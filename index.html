@@ -685,8 +685,13 @@ function exportData(idx, all) {
   dlCSV(rows, (all?'all_':'active_')+key+'_2026.csv');
 }
 
+let isPushing = false;
+
 // Push all local data to Airtable (first time setup)
 async function pushAllToAirtable(){
+  if(isPushing){ toast('Already pushing, please wait...'); return; }
+  if(!confirm('This will replace ALL data in Airtable. Continue?')) return;
+  isPushing = true;
   setSaving();
   try {
     // First delete all existing records
@@ -720,6 +725,7 @@ async function pushAllToAirtable(){
     setSaved();
     toast('All data pushed to Airtable!');
   } catch(e){ setSaveErr(); console.error(e); }
+  isPushing = false;
 }
 
 // ── INIT ──
@@ -733,6 +739,13 @@ loadFromAirtable().then(loaded => {
     toast('Synced with Airtable!');
   }
 });
+
+// Auto-sync every 30 seconds
+setInterval(() => {
+  loadFromAirtable().then(loaded => {
+    if(loaded) KEYS.forEach((k, idx) => renderPanel(idx));
+  });
+}, 30000);
 </script>
 </body>
 </html>
