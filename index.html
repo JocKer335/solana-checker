@@ -9,13 +9,10 @@
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#e0e0e0;padding:24px;}
     h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
     .sub{font-size:13px;color:#555;margin-bottom:20px;}
-    .sync-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:#111;border:0.5px solid #222;border-radius:10px;flex-wrap:wrap;}
-    .sync-status{font-size:12px;color:#555;flex:1;}
-    .sync-status.ok{color:#4ade80;}
-    .sync-status.err{color:#f87171;}
-    .sync-status.loading{color:#f59e0b;}
-    .sbtn{font-size:12px;padding:6px 14px;border-radius:8px;border:0.5px solid #333;background:transparent;color:#60a5fa;cursor:pointer;}
-    .sbtn:hover{background:#1a2030;}
+    .save-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:#111;border:0.5px solid #222;border-radius:10px;flex-wrap:wrap;}
+    .save-status{font-size:12px;color:#4ade80;flex:1;}
+    .sbtn{font-size:12px;padding:6px 14px;border-radius:8px;border:0.5px solid #333;background:transparent;color:#f87171;cursor:pointer;}
+    .sbtn:hover{background:#2a1a1a;}
     .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid #222;}
     .tab{padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px 8px 0 0;color:#555;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;}
     .tab:hover{color:#ccc;}
@@ -74,15 +71,14 @@
 <h1>Solana Activity Checker</h1>
 <p class="sub">Track which projects and DAOs are active on X in 2026</p>
 
-<div class="sync-bar">
-  <span class="sync-status" id="sync-status">Not synced yet</span>
-  <button class="sbtn" onclick="loadFromSheets()">Load from Google Sheets ↓</button>
-  <button class="sbtn" onclick="saveToSheets()">Save to Google Sheets ↑</button>
+<div class="save-bar">
+  <span class="save-status" id="save-status">✓ All changes saved automatically</span>
+  <button class="sbtn" onclick="resetAll()">Reset all data</button>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('projects',this)">Projects (<span id="ptc">123</span>)</button>
-  <button class="tab" onclick="switchTab('daos',this)">DAOs (<span id="dtc">27</span>)</button>
+  <button class="tab active" onclick="switchTab('projects',this)">Projects (<span id="ptc">0</span>)</button>
+  <button class="tab" onclick="switchTab('daos',this)">DAOs (<span id="dtc">0</span>)</button>
 </div>
 
 <!-- PROJECTS -->
@@ -128,7 +124,7 @@
     <thead><tr><th>#</th><th>Project</th><th>Official X</th><th>Status</th><th></th></tr></thead>
     <tbody id="ptb"></tbody>
   </table></div>
-  <p class="nf">Click X link to open profile. Click badge to toggle. × to remove. Save to Sheets to keep changes.</p>
+  <p class="nf">Click X link to open profile. Click badge to toggle. × to remove. Changes save automatically.</p>
 </div>
 
 <!-- DAOS -->
@@ -175,124 +171,63 @@
     <thead><tr><th>#</th><th>DAO</th><th>Member X Links</th><th>Status</th><th></th></tr></thead>
     <tbody id="dtb"></tbody>
   </table></div>
-  <p class="nf">Click X links to open profiles. Click badge to toggle. × to remove. Save to Sheets to keep changes.</p>
+  <p class="nf">Click X links to open profiles. Click badge to toggle. × to remove. Changes save automatically.</p>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyurGfvCIRfzhap5SYL21RBaPWL9LAF5tpzKrbdfIGt6A2gza5-YT4Lj9ScqAxPxPG4g/exec';
+const LS_P = 'solana_projects_v1';
+const LS_D = 'solana_daos_v1';
 
+const DEFAULT_PROJECTS = [
+  {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Collab twitter",x:"",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"Sodead",x:"SodeadNFT",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Sr manzano",x:"SrManzanoNFT",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"Sandwatch premium seats",x:"SandwatchNFT",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"}
+];
+
+const DEFAULT_DAOS = [
+  {n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist / Defi Dungeons",h:["TheRealGapper"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Surgence",p:"okay bears",h:[],s:"pending"},{n:"Solana NFT Finder (DAO)",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Unity Academy",p:"okay bears",h:[],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Solana NFT Finder",p:"Smyths / meegos",h:["mhkNFTs"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians","Shahzaib_web3","Abdullah_boiii"],s:"pending"},{n:"Habibi Alpha",p:"Sandwatch",h:["7xBunny","MaskiDLuffy"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","0xHANTW","SaveTheWhal3s"],s:"pending"},{n:"Lumex",p:"Play Solana NFT",h:["pixonme_"],s:"pending"},{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl / TBP",h:["TheSimms"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl / TBP",h:["MetaDAOProject"],s:"pending"}
+];
+
+let PP = [];
+let DD = [];
+
+// ── LOCAL STORAGE ──
+function saveAll(){
+  try{
+    localStorage.setItem(LS_P, JSON.stringify(PP));
+    localStorage.setItem(LS_D, JSON.stringify(DD));
+    document.getElementById('save-status').textContent = '✓ Saved — ' + new Date().toLocaleTimeString();
+  }catch(e){}
+}
+
+function loadAll(){
+  try{
+    const sp = localStorage.getItem(LS_P);
+    const sd = localStorage.getItem(LS_D);
+    PP = sp ? JSON.parse(sp) : JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
+    DD = sd ? JSON.parse(sd) : JSON.parse(JSON.stringify(DEFAULT_DAOS));
+  }catch(e){
+    PP = JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
+    DD = JSON.parse(JSON.stringify(DEFAULT_DAOS));
+  }
+}
+
+function resetAll(){
+  if(!confirm('Reset all data to defaults? This cannot be undone.')) return;
+  localStorage.removeItem(LS_P);
+  localStorage.removeItem(LS_D);
+  PP = JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
+  DD = JSON.parse(JSON.stringify(DEFAULT_DAOS));
+  renderP();upP();renderD();upD();
+  toast('Reset to defaults!');
+}
+
+// ── HELPERS ──
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function setSyncStatus(msg,cls){const el=document.getElementById('sync-status');el.textContent=msg;el.className='sync-status '+(cls||'');}
 function switchTab(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById('panel-'+t).classList.add('active');el.classList.add('active');}
 function dlCSV(rows,fn){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=fn;a.click();}
 function dlTemplate(rows,fn){dlCSV(rows,fn);}
 function clean(s){return(s||'').replace(/^"|"$/g,'').trim();}
-
-// ── DEFAULT DATA ──
-const DEFAULT_PROJECTS = [
-  ["Mad Lads","MadLadsNFT","pending"],["Defi Dungeons","DefiDungeons","pending"],["The Heist / Defi Dungeons","TheHeistNFT","pending"],["Portals","PortalsNFT","pending"],["Taiyo Robotics TYR","TaiyoRobotics","pending"],["Aurory: Seekers of Tokane","AuroryProject","pending"],["Cets","CetsOnCreck","pending"],["Frogana","FroganaSOL","pending"],["AFEL","AFELnft","pending"],["Solarians","SolariansNFT","pending"],["Subber.xyz","Subber_xyz","pending"],["Marker Kid - WE ARE GREGS","MarkerKidNFT","pending"],["Degen Coin Flip","DegenCoinFlip","pending"],["URBAN NODE","UrbanNodeNFT","pending"],["Seraph","SeraphNFT","pending"],["Miken Club","MikenClub","pending"],["okay bears","okaybears","pending"],["degods","DeGodsNFT","pending"],["y00ts","y00tsNFT","pending"],["Collab twitter","","pending"],["Smyths / meegos / Blocksmith Labs","BlocksmithLabs","pending"],["SharkyFI","sharkyfi","pending"],["Sodead","SodeadNFT","pending"],["OligarchNFT","OligarchNFT","pending"],["Dead King Society","DeadKingSociety","pending"],["GAINZ","GainzNFT","pending"],["SolCasino","SolCasino_","pending"],["BASC","BASCollective","pending"],["Bodoggos","Bodoggos","pending"],["Sandwatch","SandwatchNFT","pending"],["Poply","PoplyNFT","pending"],["BroHalla","BroHallaNFT","pending"],["SMB / Bonkz / SagaDAO","SolanaMBS","pending"],["Pen Frens","PenFrensNFT","pending"],["Bored Ape Solana Club","BoredApeSolana","pending"],["Stoned Ape Crew","StonedApeCrew","pending"],["Play Solana NFT","PlaySolanaNFT","pending"],["Famous Fox Federation","FamousFoxFed","pending"],["RETARDIO","retardiocousins","pending"],["Lifinity Flares","Lifinity","pending"],["Dokyo","DokyoNFT","pending"],["Pathfinders","PathfindersNFT","pending"],["Shredded Apes","ShreddedApes","pending"],["sol punk","SolPunksNFT","pending"],["Genesis Watcher","GenesisWatcher_","pending"],["Decimus Dynamics / ALTRA","DecimusDynamics","pending"],["The Chimpions","TheChimpions","pending"],["Coral Tribe","CoralTribeNFT","pending"],["SOL Decoder","SOLDecoder","pending"],["Tombstoned","TombstonedNFT","pending"],["Thugbirdz","ThugBirdz","pending"],["the Stoned Frogs","StonedFrogsNFT","pending"],["New Foxes","NewFoxesNFT","pending"],["Udder Chaos","UdderChaosNFT","pending"],["Primates","PrimatesNFT","pending"],["solsteads","solsteads","pending"],["SolPunks","SolPunksFamily","pending"],["TombStoned","TombStonedHS","pending"],["BANX","BanxNFT","pending"],["Miners of Mars","MinersOfMars","pending"],["Boogles GEN 1","BooglesNFT","pending"],["Pesky Penguins","PeskyPenguins","pending"],["SOL SLUG","SolSlugNFT","pending"],["ZERO MONKE BIZ / ZMB","ZeroMonkeBiz","pending"],["Kanpai Pandas","KanpaiPandas","pending"],["Digi Monkz","DigiMonkz","pending"],["Cyber Frogs","CyberFrogsNFT","pending"],["Edamame","EdamameNFT","pending"],["Boku Labz","BokuLabz","pending"],["Conduct3","Conduct3NFT","pending"],["Sailors Web3","SailorsWeb3","pending"],["Inferno Labs","InfernoLabsNFT","pending"],["Omega Alpha","OmegaAlphaNFT","pending"],["HELIO","helio_pay","pending"],["TrippinApeNFT","TrippinApeNFT","pending"],["Code Cowboy","Code_Cowboy_","pending"],["Liberty Square","LibertySquareHQ","pending"],["Oak Paradise","OakParadiseNFT","pending"],["Monkey Baby Business (MBB)","MonkeyBabyBiz","pending"],["Boryoku dragons","BoryokuDragon","pending"],["OWNERS CLUB","OwnersClubNFT","pending"],["THE FRACTURE","TheFractureNFT","pending"],["XPUNK","xpunknft","pending"],["WONDERBOSSNFT","WonderBossNFT","pending"],["BLOCKSMITHLABS","BlocksmithLabs","pending"],["SOLANA SENSEI","SolanaSensei","pending"],["PLAYSOLANA","PlaySolana","pending"],["GIGABUDS","GigabudsNFT","pending"],["MOONSTERS","MoonstersNFT","pending"],["Rafflors","Rafflors","pending"],["SaveTheWhal3s","SaveTheWhal3s","pending"],["Tomorrowland: the reflection","TomorrowlandNFT","pending"],["Pixeezus","Pixeezus","pending"],["Punkykongz","PunkyKongz","pending"],["Pythenians","Pythenians","pending"],["Sr manzano","SrManzanoNFT","pending"],["Rogues","RoguesNFT","pending"],["LP Dollz","LPDollz","pending"],["Eden","Eden_SOL","pending"],["Wegens","WegensNFT","pending"],["Webkidz","WebkidzNFT","pending"],["Degenerate ape academy","degenape","pending"],["Sandwatch premium seats","SandwatchNFT","pending"],["LowLifeForms","LowLifeFormsNFT","pending"],["Critters quest","CrittersQuest","pending"],["Puffsterz","PuffsterzNFT","pending"],["Maikers","MaikersNFT","pending"],["Solana fat boys","SolanaFatBoys","pending"],["Enchanted nft","EnchantedNFT_","pending"],["Luckysea","LuckySea_NFT","pending"],["Mnk3ys","Mnk3ysNFT","pending"],["Space operator nft","SpaceOperatorNFT","pending"],["Yaku","YakuCorp","pending"],["Saviors","SaviorsNFT","pending"],["BoredApeYC","BoredApeYC","pending"],["Stride","stride_sol","pending"],["itk.digital","itkdigital","pending"],["ThePlagueNft","ThePlagueNFT","pending"],["Element NFT Marketplace","Element_Market","pending"],["The Black Pearl / TBP","TBP_Official","pending"],["MultiChain Advisors Inc.","MultiChainInc","pending"],["Carrot","DeFiCarrot","pending"],["AdrenaProtocol","AdrenaProtocol","pending"]
-];
-
-const DEFAULT_DAOS = [
-  ["Partners DAO","Mad Lads","Jon_HQ","pending"],
-  ["Minteddao","The Heist / Defi Dungeons","0itsali0","pending"],
-  ["Solami Mommy DAO","The Heist / Defi Dungeons","TheRealGapper","pending"],
-  ["DOOSIN ALPHA","Seraph","nft_Osb;doosingod","pending"],
-  ["Spike Club","Miken Club","ParisP_eth","pending"],
-  ["Surgence","okay bears","","pending"],
-  ["Solana NFT Finder (DAO)","okay bears","mhkNFTs;rifatNFTs;jackkksol","pending"],
-  ["Unity Academy","okay bears","","pending"],
-  ["Thomas DAO","Collab twitter","MizzleFireNFT","pending"],
-  ["Solana NFT Finder","Smyths / meegos","mhkNFTs","pending"],
-  ["Habibi Alpha","SharkyFI","0xmani_;lamoniaa;Stepmemer","pending"],
-  ["Minted","SharkyFI","jellonft;0itsali0","pending"],
-  ["GotM DAO","GAINZ","Tswahne1991;BlockTrainn","pending"],
-  ["Sukuna DAO","BASC","tommyysol03;SukunaZH;jikannians;Shahzaib_web3;Abdullah_boiii","pending"],
-  ["Habibi Alpha","Sandwatch","7xBunny;MaskiDLuffy","pending"],
-  ["Tropa da Drih DAO","Sandwatch","WestfureWest;Dontolidos;Mohitt_NFT","pending"],
-  ["ZoddDAO","Sandwatch","icanfly2_nft;mazannyy","pending"],
-  ["Whale3","Play Solana NFT","pixonme_;Khabib263;0xHANTW;SaveTheWhal3s","pending"],
-  ["Lumex","Play Solana NFT","pixonme_","pending"],
-  ["Degen DAO","Thugbirdz","Umak0000","pending"],
-  ["Linked DAO","Kanpai Pandas","Manay_Rants;_its_avi;oojiwashere","pending"],
-  ["PESTDAO","Kanpai Pandas","continentalger;Escoba_sol;Fairo_m2e","pending"],
-  ["IMPACT","Inferno Labs","carisneeth;nft_parker_;thejasich","pending"],
-  ["GhostKidDAO","Code Cowboy","GhostKidDAO","pending"],
-  ["Dre","Saviors","nftsgoldeth;MookieNFT;dsuperrboy","pending"],
-  ["OnChain Buccaneers","itk.digital","Hydraze420;Jampzey","pending"],
-  ["Rug Radio","The Black Pearl / TBP","TheSimms","pending"],
-  ["MetaDAO","The Black Pearl / TBP","MetaDAOProject","pending"]
-];
-
-// ── STATE ──
-// Projects: [{n, x, s}]  DAOs: [{n, p, h[], s}]
-let PP = [];
-let DD = [];
-
-function rowsToProjects(rows) {
-  return rows.filter(r=>r[0]&&r[0]!=='Project').map(r=>({n:r[0]||'',x:r[1]||'',s:r[2]||'pending'}));
-}
-function rowsToDaos(rows) {
-  return rows.filter(r=>r[0]&&r[0]!=='DAO').map(r=>({n:r[0]||'',p:r[1]||'',h:(r[2]||'').split(';').map(x=>x.trim()).filter(Boolean),s:r[3]||'pending'}));
-}
-function projectsToRows() {
-  return [['Project','Handle','Status'],...PP.map(p=>[p.n,p.x||'',p.s])];
-}
-function daosToRows() {
-  return [['DAO','Project','Handles','Status'],...DD.map(d=>[d.n,d.p,d.h.join(';'),d.s])];
-}
-
-// ── SHEETS SYNC ──
-async function loadFromSheets() {
-  setSyncStatus('Loading...','loading');
-  try {
-    const [pr, dr] = await Promise.all([
-      fetch(SCRIPT_URL+'?action=read&sheet=Projects').then(r=>r.json()),
-      fetch(SCRIPT_URL+'?action=read&sheet=DAOs').then(r=>r.json())
-    ]);
-    if(pr.status==='ok' && pr.data.length > 1) {
-      PP = rowsToProjects(pr.data.slice(1));
-    } else {
-      PP = rowsToProjects(DEFAULT_PROJECTS);
-    }
-    if(dr.status==='ok' && dr.data.length > 1) {
-      DD = rowsToDaos(dr.data.slice(1));
-    } else {
-      DD = rowsToDaos(DEFAULT_DAOS);
-    }
-    renderP(); upP(); renderD(); upD();
-    setSyncStatus('Loaded from Google Sheets — '+new Date().toLocaleTimeString(),'ok');
-    toast('Data loaded from Google Sheets!');
-  } catch(e) {
-    // fallback to defaults
-    PP = rowsToProjects(DEFAULT_PROJECTS);
-    DD = rowsToDaos(DEFAULT_DAOS);
-    renderP(); upP(); renderD(); upD();
-    setSyncStatus('Could not reach Sheets — showing defaults','err');
-  }
-}
-
-async function saveToSheets() {
-  setSyncStatus('Saving...','loading');
-  try {
-    const pRows = projectsToRows();
-    const dRows = daosToRows();
-    const [pr, dr] = await Promise.all([
-      fetch(SCRIPT_URL+'?action=write&sheet=Projects&rows='+encodeURIComponent(JSON.stringify(pRows))).then(r=>r.json()),
-      fetch(SCRIPT_URL+'?action=write&sheet=DAOs&rows='+encodeURIComponent(JSON.stringify(dRows))).then(r=>r.json())
-    ]);
-    if(pr.status==='ok' && dr.status==='ok') {
-      setSyncStatus('Saved to Google Sheets — '+new Date().toLocaleTimeString(),'ok');
-      toast('Saved to Google Sheets!');
-    } else {
-      setSyncStatus('Save error — check console','err');
-    }
-  } catch(e) {
-    setSyncStatus('Save failed: '+e.message,'err');
-  }
-}
 
 // ── PROJECTS ──
 function addP(){
@@ -302,7 +237,7 @@ function addP(){
   if(PP.find(p=>p.n.toLowerCase()===n.toLowerCase())){alert('Already exists.');return;}
   PP.push({n,x:x||'',s:'pending'});
   document.getElementById('pan').value='';document.getElementById('pah').value='';
-  renderP();upP();toast('Added: '+n);
+  renderP();upP();saveAll();toast('Added: '+n);
 }
 
 function importPCSV(input){
@@ -319,11 +254,11 @@ function importPCSV(input){
       if(PP.find(p=>p.n.toLowerCase()===n.toLowerCase()))return;
       PP.push({n,x,s:'pending'});added++;
     });
-    renderP();upP();toast(added+' projects imported!');input.value='';
+    renderP();upP();saveAll();toast(added+' projects imported!');input.value='';
   };r.readAsText(f);
 }
 
-function rmP(i){PP.splice(i,1);renderP();upP();}
+function rmP(i){PP.splice(i,1);renderP();upP();saveAll();}
 
 function upP(){
   const a=PP.filter(p=>p.s==='active').length;
@@ -337,7 +272,7 @@ function upP(){
   document.getElementById('pp').style.width=PP.length?Math.round((a+i)/PP.length*100)+'%':'0%';
 }
 
-function cycP(i){PP[i].s=PP[i].s==='pending'?'active':PP[i].s==='active'?'inactive':'pending';renderP();upP();}
+function cycP(i){PP[i].s=PP[i].s==='pending'?'active':PP[i].s==='active'?'inactive':'pending';renderP();upP();saveAll();}
 
 function getFP(){
   const q=document.getElementById('ps').value.toLowerCase();
@@ -361,7 +296,7 @@ function renderP(){
   });
 }
 
-function markP(s){getFP().forEach(p=>PP[p.i].s=s);renderP();upP();}
+function markP(s){getFP().forEach(p=>PP[p.i].s=s);renderP();upP();saveAll();}
 
 function exportP(all){
   const list=all?PP:PP.filter(p=>p.s==='active');
@@ -381,7 +316,7 @@ function addD(){
   const h=hr?hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean):[];
   DD.push({n,p,h,s:'pending'});
   document.getElementById('dan').value='';document.getElementById('dap').value='';document.getElementById('dah').value='';
-  renderD();upD();toast('Added: '+n);
+  renderD();upD();saveAll();toast('Added: '+n);
 }
 
 function importDCSV(input){
@@ -398,11 +333,11 @@ function importDCSV(input){
       if(!n)return;
       DD.push({n,p,h,s:'pending'});added++;
     });
-    renderD();upD();toast(added+' DAOs imported!');input.value='';
+    renderD();upD();saveAll();toast(added+' DAOs imported!');input.value='';
   };r.readAsText(f);
 }
 
-function rmD(i){DD.splice(i,1);renderD();upD();}
+function rmD(i){DD.splice(i,1);renderD();upD();saveAll();}
 
 function upD(){
   const a=DD.filter(d=>d.s==='active').length;
@@ -416,7 +351,7 @@ function upD(){
   document.getElementById('dp').style.width=DD.length?Math.round((a+i)/DD.length*100)+'%':'0%';
 }
 
-function cycD(i){DD[i].s=DD[i].s==='pending'?'active':DD[i].s==='active'?'inactive':'pending';renderD();upD();}
+function cycD(i){DD[i].s=DD[i].s==='pending'?'active':DD[i].s==='active'?'inactive':'pending';renderD();upD();saveAll();}
 
 function getFD(){
   const q=document.getElementById('dsr').value.toLowerCase();
@@ -440,7 +375,7 @@ function renderD(){
   });
 }
 
-function markD(s){getFD().forEach(d=>DD[d.i].s=s);renderD();upD();}
+function markD(s){getFD().forEach(d=>DD[d.i].s=s);renderD();upD();saveAll();}
 
 function exportD(all){
   const list=all?DD:DD.filter(d=>d.s==='active');
@@ -452,7 +387,9 @@ function exportD(all){
 }
 
 // ── INIT ──
-loadFromSheets();
+loadAll();
+renderP();upP();
+renderD();upD();
 </script>
 </body>
 </html>
