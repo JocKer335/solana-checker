@@ -164,7 +164,11 @@ td{padding:11px 14px;vertical-align:middle;}
     </div>
   </div>
   <p>Track projects, influencers & DAOs across Solana · Ethereum · Bitcoin</p>
-  <div class="save-pill"><span class="dot"></span><span id="save-txt">All changes saved</span></div>
+  <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
+  <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync from Airtable</button>
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.1);color:#10b981;cursor:pointer;" onclick="pushAllToAirtable()">↑ Push all to Airtable</button>
+  </div>
 
   <div class="tabs" id="tabs">
     <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
@@ -232,9 +236,110 @@ td{padding:11px 14px;vertical-align:middle;}
 // ── STORAGE ──
 const KEYS = ['sol','eth','btc','topinf','inf','dao','base'];
 
-function save(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); setSaved(); }catch(e){} }
-function load(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
-function setSaved(){ document.getElementById('save-txt').textContent = '✓ Saved — '+new Date().toLocaleTimeString(); }
+const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
+const AT_BASE  = 'appJpWWp9NkIQCugA';
+const AT_TABLE = 'Table%201';
+const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
+const AT_HEADS = { 'Authorization': `Bearer ${AT_TOKEN}`, 'Content-Type': 'application/json' };
+
+// Also keep localStorage as fast cache
+function saveLocal(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); }catch(e){} }
+function loadLocal(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
+function setSaved(){ document.getElementById('save-txt').textContent = '✓ Synced — '+new Date().toLocaleTimeString(); }
+function setSaving(){ document.getElementById('save-txt').textContent = '⏳ Syncing...'; }
+function setSaveErr(){ document.getElementById('save-txt').textContent = '⚠️ Sync error — saved locally'; }
+
+// Convert our data to Airtable records
+function toRecords(key, arr){
+  const isDao = key === 'dao';
+  return arr.map(d => ({
+    fields: {
+      Name: d.n || '',
+      Handle: isDao ? (d.h||[]).join(';') : (d.x||''),
+      Status: d.s || 'pending',
+      Category: key + (isDao ? ('|'+( d.p||'')) : '')
+    }
+  }));
+}
+
+// Convert Airtable records back to our format
+function fromRecords(key, records){
+  const isDao = key === 'dao';
+  return records.map(r => {
+    const f = r.fields;
+    const cat = (f.Category||'');
+    if (isDao) {
+      const parts = cat.split('|');
+      return { n: f.Name||'', p: parts[1]||'', h: (f.Handle||'').split(';').filter(Boolean), s: f.Status||'pending', _id: r.id };
+    }
+    return { n: f.Name||'', x: f.Handle||'', s: f.Status||'pending', _id: r.id };
+  });
+}
+
+// Load all data from Airtable
+async function loadFromAirtable(){
+  setSaving();
+  try {
+    let all = [], offset = null;
+    do {
+      const url = AT_URL + '?pageSize=100' + (offset ? '&offset='+offset : '');
+      const res = await fetch(url, { headers: AT_HEADS });
+      const json = await res.json();
+      all = all.concat(json.records||[]);
+      offset = json.offset || null;
+    } while(offset);
+
+    if(all.length === 0){ setSaved(); return false; } // empty table
+
+    KEYS.forEach(k => {
+      const recs = all.filter(r => (r.fields.Category||'').startsWith(k));
+      if(recs.length > 0){
+        DATA[k] = fromRecords(k, recs);
+        saveLocal(k, DATA[k]);
+      }
+    });
+    setSaved();
+    return true;
+  } catch(e){
+    setSaveErr();
+    return false;
+  }
+}
+
+// Save a single item to Airtable
+async function saveItemToAirtable(key, item){
+  setSaving();
+  try {
+    const isDao = key === 'dao';
+    const fields = {
+      Name: item.n||'',
+      Handle: isDao ? (item.h||[]).join(';') : (item.x||''),
+      Status: item.s||'pending',
+      Category: key + (isDao ? ('|'+(item.p||'')) : '')
+    };
+    if(item._id){
+      // Update existing
+      await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields}) });
+    } else {
+      // Create new
+      const res = await fetch(AT_URL, { method:'POST', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const json = await res.json();
+      item._id = json.id;
+    }
+    saveLocal(key, DATA[key]);
+    setSaved();
+  } catch(e){ setSaveErr(); }
+}
+
+// Delete item from Airtable
+async function deleteFromAirtable(id){
+  try { await fetch(`${AT_URL}/${id}`, { method:'DELETE', headers: AT_HEADS }); } catch(e){}
+}
+
+function save(key, data){
+  saveLocal(key, data);
+  setSaved();
+}
 
 // ── DATA ──
 // Structure: projects = [{n, x, s}], influencers = [{n, x, s}], daos = [{n, p, h[], s}]
@@ -267,7 +372,7 @@ base: [
 // ── STATE ──
 let DATA = {};
 KEYS.forEach(k => {
-  DATA[k] = load(k) || JSON.parse(JSON.stringify(DEFAULTS[k]));
+  DATA[k] = loadLocal(k) || JSON.parse(JSON.stringify(DEFAULTS[k]));
 });
 
 // ── MODAL ──
@@ -471,12 +576,14 @@ function cycleStatus(idx, i) {
   const key = keyOf(idx);
   const d = DATA[key][i];
   d.s = d.s==='pending'?'active':d.s==='active'?'inactive':'pending';
-  save(key, DATA[key]);
+  saveItemToAirtable(key, d);
   renderPanel(idx);
 }
 
 function delRow(idx, i) {
   const key = keyOf(idx);
+  const d = DATA[key][i];
+  if(d._id) deleteFromAirtable(d._id);
   DATA[key].splice(i, 1);
   save(key, DATA[key]);
   renderPanel(idx);
@@ -487,7 +594,7 @@ function editLink(idx, i) {
   const d = DATA[key][i];
   openModal(d.n, d.x, (newHandle) => {
     DATA[key][i].x = newHandle;
-    save(key, DATA[key]);
+    saveItemToAirtable(key, DATA[key][i]);
     renderPanel(idx);
     toast('Link updated!');
   });
@@ -516,13 +623,22 @@ function addRow(idx) {
   save(key, DATA[key]);
   renderPanel(idx);
   toast('Added: '+n);
+  saveItemToAirtable(key, DATA[key][DATA[key].length-1]);
 }
 
 function markAll(idx, status) {
   const key = keyOf(idx);
-  getFiltered(idx).forEach(d => DATA[key][d.i].s = status);
+  const filtered = getFiltered(idx);
+  filtered.forEach(d => DATA[key][d.i].s = status);
   save(key, DATA[key]);
   renderPanel(idx);
+  // Batch update to Airtable (up to 10 at a time)
+  const chunks = [];
+  for(let i=0; i<filtered.length; i+=10) chunks.push(filtered.slice(i,i+10));
+  chunks.forEach(chunk => {
+    const records = chunk.filter(d=>DATA[key][d.i]._id).map(d=>({id:DATA[key][d.i]._id,fields:{Status:status}}));
+    if(records.length) fetch(AT_URL, {method:'PATCH',headers:AT_HEADS,body:JSON.stringify({records})}).then(()=>setSaved()).catch(()=>setSaveErr());
+  });
 }
 
 function importCSV(idx, input) {
@@ -569,9 +685,54 @@ function exportData(idx, all) {
   dlCSV(rows, (all?'all_':'active_')+key+'_2026.csv');
 }
 
+// Push all local data to Airtable (first time setup)
+async function pushAllToAirtable(){
+  setSaving();
+  try {
+    // First delete all existing records
+    let existing = [], offset = null;
+    do {
+      const url = AT_URL + '?pageSize=100&fields[]=Name' + (offset ? '&offset='+offset : '');
+      const res = await fetch(url, {headers: AT_HEADS});
+      const json = await res.json();
+      existing = existing.concat((json.records||[]).map(r=>r.id));
+      offset = json.offset||null;
+    } while(offset);
+
+    // Delete in batches of 10
+    for(let i=0;i<existing.length;i+=10){
+      const ids = existing.slice(i,i+10).map(id=>`records[]=${id}`).join('&');
+      await fetch(`${AT_URL}?${ids}`, {method:'DELETE', headers: AT_HEADS});
+    }
+
+    // Push all data in batches of 10
+    for(const key of KEYS){
+      const records = toRecords(key, DATA[key]);
+      for(let i=0;i<records.length;i+=10){
+        const batch = records.slice(i,i+10);
+        const res = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:batch})});
+        const json = await res.json();
+        // Store returned IDs
+        (json.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
+      }
+      saveLocal(key, DATA[key]);
+    }
+    setSaved();
+    toast('All data pushed to Airtable!');
+  } catch(e){ setSaveErr(); console.error(e); }
+}
+
 // ── INIT ──
 KEYS.forEach((k, idx) => buildPanel(idx));
 KEYS.forEach((k, idx) => renderPanel(idx));
+
+// Try loading from Airtable on start
+loadFromAirtable().then(loaded => {
+  if(loaded) {
+    KEYS.forEach((k, idx) => renderPanel(idx));
+    toast('Synced with Airtable!');
+  }
+});
 </script>
 </body>
 </html>
