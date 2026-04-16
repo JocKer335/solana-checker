@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solana Project Activity Checker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 24px; }
+    h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .stat { background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; padding: 7px 14px; font-size: 12px; color: #888; }
+    .stat span { font-weight: 600; color: #fff; }
+    .progress-bar { width: 100%; height: 5px; background: #222; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3B6D11; border-radius: 3px; transition: width 0.3s; }
+    .controls { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    .controls input, .controls select { font-size: 13px; padding: 7px 10px; border-radius: 8px; border: 0.5px solid #333; background: #1a1a1a; color: #e0e0e0; flex: 1; min-width: 140px; }
+    .controls input:focus, .controls select:focus { outline: none; border-color: #555; }
+    .export-btn { font-size: 12px; padding: 7px 14px; border-radius: 8px; border: 0.5px solid #444; background: transparent; color: #60a5fa; cursor: pointer; white-space: nowrap; }
+    .export-btn:hover { background: #1e2a3a; }
+    .bulk-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .bulk-btn { font-size: 12px; padding: 5px 12px; border-radius: 8px; border: 0.5px solid #333; background: transparent; color: #ccc; cursor: pointer; }
+    .bulk-btn:hover { background: #1a1a1a; }
+    .legend { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .leg { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .table-wrap { max-height: 600px; overflow-y: auto; border: 0.5px solid #2a2a2a; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; padding: 10px 12px; font-weight: 500; font-size: 12px; color: #666; border-bottom: 0.5px solid #2a2a2a; position: sticky; top: 0; background: #141414; }
+    tbody tr { border-bottom: 0.5px solid #1e1e1e; }
+    tbody tr:hover { background: #161616; }
+    td { padding: 9px 12px; vertical-align: middle; }
+    .proj-name { font-weight: 500; color: #e0e0e0; }
+    .x-link { color: #60a5fa; text-decoration: none; font-size: 12px; }
+    .x-link:hover { text-decoration: underline; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .b-active { background: #1a3a1a; color: #4ade80; border: 0.5px solid #2d6a2d; }
+    .b-inactive { background: #1a1a1a; color: #666; border: 0.5px solid #333; }
+    .b-pending { background: #2a1f0a; color: #f59e0b; border: 0.5px solid #5a3e0a; }
+    .num { color: #555; font-size: 11px; width: 28px; }
+    .note-footer { font-size: 11px; color: #555; margin-top: 12px; }
+  </style>
+</head>
+<body>
+
+  <h1>Solana Project Activity Checker</h1>
+  <p class="subtitle">123 projects — check who is active on X in 2026</p>
+
+  <div class="stats">
+    <div class="stat">Showing <span id="s-total">123</span></div>
+    <div class="stat">Active <span id="s-active" style="color:#4ade80">0</span></div>
+    <div class="stat">Inactive <span id="s-inactive" style="color:#666">0</span></div>
+    <div class="stat">Pending <span id="s-pending" style="color:#f59e0b">123</span></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search project..." oninput="render()"/>
+    <select id="f-status" onchange="render()">
+      <option value="all">All statuses</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+      <option value="pending">Pending</option>
+    </select>
+    <button class="export-btn" onclick="exportCSV()">Export active CSV ↓</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><span class="dot" style="background:#4ade80"></span>Active in 2026</div>
+    <div class="leg"><span class="dot" style="background:#555"></span>Inactive</div>
+    <div class="leg"><span class="dot" style="background:#f59e0b"></span>Not checked</div>
+  </div>
+
+  <div class="bulk-bar">
+    <button class="bulk-btn" onclick="markAll('active')">Mark all visible → Active</button>
+    <button class="bulk-btn" onclick="markAll('inactive')">Mark all visible → Inactive</button>
+    <button class="bulk-btn" onclick="markAll('pending')">Reset visible</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Project</th><th>Official X</th><th>Status</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <p class="note-footer">Click the X link to open the project profile. Click the badge to toggle Active / Inactive / Pending. Export when done.</p>
+
+<script>
+const PROJECTS = [
+  {n:"Mad Lads", x:"MadLadsNFT"},
+  {n:"Defi Dungeons", x:"DefiDungeons"},
+  {n:"The Heist / Defi Dungeons", x:"TheHeistNFT"},
+  {n:"Portals", x:"PortalsNFT"},
+  {n:"Taiyo Robotics TYR", x:"TaiyoRobotics"},
+  {n:"Aurory: Seekers of Tokane", x:"AuroryProject"},
+  {n:"Cets", x:"CetsOnCreck"},
+  {n:"Frogana", x:"FroganaSOL"},
+  {n:"AFEL", x:"AFELnft"},
+  {n:"Solarians", x:"SolariansNFT"},
+  {n:"Subber.xyz", x:"Subber_xyz"},
+  {n:"Marker Kid - WE ARE GREGS", x:"MarkerKidNFT"},
+  {n:"Degen Coin Flip", x:"DegenCoinFlip"},
+  {n:"URBAN NODE", x:"UrbanNodeNFT"},
+  {n:"Seraph", x:"SeraphNFT"},
+  {n:"Miken Club", x:"MikenClub"},
+  {n:"okay bears", x:"okaybears"},
+  {n:"degods", x:"DeGodsNFT"},
+  {n:"y00ts", x:"y00tsNFT"},
+  {n:"Collab twitter", x:null},
+  {n:"Smyths / meegos / Blocksmith Labs", x:"BlocksmithLabs"},
+  {n:"SharkyFI", x:"sharkyfi"},
+  {n:"Sodead", x:"SodeadNFT"},
+  {n:"OligarchNFT", x:"OligarchNFT"},
+  {n:"Dead King Society", x:"DeadKingSociety"},
+  {n:"GAINZ", x:"GainzNFT"},
+  {n:"SolCasino", x:"SolCasino_"},
+  {n:"BASC", x:"BASCollective"},
+  {n:"Bodoggos", x:"Bodoggos"},
+  {n:"Sandwatch", x:"SandwatchNFT"},
+  {n:"Poply", x:"PoplyNFT"},
+  {n:"BroHalla", x:"BroHallaNFT"},
+  {n:"SMB / Bonkz / SagaDAO", x:"SolanaMBS"},
+  {n:"Pen Frens", x:"PenFrensNFT"},
+  {n:"Bored Ape Solana Club", x:"BoredApeSolana"},
+  {n:"Stoned Ape Crew", x:"StonedApeCrew"},
+  {n:"Play Solana NFT", x:"PlaySolanaNFT"},
+  {n:"Famous Fox Federation", x:"FamousFoxFed"},
+  {n:"RETARDIO", x:"retardiocousins"},
+  {n:"Lifinity Flares", x:"Lifinity"},
+  {n:"Dokyo", x:"DokyoNFT"},
+  {n:"Pathfinders", x:"PathfindersNFT"},
+  {n:"Shredded Apes", x:"ShreddedApes"},
+  {n:"sol punk", x:"SolPunksNFT"},
+  {n:"Genesis Watcher", x:"GenesisWatcher_"},
+  {n:"Decimus Dynamics / ALTRA", x:"DecimusDynamics"},
+  {n:"The Chimpions", x:"TheChimpions"},
+  {n:"Coral Tribe", x:"CoralTribeNFT"},
+  {n:"SOL Decoder", x:"SOLDecoder"},
+  {n:"Tombstoned", x:"TombstonedNFT"},
+  {n:"Thugbirdz", x:"ThugBirdz"},
+  {n:"the Stoned Frogs", x:"StonedFrogsNFT"},
+  {n:"New Foxes", x:"NewFoxesNFT"},
+  {n:"Udder Chaos", x:"UdderChaosNFT"},
+  {n:"Primates", x:"PrimatesNFT"},
+  {n:"solsteads", x:"solsteads"},
+  {n:"SolPunks", x:"SolPunksFamily"},
+  {n:"TombStoned", x:"TombStonedHS"},
+  {n:"BANX", x:"BanxNFT"},
+  {n:"Miners of Mars", x:"MinersOfMars"},
+  {n:"Boogles GEN 1", x:"BooglesNFT"},
+  {n:"Pesky Penguins", x:"PeskyPenguins"},
+  {n:"SOL SLUG", x:"SolSlugNFT"},
+  {n:"ZERO MONKE BIZ / ZMB", x:"ZeroMonkeBiz"},
+  {n:"Kanpai Pandas", x:"KanpaiPandas"},
+  {n:"Digi Monkz", x:"DigiMonkz"},
+  {n:"Cyber Frogs", x:"CyberFrogsNFT"},
+  {n:"Edamame", x:"EdamameNFT"},
+  {n:"Boku Labz", x:"BokuLabz"},
+  {n:"Conduct3", x:"Conduct3NFT"},
+  {n:"Sailors Web3", x:"SailorsWeb3"},
+  {n:"Inferno Labs", x:"InfernoLabsNFT"},
+  {n:"Omega Alpha", x:"OmegaAlphaNFT"},
+  {n:"HELIO", x:"helio_pay"},
+  {n:"TrippinApeNFT", x:"TrippinApeNFT"},
+  {n:"Code Cowboy", x:"Code_Cowboy_"},
+  {n:"Liberty Square", x:"LibertySquareHQ"},
+  {n:"Oak Paradise", x:"OakParadiseNFT"},
+  {n:"Monkey Baby Business (MBB)", x:"MonkeyBabyBiz"},
+  {n:"Boryoku dragons", x:"BoryokuDragon"},
+  {n:"OWNERS CLUB", x:"OwnersClubNFT"},
+  {n:"THE FRACTURE", x:"TheFractureNFT"},
+  {n:"XPUNK", x:"xpunknft"},
+  {n:"WONDERBOSSNFT", x:"WonderBossNFT"},
+  {n:"BLOCKSMITHLABS", x:"BlocksmithLabs"},
+  {n:"SOLANA SENSEI", x:"SolanaSensei"},
+  {n:"PLAYSOLANA", x:"PlaySolana"},
+  {n:"GIGABUDS", x:"GigabudsNFT"},
+  {n:"MOONSTERS", x:"MoonstersNFT"},
+  {n:"Rafflors", x:"Rafflors"},
+  {n:"SaveTheWhal3s", x:"SaveTheWhal3s"},
+  {n:"Tomorrowland: the reflection", x:"TomorrowlandNFT"},
+  {n:"Pixeezus", x:"Pixeezus"},
+  {n:"Punkykongz", x:"PunkyKongz"},
+  {n:"Pythenians", x:"Pythenians"},
+  {n:"Sr manzano", x:"SrManzanoNFT"},
+  {n:"Rogues", x:"RoguesNFT"},
+  {n:"LP Dollz", x:"LPDollz"},
+  {n:"Eden", x:"Eden_SOL"},
+  {n:"Wegens", x:"WegensNFT"},
+  {n:"Webkidz", x:"WebkidzNFT"},
+  {n:"Degenerate ape academy", x:"degenape"},
+  {n:"Sandwatch premium seats", x:"SandwatchNFT"},
+  {n:"LowLifeForms", x:"LowLifeFormsNFT"},
+  {n:"Critters quest", x:"CrittersQuest"},
+  {n:"Puffsterz", x:"PuffsterzNFT"},
+  {n:"Maikers", x:"MaikersNFT"},
+  {n:"Solana fat boys", x:"SolanaFatBoys"},
+  {n:"Enchanted nft", x:"EnchantedNFT_"},
+  {n:"Luckysea", x:"LuckySea_NFT"},
+  {n:"Mnk3ys", x:"Mnk3ysNFT"},
+  {n:"Space operator nft", x:"SpaceOperatorNFT"},
+  {n:"Yaku", x:"YakuCorp"},
+  {n:"Saviors", x:"SaviorsNFT"},
+  {n:"BoredApeYC", x:"BoredApeYC"},
+  {n:"Stride", x:"stride_sol"},
+  {n:"itk.digital", x:"itkdigital"},
+  {n:"ThePlagueNft", x:"ThePlagueNFT"},
+  {n:"Element NFT Marketplace", x:"Element_Market"},
+  {n:"The Black Pearl / TBP", x:"TBP_Official"},
+  {n:"MultiChain Advisors Inc.", x:"MultiChainInc"},
+  {n:"Carrot", x:"DeFiCarrot"},
+  {n:"AdrenaProtocol", x:"AdrenaProtocol"},
+];
+
+const status = {};
+PROJECTS.forEach(p => status[p.n] = 'pending');
+
+function updateStats() {
+  const a = PROJECTS.filter(p => status[p.n] === 'active').length;
+  const i = PROJECTS.filter(p => status[p.n] === 'inactive').length;
+  const pend = PROJECTS.filter(p => status[p.n] === 'pending').length;
+  document.getElementById('s-active').textContent = a;
+  document.getElementById('s-inactive').textContent = i;
+  document.getElementById('s-pending').textContent = pend;
+  document.getElementById('prog').style.width = Math.round((a + i) / PROJECTS.length * 100) + '%';
+}
+
+function cycle(idx) {
+  const p = PROJECTS[idx].n;
+  status[p] = status[p] === 'pending' ? 'active' : status[p] === 'active' ? 'inactive' : 'pending';
+  render(); updateStats();
+}
+
+function getFiltered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('f-status').value;
+  return PROJECTS.map((p, i) => ({...p, idx: i})).filter(p => {
+    if (q && !p.n.toLowerCase().includes(q)) return false;
+    if (fs !== 'all' && status[p.n] !== fs) return false;
+    return true;
+  });
+}
+
+function render() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  rows.forEach((p, i) => {
+    const s = status[p.n];
+    const bc = s === 'active' ? 'b-active' : s === 'inactive' ? 'b-inactive' : 'b-pending';
+    const label = s === 'active' ? 'Active' : s === 'inactive' ? 'Inactive' : 'Pending';
+    const linkCell = p.x
+      ? `<a class="x-link" href="https://x.com/${p.x}" target="_blank">x.com/${p.x}</a>`
+      : `<span style="color:#444;font-size:11px;">—</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="num">${i + 1}</td>
+      <td class="proj-name">${p.n}</td>
+      <td>${linkCell}</td>
+      <td><span class="badge ${bc}" onclick="cycle(${p.idx})">${label}</span></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('s-total').textContent = rows.length;
+}
+
+function markAll(s) {
+  getFiltered().forEach(p => status[p.n] = s);
+  render(); updateStats();
+}
+
+function exportCSV() {
+  const active = PROJECTS.filter(p => status[p.n] === 'active');
+  if (!active.length) { alert('No active projects yet.'); return; }
+  const lines = ['Project,Handle,URL'];
+  active.forEach(p => lines.push(`"${p.n}","${p.x ? '@' + p.x : ''}","${p.x ? 'https://x.com/' + p.x : ''}"`));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([lines.join('\n')], {type: 'text/csv'}));
+  a.download = 'active_projects_2026.csv';
+  a.click();
+}
+
+render(); updateStats();
+</script>
+</body>
+</html>

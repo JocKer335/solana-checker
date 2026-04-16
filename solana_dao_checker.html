@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solana DAO Activity Checker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 24px; }
+    h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .stat { background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; padding: 7px 14px; font-size: 12px; color: #888; }
+    .stat span { font-weight: 600; color: #fff; }
+    .progress-bar { width: 100%; height: 5px; background: #222; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #7c3aed; border-radius: 3px; transition: width 0.3s; }
+    .controls { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    .controls input, .controls select { font-size: 13px; padding: 7px 10px; border-radius: 8px; border: 0.5px solid #333; background: #1a1a1a; color: #e0e0e0; flex: 1; min-width: 140px; }
+    .controls input:focus, .controls select:focus { outline: none; border-color: #555; }
+    .export-btn { font-size: 12px; padding: 7px 14px; border-radius: 8px; border: 0.5px solid #444; background: transparent; color: #a78bfa; cursor: pointer; white-space: nowrap; }
+    .export-btn:hover { background: #1e1a2e; }
+    .bulk-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .bulk-btn { font-size: 12px; padding: 5px 12px; border-radius: 8px; border: 0.5px solid #333; background: transparent; color: #ccc; cursor: pointer; }
+    .bulk-btn:hover { background: #1a1a1a; }
+    .legend { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .leg { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .table-wrap { max-height: 600px; overflow-y: auto; border: 0.5px solid #2a2a2a; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; padding: 10px 12px; font-weight: 500; font-size: 12px; color: #666; border-bottom: 0.5px solid #2a2a2a; position: sticky; top: 0; background: #141414; }
+    tbody tr { border-bottom: 0.5px solid #1e1e1e; }
+    tbody tr:hover { background: #161616; }
+    td { padding: 9px 12px; vertical-align: middle; }
+    .dao-name { font-weight: 500; color: #e0e0e0; }
+    .project-tag { font-size: 11px; color: #666; margin-top: 2px; }
+    .x-link { color: #60a5fa; text-decoration: none; font-size: 12px; display: block; line-height: 1.8; }
+    .x-link:hover { text-decoration: underline; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .b-active { background: #1a3a1a; color: #4ade80; border: 0.5px solid #2d6a2d; }
+    .b-inactive { background: #1a1a1a; color: #666; border: 0.5px solid #333; }
+    .b-pending { background: #2a1f0a; color: #f59e0b; border: 0.5px solid #5a3e0a; }
+    .num { color: #555; font-size: 11px; width: 28px; }
+    .note-footer { font-size: 11px; color: #555; margin-top: 12px; }
+  </style>
+</head>
+<body>
+
+  <h1>Solana DAO Activity Checker</h1>
+  <p class="subtitle">27 DAOs — check who is active on X in 2026</p>
+
+  <div class="stats">
+    <div class="stat">Showing <span id="s-total">27</span></div>
+    <div class="stat">Active <span id="s-active" style="color:#4ade80">0</span></div>
+    <div class="stat">Inactive <span id="s-inactive" style="color:#666">0</span></div>
+    <div class="stat">Pending <span id="s-pending" style="color:#f59e0b">27</span></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search DAO..." oninput="render()"/>
+    <select id="f-status" onchange="render()">
+      <option value="all">All statuses</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+      <option value="pending">Pending</option>
+    </select>
+    <button class="export-btn" onclick="exportCSV()">Export active CSV ↓</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><span class="dot" style="background:#4ade80"></span>Active in 2026</div>
+    <div class="leg"><span class="dot" style="background:#555"></span>Inactive</div>
+    <div class="leg"><span class="dot" style="background:#f59e0b"></span>Not checked</div>
+  </div>
+
+  <div class="bulk-bar">
+    <button class="bulk-btn" onclick="markAll('active')">Mark all visible → Active</button>
+    <button class="bulk-btn" onclick="markAll('inactive')">Mark all visible → Inactive</button>
+    <button class="bulk-btn" onclick="markAll('pending')">Reset visible</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>DAO</th><th>Member X Links</th><th>Status</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <p class="note-footer">Click X links to open member profiles. Click the badge to toggle Active / Inactive / Pending. Export when done.</p>
+
+<script>
+const DAOS = [
+  {n:"Partners DAO", project:"Mad Lads", handles:["Jon_HQ"]},
+  {n:"Minteddao", project:"The Heist / Defi Dungeons", handles:["0itsali0"]},
+  {n:"Solami Mommy DAO", project:"The Heist / Defi Dungeons", handles:["TheRealGapper"]},
+  {n:"DOOSIN ALPHA", project:"Seraph", handles:["nft_Osb","doosingod"]},
+  {n:"Spike Club", project:"Miken Club", handles:["ParisP_eth"]},
+  {n:"Surgence", project:"okay bears", handles:[]},
+  {n:"Solana NFT Finder (DAO)", project:"okay bears", handles:["mhkNFTs","rifatNFTs","jackkksol"]},
+  {n:"Unity Academy", project:"okay bears", handles:[]},
+  {n:"Thomas DAO", project:"Collab twitter", handles:["MizzleFireNFT"]},
+  {n:"Solana NFT Finder", project:"Smyths / meegos", handles:["mhkNFTs"]},
+  {n:"Habibi Alpha", project:"SharkyFI", handles:["0xmani_","lamoniaa","Stepmemer"]},
+  {n:"Minted", project:"SharkyFI", handles:["jellonft","0itsali0"]},
+  {n:"GotM DAO", project:"GAINZ", handles:["Tswahne1991","BlockTrainn"]},
+  {n:"Sukuna DAO", project:"BASC", handles:["tommyysol03","SukunaZH","jikannians","Shahzaib_web3","Abdullah_boiii"]},
+  {n:"Habibi Alpha", project:"Sandwatch", handles:["7xBunny","MaskiDLuffy"]},
+  {n:"Tropa da Drih DAO", project:"Sandwatch", handles:["WestfureWest","Dontolidos","Mohitt_NFT"]},
+  {n:"ZoddDAO", project:"Sandwatch", handles:["icanfly2_nft","mazannyy"]},
+  {n:"Whale3", project:"Play Solana NFT", handles:["pixonme_","Khabib263","0xHANTW","SaveTheWhal3s"]},
+  {n:"Lumex", project:"Play Solana NFT", handles:["pixonme_"]},
+  {n:"Degen DAO", project:"Thugbirdz", handles:["Umak0000"]},
+  {n:"Linked DAO", project:"Kanpai Pandas", handles:["Manay_Rants","_its_avi","oojiwashere"]},
+  {n:"PESTDAO", project:"Kanpai Pandas", handles:["continentalger","Escoba_sol","Fairo_m2e"]},
+  {n:"IMPACT", project:"Inferno Labs", handles:["carisneeth","nft_parker_","thejasich"]},
+  {n:"GhostKidDAO", project:"Code Cowboy", handles:["GhostKidDAO"]},
+  {n:"Dre", project:"Saviors", handles:["nftsgoldeth","MookieNFT","dsuperrboy"]},
+  {n:"OnChain Buccaneers", project:"itk.digital", handles:["Hydraze420","Jampzey"]},
+  {n:"Rug Radio", project:"The Black Pearl / TBP", handles:["TheSimms"]},
+  {n:"MetaDAO", project:"The Black Pearl / TBP", handles:["MetaDAOProject"]},
+];
+
+const status = {};
+DAOS.forEach(d => status[d.n + d.project] = 'pending');
+
+function key(d) { return d.n + d.project; }
+
+function updateStats() {
+  const a = DAOS.filter(d => status[key(d)] === 'active').length;
+  const i = DAOS.filter(d => status[key(d)] === 'inactive').length;
+  const p = DAOS.filter(d => status[key(d)] === 'pending').length;
+  document.getElementById('s-active').textContent = a;
+  document.getElementById('s-inactive').textContent = i;
+  document.getElementById('s-pending').textContent = p;
+  document.getElementById('prog').style.width = Math.round((a + i) / DAOS.length * 100) + '%';
+}
+
+function cycle(idx) {
+  const k = key(DAOS[idx]);
+  status[k] = status[k] === 'pending' ? 'active' : status[k] === 'active' ? 'inactive' : 'pending';
+  render(); updateStats();
+}
+
+function getFiltered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('f-status').value;
+  return DAOS.map((d, i) => ({...d, idx: i})).filter(d => {
+    if (q && !d.n.toLowerCase().includes(q) && !d.project.toLowerCase().includes(q)) return false;
+    if (fs !== 'all' && status[key(d)] !== fs) return false;
+    return true;
+  });
+}
+
+function render() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  rows.forEach((d, i) => {
+    const k = key(d);
+    const s = status[k];
+    const bc = s === 'active' ? 'b-active' : s === 'inactive' ? 'b-inactive' : 'b-pending';
+    const label = s === 'active' ? 'Active' : s === 'inactive' ? 'Inactive' : 'Pending';
+    const links = d.handles.length
+      ? d.handles.map(h => `<a class="x-link" href="https://x.com/${h}" target="_blank">x.com/${h}</a>`).join('')
+      : `<span style="color:#444;font-size:11px;">No handles</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="num">${i + 1}</td>
+      <td>
+        <div class="dao-name">${d.n}</div>
+        <div class="project-tag">${d.project}</div>
+      </td>
+      <td>${links}</td>
+      <td><span class="badge ${bc}" onclick="cycle(${d.idx})">${label}</span></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('s-total').textContent = rows.length;
+}
+
+function markAll(s) {
+  getFiltered().forEach(d => status[key(d)] = s);
+  render(); updateStats();
+}
+
+function exportCSV() {
+  const active = DAOS.filter(d => status[key(d)] === 'active');
+  if (!active.length) { alert('No active DAOs yet.'); return; }
+  const lines = ['DAO,Project,Handles'];
+  active.forEach(d => lines.push(`"${d.n}","${d.project}","${d.handles.map(h => '@' + h).join(', ')}"`));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([lines.join('\n')], {type: 'text/csv'}));
+  a.download = 'active_daos_2026.csv';
+  a.click();
+}
+
+render(); updateStats();
+</script>
+</body>
+</html>
