@@ -1,395 +1,569 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Solana Activity Checker</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#e0e0e0;padding:24px;}
-    h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
-    .sub{font-size:13px;color:#555;margin-bottom:20px;}
-    .save-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:#111;border:0.5px solid #222;border-radius:10px;flex-wrap:wrap;}
-    .save-status{font-size:12px;color:#4ade80;flex:1;}
-    .sbtn{font-size:12px;padding:6px 14px;border-radius:8px;border:0.5px solid #333;background:transparent;color:#f87171;cursor:pointer;}
-    .sbtn:hover{background:#2a1a1a;}
-    .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid #222;}
-    .tab{padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px 8px 0 0;color:#555;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;}
-    .tab:hover{color:#ccc;}
-    .tab.active{color:#fff;border-bottom:2px solid #7c3aed;}
-    .panel{display:none;}
-    .panel.active{display:block;}
-    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
-    .stat{background:#1a1a1a;border:0.5px solid #2a2a2a;border-radius:8px;padding:7px 14px;font-size:12px;color:#666;}
-    .stat span{font-weight:600;color:#fff;}
-    .progress-bar{width:100%;height:5px;background:#1a1a1a;border-radius:3px;margin-bottom:16px;overflow:hidden;}
-    .pf{height:100%;background:#3B6D11;border-radius:3px;transition:width 0.3s;}
-    .df{height:100%;background:#7c3aed;border-radius:3px;transition:width 0.3s;}
-    .controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
-    .controls input[type="text"],.controls select{font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid #2a2a2a;background:#1a1a1a;color:#e0e0e0;flex:1;min-width:140px;}
-    .btn{font-size:12px;padding:7px 14px;border-radius:8px;border:0.5px solid #333;background:transparent;cursor:pointer;white-space:nowrap;}
-    .bv{color:#a78bfa;}.bv:hover{background:#1e1a2e;}
-    .ba{color:#4ade80;}.ba:hover{background:#1a2a1a;}
-    .bulk-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-    .bbtn{font-size:12px;padding:5px 12px;border-radius:8px;border:0.5px solid #2a2a2a;background:transparent;color:#888;cursor:pointer;}
-    .bbtn:hover{background:#1a1a1a;}
-    .legend{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
-    .leg{display:flex;align-items:center;gap:5px;font-size:12px;color:#666;}
-    .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-    .import-box{border:1px dashed #222;border-radius:10px;padding:16px;margin-bottom:20px;background:#111;}
-    .import-box h3{font-size:13px;font-weight:500;color:#777;margin-bottom:12px;}
-    .irow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
-    .irow input[type="text"]{flex:1;min-width:140px;font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid #2a2a2a;background:#1a1a1a;color:#e0e0e0;}
-    .irow label{font-size:12px;padding:7px 14px;border-radius:8px;border:0.5px solid #333;color:#60a5fa;cursor:pointer;}
-    .irow label:hover{background:#1a2030;}
-    .irow input[type="file"]{display:none;}
-    .hint{font-size:11px;color:#444;margin-top:4px;}
-    .hint code{background:#1a1a1a;padding:1px 5px;border-radius:3px;color:#666;}
-    .tw{max-height:480px;overflow-y:auto;border:0.5px solid #1e1e1e;border-radius:12px;margin-bottom:10px;}
-    table{width:100%;border-collapse:collapse;font-size:13px;}
-    thead th{text-align:left;padding:10px 12px;font-size:12px;color:#555;border-bottom:0.5px solid #1e1e1e;position:sticky;top:0;background:#0f0f0f;}
-    tbody tr{border-bottom:0.5px solid #181818;}
-    tbody tr:hover{background:#141414;}
-    td{padding:9px 12px;vertical-align:middle;}
-    .pn{font-weight:500;color:#e0e0e0;}
-    .pt{font-size:11px;color:#444;margin-top:2px;}
-    .xl{color:#60a5fa;text-decoration:none;font-size:12px;display:block;line-height:1.9;}
-    .xl:hover{text-decoration:underline;}
-    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;}
-    .ac{background:#1a3a1a;color:#4ade80;border:0.5px solid #2d6a2d;}
-    .in{background:#1a1a1a;color:#555;border:0.5px solid #2a2a2a;}
-    .pe{background:#2a1f0a;color:#f59e0b;border:0.5px solid #5a3e0a;}
-    .xb{font-size:11px;color:#333;background:transparent;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;}
-    .xb:hover{color:#f87171;background:#2a1a1a;}
-    .num{color:#444;font-size:11px;width:28px;}
-    .nf{font-size:11px;color:#444;margin-top:8px;}
-    .toast{position:fixed;bottom:24px;right:24px;background:#1a3a1a;color:#4ade80;border:0.5px solid #2d6a2d;border-radius:8px;padding:10px 18px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
-    .toast.show{opacity:1;}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Web3 Activity Checker</title>
+<style>
+:root {
+  --bg: #080b12;
+  --bg2: #0d1117;
+  --bg3: #111827;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.3);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,0.1);
+  --amber-border: rgba(245,158,11,0.3);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.1);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,0.1);
+  --blue-border: rgba(59,130,246,0.3);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.1);
+  --purple-border: rgba(139,92,246,0.3);
+  --orange: #f97316;
+  --orange-bg: rgba(249,115,22,0.1);
+  --orange-border: rgba(249,115,22,0.3);
+  --pink: #ec4899;
+  --pink-bg: rgba(236,72,153,0.1);
+  --pink-border: rgba(236,72,153,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+/* HEADER */
+.header{padding:24px 28px 0;background:linear-gradient(180deg,rgba(139,92,246,0.05) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.header-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.logo{width:36px;height:36px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.header h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#e2e8f0,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header p{font-size:12px;color:var(--muted);margin-left:52px;margin-bottom:16px;}
+.save-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);border-radius:20px;padding:4px 12px;margin-left:52px;margin-bottom:16px;}
+.save-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+/* TABS */
+.tabs{display:flex;gap:2px;overflow-x:auto;padding:0 0 0 0;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{display:flex;align-items:center;gap:7px;padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.2s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);border-bottom-color:var(--purple);}
+.tab-dot{width:8px;height:8px;border-radius:50%;}
+.tab-count{font-size:10px;background:var(--bg3);padding:2px 7px;border-radius:20px;color:var(--muted);}
+.tab.active .tab-count{background:var(--purple-bg);color:var(--purple);}
+/* MAIN */
+.main{padding:20px 28px;}
+.panel{display:none;}
+.panel.active{display:block;}
+/* STATS ROW */
+.stats-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;}
+.stat-card .label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-card .value{font-size:22px;font-weight:700;color:var(--text);}
+.stat-card.green .value{color:var(--green);}
+.stat-card.amber .value{color:var(--amber);}
+.stat-card.red .value{color:var(--red);}
+.progress-wrap{margin-bottom:20px;}
+.progress-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+.progress-label{font-size:11px;color:var(--muted);margin-top:5px;}
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.toolbar input,.toolbar select{font-size:13px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);outline:none;transition:border-color 0.2s;}
+.toolbar input{flex:1;min-width:180px;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--purple);}
+.btn{font-size:12px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--muted2);transition:all 0.2s;white-space:nowrap;}
+.btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3);}
+.btn-purple{color:var(--purple);border-color:var(--purple-border);}
+.btn-purple:hover{background:var(--purple-bg);}
+.btn-green{color:var(--green);border-color:var(--green-border);}
+.btn-green:hover{background:var(--green-bg);}
+.btn-red{color:var(--red);border-color:rgba(239,68,68,0.3);}
+.btn-red:hover{background:var(--red-bg);}
+/* ADD BOX */
+.add-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;}
+.add-box-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:500;color:var(--muted2);}
+.add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.add-row input{flex:1;min-width:140px;font-size:13px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;}
+.add-row input:focus{border-color:var(--purple);}
+.add-row label{font-size:12px;padding:8px 14px;border-radius:10px;border:1px solid var(--blue-border);color:var(--blue);cursor:pointer;transition:all 0.2s;}
+.add-row label:hover{background:var(--blue-bg);}
+.add-row input[type="file"]{display:none;}
+.hint{font-size:11px;color:var(--muted);margin-top:8px;}
+.hint code{background:var(--bg3);padding:1px 6px;border-radius:4px;color:var(--muted2);font-size:10px;}
+/* BULK */
+.bulk-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+/* TABLE */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+.table-scroll{max-height:520px;overflow-y:auto;}
+.table-scroll::-webkit-scrollbar{width:4px;}
+.table-scroll::-webkit-scrollbar-track{background:transparent;}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{position:sticky;top:0;z-index:10;}
+thead th{text-align:left;padding:12px 14px;font-size:11px;font-weight:500;color:var(--muted);background:var(--bg3);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody tr:last-child{border-bottom:none;}
+td{padding:11px 14px;vertical-align:middle;}
+.cell-name{font-weight:500;color:var(--text);}
+.cell-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.cell-link{display:flex;align-items:center;gap:5px;}
+.xl{color:var(--blue);text-decoration:none;font-size:12px;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;border:1px solid var(--blue-border);background:var(--blue-bg);white-space:nowrap;}
+.xl:hover{background:rgba(59,130,246,0.2);}
+.xl-text{font-size:10px;}
+.xl-edit{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:6px;font-size:11px;}
+.xl-edit:hover{color:var(--text);background:var(--bg3);}
+.xl-none{font-size:11px;color:var(--muted);font-style:italic;}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all 0.15s;}
+.badge:hover{filter:brightness(1.2);}
+.badge-active{background:var(--green-bg);color:var(--green);border-color:var(--green-border);}
+.badge-inactive{background:var(--bg3);color:var(--muted);border-color:var(--border);}
+.badge-pending{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border);}
+.del-btn{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px;font-size:14px;transition:all 0.15s;}
+.del-btn:hover{color:var(--red);background:var(--red-bg);}
+.num{color:var(--muted);font-size:11px;width:30px;}
+/* HANDLES LIST */
+.handles{display:flex;flex-wrap:wrap;gap:4px;}
+/* LEGEND */
+.legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.leg-dot{width:7px;height:7px;border-radius:50%;}
+/* EDIT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:420px;max-width:90vw;}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text);}
+.modal input{width:100%;font-size:13px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;margin-bottom:10px;}
+.modal input:focus{border-color:var(--purple);}
+.modal-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--green-border);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--green);opacity:0;transition:all 0.3s;pointer-events:none;z-index:200;transform:translateY(8px);}
+.toast.show{opacity:1;transform:translateY(0);}
+/* CATEGORY COLORS */
+.cat-sol{--cat:#8b5cf6;}
+.cat-eth{--cat:#627eea;}
+.cat-btc{--cat:#f7931a;}
+.cat-topinf{--cat:#10b981;}
+.cat-inf{--cat:#06b6d4;}
+</style>
 </head>
 <body>
-<h1>Solana Activity Checker</h1>
-<p class="sub">Track which projects and DAOs are active on X in 2026</p>
 
-<div class="save-bar">
-  <span class="save-status" id="save-status">✓ All changes saved automatically</span>
-  <button class="sbtn" onclick="resetAll()">Reset all data</button>
-</div>
-
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('projects',this)">Projects (<span id="ptc">0</span>)</button>
-  <button class="tab" onclick="switchTab('daos',this)">DAOs (<span id="dtc">0</span>)</button>
-</div>
-
-<!-- PROJECTS -->
-<div class="panel active" id="panel-projects">
-  <div class="import-box">
-    <h3>Add / Import Projects</h3>
-    <div class="irow">
-      <input type="text" id="pan" placeholder="Project name..."/>
-      <input type="text" id="pah" placeholder="@xhandle (optional)"/>
-      <button class="btn ba" onclick="addP()">+ Add</button>
-      <label>Upload CSV <input type="file" id="pcf" accept=".csv" onchange="importPCSV(this)"/></label>
-      <button class="btn bv" onclick="dlTemplate(['Project,Handle','Example Project,@examplehandle'],'projects_template.csv')">Template ↓</button>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">🌐</div>
+    <div>
+      <h1>Web3 Activity Checker</h1>
     </div>
-    <p class="hint">CSV: <code>Project,Handle</code> — Handle optional.</p>
   </div>
-  <div class="stats">
-    <div class="stat">Total <span id="pst">0</span></div>
-    <div class="stat">Active <span id="psa" style="color:#4ade80">0</span></div>
-    <div class="stat">Inactive <span id="psi" style="color:#555">0</span></div>
-    <div class="stat">Pending <span id="psp" style="color:#f59e0b">0</span></div>
+  <p>Track projects, influencers & DAOs across Solana · Ethereum · Bitcoin</p>
+  <div class="save-pill"><span class="dot"></span><span id="save-txt">All changes saved</span></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
+      <span class="tab-dot" style="background:#8b5cf6"></span>Solana Projects
+      <span class="tab-count" id="tc0">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(1,this)" data-cat="eth">
+      <span class="tab-dot" style="background:#627eea"></span>ETH Collab
+      <span class="tab-count" id="tc1">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(2,this)" data-cat="btc">
+      <span class="tab-dot" style="background:#f7931a"></span>Bitcoin
+      <span class="tab-count" id="tc2">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(3,this)" data-cat="topinf">
+      <span class="tab-dot" style="background:#10b981"></span>Top Influencers
+      <span class="tab-count" id="tc3">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(4,this)" data-cat="inf">
+      <span class="tab-dot" style="background:#06b6d4"></span>Influencers
+      <span class="tab-count" id="tc4">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(5,this)" data-cat="dao">
+      <span class="tab-dot" style="background:#ec4899"></span>Solana DAOs
+      <span class="tab-count" id="tc5">0</span>
+    </button>
   </div>
-  <div class="progress-bar"><div class="pf" id="pp" style="width:0%"></div></div>
-  <div class="controls">
-    <input type="text" id="ps" placeholder="Search..." oninput="renderP()"/>
-    <select id="pfs" onchange="renderP()">
-      <option value="all">All</option><option value="active">Active</option>
-      <option value="inactive">Inactive</option><option value="pending">Pending</option>
-    </select>
-    <button class="btn bv" onclick="exportP(false)">Export active ↓</button>
-    <button class="btn bv" onclick="exportP(true)">Export all ↓</button>
-  </div>
-  <div class="legend">
-    <div class="leg"><span class="dot" style="background:#4ade80"></span>Active</div>
-    <div class="leg"><span class="dot" style="background:#555"></span>Inactive</div>
-    <div class="leg"><span class="dot" style="background:#f59e0b"></span>Pending</div>
-  </div>
-  <div class="bulk-bar">
-    <button class="bbtn" onclick="markP('active')">All visible → Active</button>
-    <button class="bbtn" onclick="markP('inactive')">All visible → Inactive</button>
-    <button class="bbtn" onclick="markP('pending')">Reset visible</button>
-  </div>
-  <div class="tw"><table>
-    <thead><tr><th>#</th><th>Project</th><th>Official X</th><th>Status</th><th></th></tr></thead>
-    <tbody id="ptb"></tbody>
-  </table></div>
-  <p class="nf">Click X link to open profile. Click badge to toggle. × to remove. Changes save automatically.</p>
 </div>
 
-<!-- DAOS -->
-<div class="panel" id="panel-daos">
-  <div class="import-box">
-    <h3>Add / Import DAOs</h3>
-    <div class="irow">
-      <input type="text" id="dan" placeholder="DAO name..."/>
-      <input type="text" id="dap" placeholder="Project..."/>
-      <input type="text" id="dah" placeholder="@handle1, @handle2..."/>
-      <button class="btn ba" onclick="addD()">+ Add</button>
-      <label>Upload CSV <input type="file" id="dcf" accept=".csv" onchange="importDCSV(this)"/></label>
-      <button class="btn bv" onclick="dlTemplate(['DAO,Project,Handles','My DAO,My Project,@h1;@h2'],'daos_template.csv')">Template ↓</button>
+<div class="main">
+
+<!-- PANELS 0-4: project/influencer panels -->
+<div id="panel-0" class="panel active"></div>
+<div id="panel-1" class="panel"></div>
+<div id="panel-2" class="panel"></div>
+<div id="panel-3" class="panel"></div>
+<div id="panel-4" class="panel"></div>
+<div id="panel-5" class="panel"></div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">Edit X Handle</h3>
+    <div class="modal-label">Name</div>
+    <input id="modal-name" type="text" readonly style="color:var(--muted);cursor:default"/>
+    <div class="modal-label">X Handle (without @)</div>
+    <input id="modal-handle" type="text" placeholder="e.g. MadLadsNFT"/>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-purple" onclick="saveModal()">Save</button>
     </div>
-    <p class="hint">CSV: <code>DAO,Project,Handles</code> — separate handles with semicolons.</p>
   </div>
-  <div class="stats">
-    <div class="stat">Total <span id="dst">0</span></div>
-    <div class="stat">Active <span id="dsa" style="color:#4ade80">0</span></div>
-    <div class="stat">Inactive <span id="dsi" style="color:#555">0</span></div>
-    <div class="stat">Pending <span id="dsp" style="color:#f59e0b">0</span></div>
-  </div>
-  <div class="progress-bar"><div class="df" id="dp" style="width:0%"></div></div>
-  <div class="controls">
-    <input type="text" id="dsr" placeholder="Search..." oninput="renderD()"/>
-    <select id="dfs" onchange="renderD()">
-      <option value="all">All</option><option value="active">Active</option>
-      <option value="inactive">Inactive</option><option value="pending">Pending</option>
-    </select>
-    <button class="btn bv" onclick="exportD(false)">Export active ↓</button>
-    <button class="btn bv" onclick="exportD(true)">Export all ↓</button>
-  </div>
-  <div class="legend">
-    <div class="leg"><span class="dot" style="background:#4ade80"></span>Active</div>
-    <div class="leg"><span class="dot" style="background:#555"></span>Inactive</div>
-    <div class="leg"><span class="dot" style="background:#f59e0b"></span>Pending</div>
-  </div>
-  <div class="bulk-bar">
-    <button class="bbtn" onclick="markD('active')">All visible → Active</button>
-    <button class="bbtn" onclick="markD('inactive')">All visible → Inactive</button>
-    <button class="bbtn" onclick="markD('pending')">Reset visible</button>
-  </div>
-  <div class="tw"><table>
-    <thead><tr><th>#</th><th>DAO</th><th>Member X Links</th><th>Status</th><th></th></tr></thead>
-    <tbody id="dtb"></tbody>
-  </table></div>
-  <p class="nf">Click X links to open profiles. Click badge to toggle. × to remove. Changes save automatically.</p>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const LS_P = 'solana_projects_v1';
-const LS_D = 'solana_daos_v1';
+// ── STORAGE ──
+const KEYS = ['sol','eth','btc','topinf','inf','dao'];
 
-const DEFAULT_PROJECTS = [
-  {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Collab twitter",x:"",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"Sodead",x:"SodeadNFT",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Sr manzano",x:"SrManzanoNFT",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"Sandwatch premium seats",x:"SandwatchNFT",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"}
-];
+function save(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); setSaved(); }catch(e){} }
+function load(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
+function setSaved(){ document.getElementById('save-txt').textContent = '✓ Saved — '+new Date().toLocaleTimeString(); }
 
-const DEFAULT_DAOS = [
-  {n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist / Defi Dungeons",h:["TheRealGapper"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Surgence",p:"okay bears",h:[],s:"pending"},{n:"Solana NFT Finder (DAO)",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Unity Academy",p:"okay bears",h:[],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Solana NFT Finder",p:"Smyths / meegos",h:["mhkNFTs"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians","Shahzaib_web3","Abdullah_boiii"],s:"pending"},{n:"Habibi Alpha",p:"Sandwatch",h:["7xBunny","MaskiDLuffy"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","0xHANTW","SaveTheWhal3s"],s:"pending"},{n:"Lumex",p:"Play Solana NFT",h:["pixonme_"],s:"pending"},{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl / TBP",h:["TheSimms"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl / TBP",h:["MetaDAOProject"],s:"pending"}
-];
+// ── DATA ──
+// Structure: projects = [{n, x, s}], influencers = [{n, x, s}], daos = [{n, p, h[], s}]
+// x = official handle (editable), h = member handles
 
-let PP = [];
-let DD = [];
+const DEFAULTS = {
+sol: [
+  {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"}
+],
+eth: [
+  {n:"TheCircle",x:"azazel_web3",s:"pending"},{n:"Kanto Labs",x:"KantoLabs",s:"pending"},{n:"CyberKongz",x:"CyberKongz",s:"pending"},{n:"Pixelmon",x:"Pixelmon",s:"pending"},{n:"Misfits",x:"MisfitsNFT",s:"pending"},{n:"BROZO",x:"BROZONFT",s:"pending"},{n:"evil seekers",x:"seekers_xyz",s:"pending"},{n:"Gambulls NFT",x:"GambullsCasino",s:"pending"},{n:"owlpha",x:"OwlphaNFT",s:"pending"},{n:"alpha squad",x:"AlphaSquadNFT",s:"pending"},{n:"Atama Chibi",x:"AtamaChibi",s:"pending"},{n:"Meet Nippy",x:"MeetNippy",s:"pending"},{n:"PUDGY PENGUINS",x:"pudgypenguins",s:"pending"},{n:"CYBERKUNGS",x:"CyberKungz",s:"pending"},{n:"GodHatesNFTs",x:"GodHatesNFTs",s:"pending"},{n:"Bayc",x:"BoredApeYC",s:"pending"},{n:"Crypto punk",x:"cryptopunksnfts",s:"pending"},{n:"Mutant ape",x:"MutantApeNFT",s:"pending"},{n:"Pudgy penguin",x:"pudgypenguins",s:"pending"},{n:"Lil pudgys",x:"LilPudgys",s:"pending"},{n:"Milady",x:"miladymaker",s:"pending"},{n:"Kaito Genesis",x:"KaitoAI_xyz",s:"pending"},{n:"Doodles",x:"doodles",s:"pending"},{n:"Project AEON",x:"ProjectAEON_",s:"pending"},{n:"Vee friends",x:"veefriends",s:"pending"},{n:"Gemesis",x:"GemesisNFT",s:"pending"},{n:"Azuki",x:"Azuki",s:"pending"},{n:"Otherside",x:"othersidemeta",s:"pending"},{n:"Goodvibes",x:"GoodVibesNFT",s:"pending"},{n:"Azuki elementals",x:"Azuki",s:"pending"},{n:"Moonbirds",x:"moonbirds",s:"pending"},{n:"Redacted remilio babies",x:"miladymaker",s:"pending"},{n:"Otherdeed expanded",x:"othersidemeta",s:"pending"},{n:"Crypto dickbutts",x:"CryptoDickbutts",s:"pending"},{n:"The memes 6529",x:"punk6529",s:"pending"},{n:"Gristle budeez",x:"GristleBudeez",s:"pending"},{n:"Trail heads(camp network)",x:"campnetwork_xyz",s:"pending"},{n:"Otherdeed",x:"othersidemeta",s:"pending"},{n:"Meta winners",x:"MetaWinnersNFT",s:"pending"},{n:"Xcopy edition",x:"XCOPYART",s:"pending"},{n:"Derage",x:"DeRageNFT",s:"pending"},{n:"Memeland",x:"memeland",s:"pending"},{n:"Bored ape kennel club",x:"BoredApeKC",s:"pending"},{n:"Sappy seals",x:"SappySealsNFT",s:"pending"},{n:"Moriusa",x:"MoriusaNFT",s:"pending"},{n:"Pudgyrods",x:"pudgypenguins",s:"pending"},{n:"Creepz by overlord",x:"overlordxyz",s:"pending"},{n:"Chimpers",x:"ChimpersNFT",s:"pending"},{n:"Azra games",x:"AzraGames",s:"pending"},{n:"Lasercat",x:"LaserCatNFT",s:"pending"},{n:"Meebits",x:"MeebitsNFTs",s:"pending"},{n:"Goblintown",x:"goblintownwtf",s:"pending"},{n:"Mfers",x:"sartoshi",s:"pending"},{n:"Funkari NFT",x:"FunkariNFT",s:"pending"},{n:"Lives of Asuna",x:"livesofasuna",s:"pending"},{n:"Rokus world",x:"RokusWorld",s:"pending"},{n:"Underdogs",x:"UnderDogsNFT",s:"pending"},{n:"DOODLES",x:"doodles",s:"pending"}
+],
+btc: [
+  {n:"Taproot Wizard",x:"TaprootWizards",s:"pending"},{n:"Airhead Whale Pass",x:"AirheadFun",s:"pending"},{n:"O.P.I.U.M.",x:"opiumnft",s:"pending"},{n:"Bitcoin Puppets",x:"BitcoinPuppets",s:"pending"},{n:"Pizza Ninjas",x:"PizzaNinjas_",s:"pending"},{n:"Pog Ordinals",x:"pogdigital",s:"pending"},{n:"BTC Machines",x:"BTCMachine777",s:"pending"},{n:"Bitcoin Frogs",x:"BitcoinFrogs_",s:"pending"},{n:"Lord of stones",x:"LordofStones_",s:"pending"},{n:"NodeMonkes",x:"nodemonkes",s:"pending"},{n:"Bitcoin Wizards",x:"BitcoinWizards_",s:"pending"},{n:"Bitcoin Punks",x:"BitcoinPunks_",s:"pending"},{n:"Bitcoin Weirdos",x:"BitcoinWeirdos",s:"pending"},{n:"Ordinal Maxi Biz (OMB)",x:"OrdinalMaxiBiz",s:"pending"},{n:"Based Angels",x:"basedangelsbtc",s:"pending"},{n:"Nodescapes",x:"nodescapes",s:"pending"},{n:"Yokai Avengers",x:"YokaiAvengers",s:"pending"},{n:"Whal3s",x:"SaveTheWhal3s",s:"pending"},{n:"$MBTC by Relics Protocol",x:"relics_btc",s:"pending"},{n:"Don't Avoid Bright Lights",x:"TheArtistBTC",s:"pending"},{n:"RSIC METAPROTOCOL",x:"rune_coin",s:"pending"},{n:"The Wizards of Ord",x:"TheWizardsOfOrd",s:"pending"},{n:"Apes on Bitcoin",x:"apes_pixelated",s:"pending"},{n:"Loboverse",x:"lobothewolfpup",s:"pending"},{n:"CENTS",x:"centsOrdinals",s:"pending"},{n:"Fukuhedrons",x:"Nakamigos",s:"pending"},{n:"INK",x:"INKedBTC",s:"pending"},{n:"IDIOTS",x:"idiotsbtc",s:"pending"},{n:"Honey Badgers",x:"HoneyBadgersBtc",s:"pending"},{n:"Bixels",x:"BixelBit",s:"pending"},{n:"Little Pups",x:"LittlePupsNFT",s:"pending"},{n:"MegaPunks",x:"MegapontNFT",s:"pending"},{n:"Pizza Pets Game",x:"Pizza_Pets",s:"pending"},{n:"STEPEPES by LORS",x:"LorsOnChain",s:"pending"},{n:"The Royals",x:"TheRoyals_DMT",s:"pending"},{n:"OMEN",x:"Omen4Omen",s:"pending"},{n:"MNCHRMS",x:"MNCHRMSBTC",s:"pending"},{n:"Goosinals",x:"goosinals",s:"pending"},{n:"Puppet Maxi Biz (PMB)",x:"PuppetMaziBiz",s:"pending"}
+],
+topinf: [
+  {n:"fabiano.sol",x:"FabianoSolana",s:"pending"},{n:"Cozy the Caller",x:"cozypront",s:"pending"},{n:"SOL PRINCESS",x:"SolanaPrincess",s:"pending"},{n:"tab",x:"tvbzify",s:"pending"},{n:"Nico",x:"MintOfTheDay",s:"pending"},{n:"BASC",x:"BoredApeSolClub",s:"pending"},{n:"Portals",x:"_portals_",s:"pending"},{n:"Trippin Ape Tribe",x:"TrippinApeNFT",s:"pending"},{n:"Ovols",x:"OvolsNFT",s:"pending"},{n:"Defi Dungeons",x:"defidungeons",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"YOLOMIGOS SPL420",x:"pxpushers",s:"pending"},{n:"Teddies",x:"playteddies",s:"pending"},{n:"JellyDawgs",x:"JellyCoNFT",s:"pending"},{n:"Oogy",x:"oogyNFT",s:"pending"},{n:"DGENZ",x:"dgenznft",s:"pending"},{n:"Fabulosa",x:"BohemiaArtFair",s:"pending"},{n:"Webkidz",x:"webkidz",s:"pending"},{n:"Agent Chammy",x:"agenttech",s:"pending"},{n:"Solana Sprotos",x:"SolanaSprotos",s:"pending"},{n:"CETS",x:"cetsfk",s:"pending"},{n:"Mad Lads / Backpack",x:"madlads",s:"pending"},{n:"SMB",x:"monkedao",s:"pending"},{n:"Tomorrowland",x:"tomorrowlandnft",s:"pending"},{n:"Haxz",x:"haxz_xyz",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"Quack Heads",x:"wallchain",s:"pending"},{n:"Frogana",x:"FroganaHQ",s:"pending"},{n:"Claynosaurz",x:"Claynosaurz",s:"pending"},{n:"Udder Chaos",x:"UdderChaosSOL",s:"pending"},{n:"Gamba Dogs",x:"gambadogs",s:"pending"},{n:"Lifinity Flares",x:"Lifinity_io",s:"pending"},{n:"Retardio Cousins",x:"retardiolove",s:"pending"},{n:"Okay Bears",x:"okaybears",s:"pending"},{n:"TENSORIANS",x:"tensor_hq",s:"pending"},{n:"Taiyo Robotics",x:"TaiyoRobotics",s:"pending"},{n:"Solana Sensei",x:"SolanaSensei",s:"pending"},{n:"Solana Legend",x:"SolanaLegend",s:"pending"},{n:"SOL Big Brain",x:"SOLBigBrain",s:"pending"},{n:"SolportTom",x:"SolportTom",s:"pending"},{n:"DSentralized",x:"DSentralized",s:"pending"},{n:"bunjil",x:"bunjil",s:"pending"},{n:"Raves",x:"Ravers",s:"pending"}
+],
+inf: [
+  {n:"Jakey",x:"SolJakey",s:"pending"},{n:"Loki",x:"lokithebird",s:"pending"},{n:"Jeremy",x:"Jeremyybtc",s:"pending"},{n:"ram",x:"0xRamonos",s:"pending"},{n:"Khalil Underwood",x:"RealKhalilU",s:"pending"},{n:"stu",x:"despxwned",s:"pending"},{n:"nft_bridges",x:"nft_bridges",s:"pending"},{n:"Project_Jcard",x:"Project_Jcard",s:"pending"},{n:"gigiz_eth",x:"gigiz_eth",s:"pending"},{n:"Mintify",x:"Mintify",s:"pending"},{n:"RUYUI",x:"RuyuiStudios",s:"pending"},{n:"JackGK",x:"JackGK_BTC",s:"pending"},{n:"Fugz",x:"FugzOfficial",s:"pending"},{n:"kyletwidda",x:"ALPHACOETH",s:"pending"},{n:"gigiNFTz",x:"gigiNFTz",s:"pending"},{n:"kuro",x:"kurogod5",s:"pending"},{n:"Aster DEX",x:"Aster_DEX",s:"pending"},{n:"Pav",x:"pav_eth",s:"pending"},{n:"farokh",x:"farokh",s:"pending"},{n:"Karin Veri - Binance",x:"karin_veri",s:"pending"},{n:"Tintin",x:"Tintinx2021",s:"pending"},{n:"ShirleyXBT",x:"ShirleyXBT",s:"pending"},{n:"Kevin Susanto",x:"KevinSusanto",s:"pending"},{n:"Elja",x:"Eljaboom",s:"pending"},{n:"Momentum",x:"MMTFinance",s:"pending"},{n:"TheWolfofAuraStreet",x:"marcusjames_dj",s:"pending"},{n:"Yogi",x:"HouseofYogiX",s:"pending"},{n:"Shibo",x:"GodsBurnt",s:"pending"},{n:"Books",x:"DaoKwonDo",s:"pending"},{n:"SpottieWiFi",x:"SpottieWiFi",s:"pending"},{n:"Ant",x:"KingAnt777",s:"pending"},{n:"Suza",x:"suzapolooza_eth",s:"pending"},{n:"EricMack.eth",x:"EricCMack",s:"pending"},{n:"Fellowship",x:"fellowshiptrust",s:"pending"},{n:"Genome",x:"genome_protocol",s:"pending"},{n:"Jayden",x:"crossing_panda",s:"pending"},{n:"Carlitosway",x:"Carlitoswa_y",s:"pending"},{n:"JUJU",x:"the_jujukey",s:"pending"}
+],
+dao: [
+  {n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist",h:["TheRealGapper"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Solana NFT Finder DAO",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","SaveTheWhal3s"],s:"pending"},{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl",h:["TheSimms"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl",h:["MetaDAOProject"],s:"pending"},{n:"HUNTERS OF WEB3",p:"Influencers",h:["evokeinsol"],s:"pending"},{n:"VIRIYA DAO",p:"Influencers",h:["casanovaWeb3"],s:"pending"},{n:"MONKDAO",p:"Influencers",h:["stroll2stroll"],s:"pending"},{n:"RADIANTDAO",p:"Influencers",h:["ftomatik","Za_maroo"],s:"pending"}
+]
+};
 
-// ── LOCAL STORAGE ──
-function saveAll(){
-  try{
-    localStorage.setItem(LS_P, JSON.stringify(PP));
-    localStorage.setItem(LS_D, JSON.stringify(DD));
-    document.getElementById('save-status').textContent = '✓ Saved — ' + new Date().toLocaleTimeString();
-  }catch(e){}
+// ── STATE ──
+let DATA = {};
+KEYS.forEach(k => {
+  DATA[k] = load(k) || JSON.parse(JSON.stringify(DEFAULTS[k]));
+});
+
+// ── MODAL ──
+let modalCallback = null;
+function openModal(name, handle, cb) {
+  document.getElementById('modal-title').textContent = 'Edit X Link — ' + name;
+  document.getElementById('modal-name').value = name;
+  document.getElementById('modal-handle').value = handle || '';
+  modalCallback = cb;
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-handle').focus(), 50);
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); modalCallback = null; }
+function saveModal() {
+  const h = document.getElementById('modal-handle').value.trim().replace('@','');
+  if (modalCallback) modalCallback(h);
+  closeModal();
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target === document.getElementById('modal')) closeModal(); });
+
+// ── TOAST ──
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function loadAll(){
-  try{
-    const sp = localStorage.getItem(LS_P);
-    const sd = localStorage.getItem(LS_D);
-    PP = sp ? JSON.parse(sp) : JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
-    DD = sd ? JSON.parse(sd) : JSON.parse(JSON.stringify(DEFAULT_DAOS));
-  }catch(e){
-    PP = JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
-    DD = JSON.parse(JSON.stringify(DEFAULT_DAOS));
+// ── TAB SWITCH ──
+let activeTab = 0;
+function switchTab(idx, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+idx).classList.add('active');
+  activeTab = idx;
+}
+
+// ── UTILS ──
+function clean(s) { return (s||'').replace(/^"|"$/g,'').trim(); }
+function dlCSV(rows, fn) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = fn; a.click();
+}
+function keyOf(idx) { return KEYS[idx]; }
+
+// ── PANEL BUILDER ──
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs'];
+const TYPES = ['project','project','project','influencer','influencer','dao'];
+
+function buildPanel(idx) {
+  const panel = document.getElementById('panel-'+idx);
+  const key = keyOf(idx);
+  const color = COLORS[idx];
+  const type = TYPES[idx];
+  const isDao = type === 'dao';
+
+  panel.innerHTML = `
+    <div class="add-box">
+      <div class="add-box-header" style="color:${color}">+ Add / Import</div>
+      <div class="add-row">
+        <input type="text" id="add-n-${idx}" placeholder="${isDao ? 'DAO name...' : 'Name...'}"/>
+        ${isDao ? `<input type="text" id="add-p-${idx}" placeholder="Project..."/><input type="text" id="add-h-${idx}" placeholder="@handles, comma separated..."/>` : `<input type="text" id="add-x-${idx}" placeholder="@x handle (optional)"/>`}
+        <button class="btn btn-green" onclick="addRow(${idx})">+ Add</button>
+        <label>Upload CSV <input type="file" id="csv-${idx}" accept=".csv" onchange="importCSV(${idx},this)"/></label>
+        <button class="btn btn-purple" onclick="exportData(${idx},false)">Export active ↓</button>
+        <button class="btn" onclick="exportData(${idx},true)">Export all ↓</button>
+      </div>
+      <p class="hint">${isDao ? 'CSV: <code>DAO,Project,Handles</code> — handles separated by semicolons' : 'CSV: <code>Name,Handle</code>'}</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">Total</div><div class="value" id="st-total-${idx}">0</div></div>
+      <div class="stat-card green"><div class="label">Active</div><div class="value" id="st-active-${idx}">0</div></div>
+      <div class="stat-card" style=""><div class="label">Inactive</div><div class="value" id="st-inactive-${idx}" style="color:var(--muted)">0</div></div>
+      <div class="stat-card amber"><div class="label">Pending</div><div class="value" id="st-pending-${idx}">0</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog-${idx}" style="width:0%;background:${color}"></div></div>
+      <div class="progress-label" id="prog-label-${idx}">0% checked</div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="search-${idx}" placeholder="Search..." oninput="renderPanel(${idx})"/>
+      <select id="filter-${idx}" onchange="renderPanel(${idx})">
+        <option value="all">All statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="pending">Pending</option>
+      </select>
+    </div>
+
+    <div class="legend">
+      <div class="leg"><span class="leg-dot" style="background:var(--green)"></span>Active in 2026</div>
+      <div class="leg"><span class="leg-dot" style="background:var(--muted)"></span>Inactive</div>
+      <div class="leg"><span class="leg-dot" style="background:var(--amber)"></span>Not checked</div>
+    </div>
+
+    <div class="bulk-row">
+      <button class="btn" onclick="markAll(${idx},'active')">All visible → Active</button>
+      <button class="btn" onclick="markAll(${idx},'inactive')">All visible → Inactive</button>
+      <button class="btn" onclick="markAll(${idx},'pending')">Reset visible</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th style="width:32px">#</th>
+            <th>${isDao ? 'DAO' : 'Name'}</th>
+            <th>${isDao ? 'Members on X' : 'Official X'}</th>
+            <th>Status</th>
+            <th style="width:40px"></th>
+          </tr></thead>
+          <tbody id="tbody-${idx}"></tbody>
+        </table>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;">Click ✏️ to edit the X link. Click badge to toggle status. Changes save automatically.</p>
+  `;
+}
+
+// ── RENDER ──
+function getFiltered(idx) {
+  const key = keyOf(idx);
+  const q = (document.getElementById('search-'+idx)||{value:''}).value.toLowerCase();
+  const fs = (document.getElementById('filter-'+idx)||{value:'all'}).value;
+  return DATA[key].map((d,i) => ({...d,i})).filter(d => {
+    if (q && !d.n.toLowerCase().includes(q) && !(d.p||'').toLowerCase().includes(q)) return false;
+    if (fs !== 'all' && d.s !== fs) return false;
+    return true;
+  });
+}
+
+function renderPanel(idx) {
+  const key = keyOf(idx);
+  const type = TYPES[idx];
+  const isDao = type === 'dao';
+  const rows = getFiltered(idx);
+  const tbody = document.getElementById('tbody-'+idx);
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  rows.forEach((d, i) => {
+    const bc = d.s==='active'?'badge-active':d.s==='inactive'?'badge-inactive':'badge-pending';
+    const lbl = d.s==='active'?'● Active':d.s==='inactive'?'● Inactive':'● Pending';
+    let linkCell = '';
+    if (isDao) {
+      linkCell = d.h && d.h.length
+        ? `<div class="handles">${d.h.map(h=>`<a class="xl" href="https://x.com/${h}" target="_blank"><span class="xl-text">@${h}</span></a>`).join('')}</div>`
+        : `<span class="xl-none">No handles</span>`;
+    } else {
+      linkCell = d.x
+        ? `<div class="cell-link"><a class="xl" href="https://x.com/${d.x}" target="_blank"><span class="xl-text">@${d.x}</span></a><button class="xl-edit" onclick="editLink(${idx},${d.i})" title="Edit">✏️</button></div>`
+        : `<div class="cell-link"><span class="xl-none">No handle</span><button class="xl-edit" onclick="editLink(${idx},${d.i})" title="Add handle">✏️</button></div>`;
+    }
+    const nameCell = isDao
+      ? `<div class="cell-name">${d.n}</div><div class="cell-sub">${d.p||''}</div>`
+      : `<div class="cell-name">${d.n}</div>`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="num">${i+1}</td>
+      <td>${nameCell}</td>
+      <td>${linkCell}</td>
+      <td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td>
+      <td><button class="del-btn" onclick="delRow(${idx},${d.i})">×</button></td>`;
+    tbody.appendChild(tr);
+  });
+
+  updateStats(idx);
+}
+
+function updateStats(idx) {
+  const key = keyOf(idx);
+  const arr = DATA[key];
+  const a = arr.filter(d=>d.s==='active').length;
+  const inactive = arr.filter(d=>d.s==='inactive').length;
+  const p = arr.filter(d=>d.s==='pending').length;
+  const total = arr.length;
+  const checked = a + inactive;
+  const pct = total ? Math.round(checked/total*100) : 0;
+
+  const set = id => { const el = document.getElementById(id); if(el) el.textContent = eval(id.split('-')[2] === 'total' ? 'total' : id.split('-')[2] === 'active' ? 'a' : id.split('-')[2] === 'inactive' ? 'inactive' : 'p'); };
+  const sid = (n) => { const el = document.getElementById(`st-${n}-${idx}`); if(el) el.textContent = n==='total'?total:n==='active'?a:n==='inactive'?inactive:p; };
+  sid('total'); sid('active'); sid('inactive'); sid('pending');
+
+  const prog = document.getElementById('prog-'+idx);
+  const plab = document.getElementById('prog-label-'+idx);
+  if (prog) prog.style.width = pct + '%';
+  if (plab) plab.textContent = `${pct}% checked (${checked}/${total})`;
+
+  const tc = document.getElementById('tc'+idx);
+  if (tc) tc.textContent = total;
+}
+
+// ── ACTIONS ──
+function cycleStatus(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  d.s = d.s==='pending'?'active':d.s==='active'?'inactive':'pending';
+  save(key, DATA[key]);
+  renderPanel(idx);
+}
+
+function delRow(idx, i) {
+  const key = keyOf(idx);
+  DATA[key].splice(i, 1);
+  save(key, DATA[key]);
+  renderPanel(idx);
+}
+
+function editLink(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  openModal(d.n, d.x, (newHandle) => {
+    DATA[key][i].x = newHandle;
+    save(key, DATA[key]);
+    renderPanel(idx);
+    toast('Link updated!');
+  });
+}
+
+function addRow(idx) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const n = (document.getElementById('add-n-'+idx)||{value:''}).value.trim();
+  if (!n) { alert('Enter a name.'); return; }
+
+  if (isDao) {
+    const p = (document.getElementById('add-p-'+idx)||{value:''}).value.trim() || '—';
+    const hr = (document.getElementById('add-h-'+idx)||{value:''}).value.trim();
+    const h = hr ? hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean) : [];
+    DATA[key].push({n, p, h, s:'pending'});
+    document.getElementById('add-h-'+idx).value = '';
+    document.getElementById('add-p-'+idx).value = '';
+  } else {
+    const x = (document.getElementById('add-x-'+idx)||{value:''}).value.trim().replace('@','');
+    if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) { alert('Already exists.'); return; }
+    DATA[key].push({n, x: x||'', s:'pending'});
+    if (document.getElementById('add-x-'+idx)) document.getElementById('add-x-'+idx).value = '';
   }
+  document.getElementById('add-n-'+idx).value = '';
+  save(key, DATA[key]);
+  renderPanel(idx);
+  toast('Added: '+n);
 }
 
-function resetAll(){
-  if(!confirm('Reset all data to defaults? This cannot be undone.')) return;
-  localStorage.removeItem(LS_P);
-  localStorage.removeItem(LS_D);
-  PP = JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
-  DD = JSON.parse(JSON.stringify(DEFAULT_DAOS));
-  renderP();upP();renderD();upD();
-  toast('Reset to defaults!');
+function markAll(idx, status) {
+  const key = keyOf(idx);
+  getFiltered(idx).forEach(d => DATA[key][d.i].s = status);
+  save(key, DATA[key]);
+  renderPanel(idx);
 }
 
-// ── HELPERS ──
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function switchTab(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById('panel-'+t).classList.add('active');el.classList.add('active');}
-function dlCSV(rows,fn){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=fn;a.click();}
-function dlTemplate(rows,fn){dlCSV(rows,fn);}
-function clean(s){return(s||'').replace(/^"|"$/g,'').trim();}
-
-// ── PROJECTS ──
-function addP(){
-  const n=document.getElementById('pan').value.trim();
-  const x=document.getElementById('pah').value.trim().replace('@','');
-  if(!n){alert('Enter a project name.');return;}
-  if(PP.find(p=>p.n.toLowerCase()===n.toLowerCase())){alert('Already exists.');return;}
-  PP.push({n,x:x||'',s:'pending'});
-  document.getElementById('pan').value='';document.getElementById('pah').value='';
-  renderP();upP();saveAll();toast('Added: '+n);
-}
-
-function importPCSV(input){
-  const f=input.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const lines=e.target.result.split('\n').filter(l=>l.trim());
-    let added=0;
-    lines.forEach((line,i)=>{
-      if(i===0&&line.toLowerCase().includes('project'))return;
-      const parts=line.split(',');
-      const n=clean(parts[0]);const x=(clean(parts[1])||'').replace('@','')||'';
-      if(!n)return;
-      if(PP.find(p=>p.n.toLowerCase()===n.toLowerCase()))return;
-      PP.push({n,x,s:'pending'});added++;
+function importCSV(idx, input) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    let added = 0;
+    lines.forEach((line, i) => {
+      if (i===0 && (line.toLowerCase().includes('name') || line.toLowerCase().includes('dao'))) return;
+      const parts = line.split(',');
+      const n = clean(parts[0]); if (!n) return;
+      if (isDao) {
+        const p = clean(parts[1]) || '—';
+        const h = parts[2] ? clean(parts[2]).split(';').map(x=>x.replace('@','')).filter(Boolean) : [];
+        DATA[key].push({n,p,h,s:'pending'}); added++;
+      } else {
+        const x = (clean(parts[1])||'').replace('@','');
+        if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) return;
+        DATA[key].push({n,x,s:'pending'}); added++;
+      }
     });
-    renderP();upP();saveAll();toast(added+' projects imported!');input.value='';
-  };r.readAsText(f);
+    save(key, DATA[key]);
+    renderPanel(idx);
+    toast(added+' rows imported!');
+    input.value = '';
+  };
+  r.readAsText(f);
 }
 
-function rmP(i){PP.splice(i,1);renderP();upP();saveAll();}
-
-function upP(){
-  const a=PP.filter(p=>p.s==='active').length;
-  const i=PP.filter(p=>p.s==='inactive').length;
-  const pnd=PP.filter(p=>p.s==='pending').length;
-  document.getElementById('psa').textContent=a;
-  document.getElementById('psi').textContent=i;
-  document.getElementById('psp').textContent=pnd;
-  document.getElementById('pst').textContent=PP.length;
-  document.getElementById('ptc').textContent=PP.length;
-  document.getElementById('pp').style.width=PP.length?Math.round((a+i)/PP.length*100)+'%':'0%';
-}
-
-function cycP(i){PP[i].s=PP[i].s==='pending'?'active':PP[i].s==='active'?'inactive':'pending';renderP();upP();saveAll();}
-
-function getFP(){
-  const q=document.getElementById('ps').value.toLowerCase();
-  const fs=document.getElementById('pfs').value;
-  return PP.map((p,i)=>({...p,i})).filter(p=>{
-    if(q&&!p.n.toLowerCase().includes(q))return false;
-    if(fs!=='all'&&p.s!==fs)return false;
-    return true;
-  });
-}
-
-function renderP(){
-  const rows=getFP();const tb=document.getElementById('ptb');tb.innerHTML='';
-  rows.forEach((p,i)=>{
-    const bc=p.s==='active'?'ac':p.s==='inactive'?'in':'pe';
-    const lbl=p.s==='active'?'Active':p.s==='inactive'?'Inactive':'Pending';
-    const lc=p.x?`<a class="xl" href="https://x.com/${p.x}" target="_blank">x.com/${p.x}</a>`:`<span style="color:#333;font-size:11px;">—</span>`;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="num">${i+1}</td><td class="pn">${p.n}</td><td>${lc}</td><td><span class="badge ${bc}" onclick="cycP(${p.i})">${lbl}</span></td><td><button class="xb" onclick="rmP(${p.i})">×</button></td>`;
-    tb.appendChild(tr);
-  });
-}
-
-function markP(s){getFP().forEach(p=>PP[p.i].s=s);renderP();upP();saveAll();}
-
-function exportP(all){
-  const list=all?PP:PP.filter(p=>p.s==='active');
-  if(!list.length){alert('Nothing to export.');return;}
-  const h=all?'Project,Handle,URL,Status':'Project,Handle,URL';
-  dlCSV([h,...list.map(p=>all?`"${p.n}","${p.x?'@'+p.x:''}","${p.x?'https://x.com/'+p.x:''}","${p.s}"`:
-    `"${p.n}","${p.x?'@'+p.x:''}","${p.x?'https://x.com/'+p.x:''}"`)],
-    all?'all_projects.csv':'active_projects_2026.csv');
-}
-
-// ── DAOS ──
-function addD(){
-  const n=document.getElementById('dan').value.trim();
-  const p=document.getElementById('dap').value.trim()||'—';
-  const hr=document.getElementById('dah').value.trim();
-  if(!n){alert('Enter a DAO name.');return;}
-  const h=hr?hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean):[];
-  DD.push({n,p,h,s:'pending'});
-  document.getElementById('dan').value='';document.getElementById('dap').value='';document.getElementById('dah').value='';
-  renderD();upD();saveAll();toast('Added: '+n);
-}
-
-function importDCSV(input){
-  const f=input.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const lines=e.target.result.split('\n').filter(l=>l.trim());
-    let added=0;
-    lines.forEach((line,i)=>{
-      if(i===0&&line.toLowerCase().includes('dao'))return;
-      const parts=line.split(',');
-      const n=clean(parts[0]);const p=clean(parts[1])||'—';
-      const h=parts[2]?clean(parts[2]).split(';').map(x=>x.replace('@','')).filter(Boolean):[];
-      if(!n)return;
-      DD.push({n,p,h,s:'pending'});added++;
-    });
-    renderD();upD();saveAll();toast(added+' DAOs imported!');input.value='';
-  };r.readAsText(f);
-}
-
-function rmD(i){DD.splice(i,1);renderD();upD();saveAll();}
-
-function upD(){
-  const a=DD.filter(d=>d.s==='active').length;
-  const i=DD.filter(d=>d.s==='inactive').length;
-  const pnd=DD.filter(d=>d.s==='pending').length;
-  document.getElementById('dsa').textContent=a;
-  document.getElementById('dsi').textContent=i;
-  document.getElementById('dsp').textContent=pnd;
-  document.getElementById('dst').textContent=DD.length;
-  document.getElementById('dtc').textContent=DD.length;
-  document.getElementById('dp').style.width=DD.length?Math.round((a+i)/DD.length*100)+'%':'0%';
-}
-
-function cycD(i){DD[i].s=DD[i].s==='pending'?'active':DD[i].s==='active'?'inactive':'pending';renderD();upD();saveAll();}
-
-function getFD(){
-  const q=document.getElementById('dsr').value.toLowerCase();
-  const fs=document.getElementById('dfs').value;
-  return DD.map((d,i)=>({...d,i})).filter(d=>{
-    if(q&&!d.n.toLowerCase().includes(q)&&!d.p.toLowerCase().includes(q))return false;
-    if(fs!=='all'&&d.s!==fs)return false;
-    return true;
-  });
-}
-
-function renderD(){
-  const rows=getFD();const tb=document.getElementById('dtb');tb.innerHTML='';
-  rows.forEach((d,i)=>{
-    const bc=d.s==='active'?'ac':d.s==='inactive'?'in':'pe';
-    const lbl=d.s==='active'?'Active':d.s==='inactive'?'Inactive':'Pending';
-    const links=d.h.length?d.h.map(x=>`<a class="xl" href="https://x.com/${x}" target="_blank">x.com/${x}</a>`).join(''):`<span style="color:#333;font-size:11px;">—</span>`;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="num">${i+1}</td><td><div class="pn">${d.n}</div><div class="pt">${d.p}</div></td><td>${links}</td><td><span class="badge ${bc}" onclick="cycD(${d.i})">${lbl}</span></td><td><button class="xb" onclick="rmD(${d.i})">×</button></td>`;
-    tb.appendChild(tr);
-  });
-}
-
-function markD(s){getFD().forEach(d=>DD[d.i].s=s);renderD();upD();saveAll();}
-
-function exportD(all){
-  const list=all?DD:DD.filter(d=>d.s==='active');
-  if(!list.length){alert('Nothing to export.');return;}
-  const h=all?'DAO,Project,Handles,Status':'DAO,Project,Handles';
-  dlCSV([h,...list.map(d=>all?`"${d.n}","${d.p}","${d.h.map(x=>'@'+x).join(';')}","${d.s}"`:
-    `"${d.n}","${d.p}","${d.h.map(x=>'@'+x).join(';')}"`)],
-    all?'all_daos.csv':'active_daos_2026.csv');
+function exportData(idx, all) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const list = all ? DATA[key] : DATA[key].filter(d=>d.s==='active');
+  if (!list.length) { alert('Nothing to export.'); return; }
+  let rows;
+  if (isDao) {
+    rows = ['DAO,Project,Handles,Status', ...list.map(d=>`"${d.n}","${d.p}","${(d.h||[]).map(h=>'@'+h).join(';')}","${d.s}"`)];
+  } else {
+    rows = ['Name,Handle,URL,Status', ...list.map(d=>`"${d.n}","${d.x?'@'+d.x:''}","${d.x?'https://x.com/'+d.x:''}","${d.s}"`)];
+  }
+  dlCSV(rows, (all?'all_':'active_')+key+'_2026.csv');
 }
 
 // ── INIT ──
-loadAll();
-renderP();upP();
-renderD();upD();
+KEYS.forEach((k, idx) => buildPanel(idx));
+KEYS.forEach((k, idx) => renderPanel(idx));
 </script>
 </body>
 </html>
