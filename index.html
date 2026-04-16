@@ -191,6 +191,10 @@ td{padding:11px 14px;vertical-align:middle;}
       <span class="tab-dot" style="background:#ec4899"></span>Solana DAOs
       <span class="tab-count" id="tc5">0</span>
     </button>
+    <button class="tab" onclick="switchTab(6,this)" data-cat="base">
+      <span class="tab-dot" style="background:#0052ff"></span>Base
+      <span class="tab-count" id="tc6">0</span>
+    </button>
   </div>
 </div>
 
@@ -203,6 +207,7 @@ td{padding:11px 14px;vertical-align:middle;}
 <div id="panel-3" class="panel"></div>
 <div id="panel-4" class="panel"></div>
 <div id="panel-5" class="panel"></div>
+<div id="panel-6" class="panel"></div>
 
 </div>
 
@@ -225,7 +230,7 @@ td{padding:11px 14px;vertical-align:middle;}
 
 <script>
 // ── STORAGE ──
-const KEYS = ['sol','eth','btc','topinf','inf','dao'];
+const KEYS = ['sol','eth','btc','topinf','inf','dao','base'];
 
 function save(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); setSaved(); }catch(e){} }
 function load(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
@@ -253,6 +258,9 @@ inf: [
 ],
 dao: [
   {n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist",h:["TheRealGapper"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Solana NFT Finder DAO",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","SaveTheWhal3s"],s:"pending"},{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl",h:["TheSimms"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl",h:["MetaDAOProject"],s:"pending"},{n:"HUNTERS OF WEB3",p:"Influencers",h:["evokeinsol"],s:"pending"},{n:"VIRIYA DAO",p:"Influencers",h:["casanovaWeb3"],s:"pending"},{n:"MONKDAO",p:"Influencers",h:["stroll2stroll"],s:"pending"},{n:"RADIANTDAO",p:"Influencers",h:["ftomatik","Za_maroo"],s:"pending"}
+],
+base: [
+  {n:"onchain gaias",x:"onchaingaias",s:"pending"},{n:"Miggles",x:"miggles_xyz",s:"pending"},{n:"Kemonokaki",x:"kemonokaki",s:"pending"},{n:"Based Fellas",x:"BasedFellas_",s:"pending"},{n:"BitDCA",x:"BitDCA_",s:"pending"},{n:"ONtegrity",x:"ONtegrity",s:"pending"},{n:"Wealthy Hypio Babies",x:"WealthyHypio",s:"pending"},{n:"Onchain Founding Membership",x:"MrGreenity",s:"pending"},{n:"Larvva Lads",x:"LarvvaLads",s:"pending"},{n:"NodePunks",x:"N0DEPunks",s:"pending"},{n:"THE DROPZONE",x:"CryptoBlockDan",s:"pending"},{n:"PNUKS",x:"PNUKS_base",s:"pending"},{n:"Degen Alpha",x:"_snowyi",s:"pending"},{n:"OK COMPUTERS",x:"dailofrog",s:"pending"},{n:"BasePaint",x:"basepaint_xyz",s:"pending"},{n:"Virtuals Land",x:"VirtuaMetaverse",s:"pending"},{n:"Persona",x:"MigeruVLR",s:"pending"},{n:"Base Gods",x:"TYBASEGOD",s:"pending"},{n:"Based OnChain Punks",x:"OnChainPunksNFT",s:"pending"},{n:"Bomefers",x:"aldover_eth",s:"pending"},{n:"re:generates",x:"mechsicko_eth",s:"pending"},{n:"Mochimons",x:"giyu_mochi",s:"pending"},{n:"Based Nouns",x:"goyabean_eth",s:"pending"},{n:"glyphs",x:"jessepollak",s:"pending"},{n:"Degens by doy",x:"patrdoy",s:"pending"},{n:"based punks",x:"basedpunks_",s:"pending"},{n:"Topi",x:"basejunkie_",s:"pending"},{n:"Shredding Sassy - Base",x:"ShreddingSassy",s:"pending"},{n:"FARWORLD Creatures",x:"WolvesDAO",s:"pending"},{n:"No-Punks",x:"NoPunkism",s:"pending"},{n:"SmallBrosNFT",x:"SmallBrosNFT",s:"pending"},{n:"CryptoPimps",x:"CryptoPimps_NFT",s:"pending"},{n:"Swamp Souls",x:"Ocaptain2023",s:"pending"},{n:"GinaGenesis",x:"askginadotai",s:"pending"},{n:"Amazing Larva Lads",x:"dynavision_im",s:"pending"},{n:"tiny dino mfers",x:"tinydinomfers",s:"pending"},{n:"Zoolini",x:"ExpoNomez",s:"pending"}
 ]
 };
 
@@ -307,9 +315,9 @@ function dlCSV(rows, fn) {
 function keyOf(idx) { return KEYS[idx]; }
 
 // ── PANEL BUILDER ──
-const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899'];
-const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs'];
-const TYPES = ['project','project','project','influencer','influencer','dao'];
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base'];
+const TYPES = ['project','project','project','influencer','influencer','dao','project'];
 
 function buildPanel(idx) {
   const panel = document.getElementById('panel-'+idx);
