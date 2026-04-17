@@ -204,7 +204,7 @@ td{padding:11px 14px;vertical-align:middle;}
 
 <div class="main">
 
-<!-- PANELS 0-4: project/influencer panels -->
+<!-- PANELS 0-6: project/influencer/dao panels -->
 <div id="panel-0" class="panel active"></div>
 <div id="panel-1" class="panel"></div>
 <div id="panel-2" class="panel"></div>
@@ -249,6 +249,16 @@ function setSaved(){ document.getElementById('save-txt').textContent = '✓ Sync
 function setSaving(){ document.getElementById('save-txt').textContent = '⏳ Syncing...'; }
 function setSaveErr(){ document.getElementById('save-txt').textContent = '⚠️ Sync error — saved locally'; }
 
+// ── FIX #1: Exact category matching ──
+// Match category field to key. For DAOs, category is "dao|ProjectName" so use startsWith.
+// For everything else, require EXACT match to prevent cross-contamination.
+function categoryMatchesKey(category, key) {
+  const cat = (category || '').trim();
+  if (key === 'dao') return cat.startsWith('dao');
+  // Exact match only for non-dao keys
+  return cat === key;
+}
+
 // Convert our data to Airtable records
 function toRecords(key, arr){
   const isDao = key === 'dao';
@@ -276,7 +286,7 @@ function fromRecords(key, records){
   });
 }
 
-// Load all data from Airtable
+// ── FIX #2: loadFromAirtable now validates BEFORE overwriting DATA ──
 async function loadFromAirtable(){
   setSaving();
   try {
@@ -291,16 +301,38 @@ async function loadFromAirtable(){
 
     if(all.length === 0){ setSaved(); return false; } // empty table
 
+    // Build temp data first — don't touch DATA yet
+    const tempData = {};
+    let totalCount = 0;
     KEYS.forEach(k => {
-      const recs = all.filter(r => (r.fields.Category||'').startsWith(k));
+      // FIX #1: use exact category matching
+      const recs = all.filter(r => categoryMatchesKey(r.fields.Category, k));
       if(recs.length > 0){
-        DATA[k] = fromRecords(k, recs);
+        tempData[k] = fromRecords(k, recs);
+        totalCount += tempData[k].length;
+      }
+    });
+
+    // FIX #2: Only apply Airtable data if it has enough records (valid dataset)
+    // This prevents a bad/partial sync from wiping out good local data
+    if(totalCount < 300){
+      console.log(`Airtable has only ${totalCount} records (need 300+), keeping local data`);
+      setSaved();
+      return false;
+    }
+
+    // Safe to apply — Airtable has a valid dataset
+    KEYS.forEach(k => {
+      if(tempData[k] && tempData[k].length > 0){
+        DATA[k] = tempData[k];
         saveLocal(k, DATA[k]);
       }
     });
+
     setSaved();
     return true;
   } catch(e){
+    console.error('Airtable load error:', e);
     setSaveErr();
     return false;
   }
@@ -342,15 +374,12 @@ function save(key, data){
 }
 
 // ── DATA ──
-// Structure: projects = [{n, x, s}], influencers = [{n, x, s}], daos = [{n, p, h[], s}]
-// x = official handle (editable), h = member handles
-
 const DEFAULTS = {
 sol: [
   {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"}
 ],
 eth: [
-  {n:"TheCircle",x:"azazel_web3",s:"pending"},{n:"Kanto Labs",x:"KantoLabs",s:"pending"},{n:"CyberKongz",x:"CyberKongz",s:"pending"},{n:"Pixelmon",x:"Pixelmon",s:"pending"},{n:"Misfits",x:"MisfitsNFT",s:"pending"},{n:"BROZO",x:"BROZONFT",s:"pending"},{n:"evil seekers",x:"seekers_xyz",s:"pending"},{n:"Gambulls NFT",x:"GambullsCasino",s:"pending"},{n:"owlpha",x:"OwlphaNFT",s:"pending"},{n:"alpha squad",x:"AlphaSquadNFT",s:"pending"},{n:"Atama Chibi",x:"AtamaChibi",s:"pending"},{n:"Meet Nippy",x:"MeetNippy",s:"pending"},{n:"PUDGY PENGUINS",x:"pudgypenguins",s:"pending"},{n:"CYBERKUNGS",x:"CyberKungz",s:"pending"},{n:"GodHatesNFTs",x:"GodHatesNFTs",s:"pending"},{n:"Bayc",x:"BoredApeYC",s:"pending"},{n:"Crypto punk",x:"cryptopunksnfts",s:"pending"},{n:"Mutant ape",x:"MutantApeNFT",s:"pending"},{n:"Pudgy penguin",x:"pudgypenguins",s:"pending"},{n:"Lil pudgys",x:"LilPudgys",s:"pending"},{n:"Milady",x:"miladymaker",s:"pending"},{n:"Kaito Genesis",x:"KaitoAI_xyz",s:"pending"},{n:"Doodles",x:"doodles",s:"pending"},{n:"Project AEON",x:"ProjectAEON_",s:"pending"},{n:"Vee friends",x:"veefriends",s:"pending"},{n:"Gemesis",x:"GemesisNFT",s:"pending"},{n:"Azuki",x:"Azuki",s:"pending"},{n:"Otherside",x:"othersidemeta",s:"pending"},{n:"Goodvibes",x:"GoodVibesNFT",s:"pending"},{n:"Azuki elementals",x:"Azuki",s:"pending"},{n:"Moonbirds",x:"moonbirds",s:"pending"},{n:"Redacted remilio babies",x:"miladymaker",s:"pending"},{n:"Otherdeed expanded",x:"othersidemeta",s:"pending"},{n:"Crypto dickbutts",x:"CryptoDickbutts",s:"pending"},{n:"The memes 6529",x:"punk6529",s:"pending"},{n:"Gristle budeez",x:"GristleBudeez",s:"pending"},{n:"Trail heads(camp network)",x:"campnetwork_xyz",s:"pending"},{n:"Otherdeed",x:"othersidemeta",s:"pending"},{n:"Meta winners",x:"MetaWinnersNFT",s:"pending"},{n:"Xcopy edition",x:"XCOPYART",s:"pending"},{n:"Derage",x:"DeRageNFT",s:"pending"},{n:"Memeland",x:"memeland",s:"pending"},{n:"Bored ape kennel club",x:"BoredApeKC",s:"pending"},{n:"Sappy seals",x:"SappySealsNFT",s:"pending"},{n:"Moriusa",x:"MoriusaNFT",s:"pending"},{n:"Pudgyrods",x:"pudgypenguins",s:"pending"},{n:"Creepz by overlord",x:"overlordxyz",s:"pending"},{n:"Chimpers",x:"ChimpersNFT",s:"pending"},{n:"Azra games",x:"AzraGames",s:"pending"},{n:"Lasercat",x:"LaserCatNFT",s:"pending"},{n:"Meebits",x:"MeebitsNFTs",s:"pending"},{n:"Goblintown",x:"goblintownwtf",s:"pending"},{n:"Mfers",x:"sartoshi",s:"pending"},{n:"Funkari NFT",x:"FunkariNFT",s:"pending"},{n:"Lives of Asuna",x:"livesofasuna",s:"pending"},{n:"Rokus world",x:"RokusWorld",s:"pending"},{n:"Underdogs",x:"UnderDogsNFT",s:"pending"},{n:"DOODLES",x:"doodles",s:"pending"}
+  {n:"TheCircle",x:"azazel_web3",s:"pending"},{n:"Kanto Labs",x:"KantoLabs",s:"pending"},{n:"CyberKongz",x:"CyberKongz",s:"pending"},{n:"Pixelmon",x:"Pixelmon",s:"pending"},{n:"Misfits",x:"MisfitsNFT",s:"pending"},{n:"BROZO",x:"BROZONFT",s:"pending"},{n:"evil seekers",x:"seekers_xyz",s:"pending"},{n:"Gambulls NFT",x:"GambullsCasino",s:"pending"},{n:"owlpha",x:"OwlphaNFT",s:"pending"},{n:"alpha squad",x:"AlphaSquadNFT",s:"pending"},{n:"Atama Chibi",x:"AtamaChibi",s:"pending"},{n:"Meet Nippy",x:"MeetNippy",s:"pending"},{n:"PUDGY PENGUINS",x:"pudgypenguins",s:"pending"},{n:"CYBERKUNGS",x:"CyberKungz",s:"pending"},{n:"GodHatesNFTs",x:"GodHatesNFTs",s:"pending"},{n:"Bayc",x:"BoredApeYC",s:"pending"},{n:"Crypto punk",x:"cryptopunksnfts",s:"pending"},{n:"Mutant ape",x:"MutantApeNFT",s:"pending"},{n:"Pudgy penguin",x:"pudgypenguins",s:"pending"},{n:"Lil pudgys",x:"LilPudgys",s:"pending"},{n:"Milady",x:"miladymaker",s:"pending"},{n:"Kaito Genesis",x:"KaitoAI_xyz",s:"pending"},{n:"Doodles",x:"doodles",s:"pending"},{n:"Project AEON",x:"ProjectAEON_",s:"pending"},{n:"Vee Friends",x:"veefriends",s:"pending"},{n:"Gemesis",x:"GemesisNFT",s:"pending"},{n:"Azuki",x:"Azuki",s:"pending"},{n:"Otherside",x:"othersidemeta",s:"pending"},{n:"Goodvibes",x:"GoodVibesNFT",s:"pending"},{n:"Azuki elementals",x:"Azuki",s:"pending"},{n:"Moonbirds",x:"moonbirds",s:"pending"},{n:"Redacted remilio babies",x:"miladymaker",s:"pending"},{n:"Otherdeed expanded",x:"othersidemeta",s:"pending"},{n:"Crypto dickbutts",x:"CryptoDickbutts",s:"pending"},{n:"The memes 6529",x:"punk6529",s:"pending"},{n:"Gristle budeez",x:"GristleBudeez",s:"pending"},{n:"Trail heads(camp network)",x:"campnetwork_xyz",s:"pending"},{n:"Otherdeed",x:"othersidemeta",s:"pending"},{n:"Meta winners",x:"MetaWinnersNFT",s:"pending"},{n:"Xcopy edition",x:"XCOPYART",s:"pending"},{n:"Derage",x:"DeRageNFT",s:"pending"},{n:"Memeland",x:"memeland",s:"pending"},{n:"Bored ape kennel club",x:"BoredApeKC",s:"pending"},{n:"Sappy seals",x:"SappySealsNFT",s:"pending"},{n:"Moriusa",x:"MoriusaNFT",s:"pending"},{n:"Pudgyrods",x:"pudgypenguins",s:"pending"},{n:"Creepz by overlord",x:"overlordxyz",s:"pending"},{n:"Chimpers",x:"ChimpersNFT",s:"pending"},{n:"Azra games",x:"AzraGames",s:"pending"},{n:"Lasercat",x:"LaserCatNFT",s:"pending"},{n:"Meebits",x:"MeebitsNFTs",s:"pending"},{n:"Goblintown",x:"goblintownwtf",s:"pending"},{n:"Mfers",x:"sartoshi",s:"pending"},{n:"Funkari NFT",x:"FunkariNFT",s:"pending"},{n:"Lives of Asuna",x:"livesofasuna",s:"pending"},{n:"Rokus world",x:"RokusWorld",s:"pending"},{n:"Underdogs",x:"UnderDogsNFT",s:"pending"},{n:"DOODLES",x:"doodles",s:"pending"}
 ],
 btc: [
   {n:"Taproot Wizard",x:"TaprootWizards",s:"pending"},{n:"Airhead Whale Pass",x:"AirheadFun",s:"pending"},{n:"O.P.I.U.M.",x:"opiumnft",s:"pending"},{n:"Bitcoin Puppets",x:"BitcoinPuppets",s:"pending"},{n:"Pizza Ninjas",x:"PizzaNinjas_",s:"pending"},{n:"Pog Ordinals",x:"pogdigital",s:"pending"},{n:"BTC Machines",x:"BTCMachine777",s:"pending"},{n:"Bitcoin Frogs",x:"BitcoinFrogs_",s:"pending"},{n:"Lord of stones",x:"LordofStones_",s:"pending"},{n:"NodeMonkes",x:"nodemonkes",s:"pending"},{n:"Bitcoin Wizards",x:"BitcoinWizards_",s:"pending"},{n:"Bitcoin Punks",x:"BitcoinPunks_",s:"pending"},{n:"Bitcoin Weirdos",x:"BitcoinWeirdos",s:"pending"},{n:"Ordinal Maxi Biz (OMB)",x:"OrdinalMaxiBiz",s:"pending"},{n:"Based Angels",x:"basedangelsbtc",s:"pending"},{n:"Nodescapes",x:"nodescapes",s:"pending"},{n:"Yokai Avengers",x:"YokaiAvengers",s:"pending"},{n:"Whal3s",x:"SaveTheWhal3s",s:"pending"},{n:"$MBTC by Relics Protocol",x:"relics_btc",s:"pending"},{n:"Don't Avoid Bright Lights",x:"TheArtistBTC",s:"pending"},{n:"RSIC METAPROTOCOL",x:"rune_coin",s:"pending"},{n:"The Wizards of Ord",x:"TheWizardsOfOrd",s:"pending"},{n:"Apes on Bitcoin",x:"apes_pixelated",s:"pending"},{n:"Loboverse",x:"lobothewolfpup",s:"pending"},{n:"CENTS",x:"centsOrdinals",s:"pending"},{n:"Fukuhedrons",x:"Nakamigos",s:"pending"},{n:"INK",x:"INKedBTC",s:"pending"},{n:"IDIOTS",x:"idiotsbtc",s:"pending"},{n:"Honey Badgers",x:"HoneyBadgersBtc",s:"pending"},{n:"Bixels",x:"BixelBit",s:"pending"},{n:"Little Pups",x:"LittlePupsNFT",s:"pending"},{n:"MegaPunks",x:"MegapontNFT",s:"pending"},{n:"Pizza Pets Game",x:"Pizza_Pets",s:"pending"},{n:"STEPEPES by LORS",x:"LorsOnChain",s:"pending"},{n:"The Royals",x:"TheRoyals_DMT",s:"pending"},{n:"OMEN",x:"Omen4Omen",s:"pending"},{n:"MNCHRMS",x:"MNCHRMSBTC",s:"pending"},{n:"Goosinals",x:"goosinals",s:"pending"},{n:"Puppet Maxi Biz (PMB)",x:"PuppetMaziBiz",s:"pending"}
@@ -558,7 +587,6 @@ function updateStats(idx) {
   const checked = a + inactive;
   const pct = total ? Math.round(checked/total*100) : 0;
 
-  const set = id => { const el = document.getElementById(id); if(el) el.textContent = eval(id.split('-')[2] === 'total' ? 'total' : id.split('-')[2] === 'active' ? 'a' : id.split('-')[2] === 'inactive' ? 'inactive' : 'p'); };
   const sid = (n) => { const el = document.getElementById(`st-${n}-${idx}`); if(el) el.textContent = n==='total'?total:n==='active'?a:n==='inactive'?inactive:p; };
   sid('total'); sid('active'); sid('inactive'); sid('pending');
 
@@ -735,32 +763,18 @@ async function pushAllToAirtable(){
 KEYS.forEach((k, idx) => buildPanel(idx));
 KEYS.forEach((k, idx) => renderPanel(idx));
 
-// Try loading from Airtable on start — only replace local data if Airtable has real data
+// FIX #3: Simplified init — loadFromAirtable now handles validation internally
 loadFromAirtable().then(loaded => {
   if(loaded) {
-    // Check if Airtable has enough records (at least 300 = valid push)
-    const totalAT = KEYS.reduce((s,k) => s + DATA[k].length, 0);
-    if(totalAT >= 300) {
-      KEYS.forEach((k, idx) => renderPanel(idx));
-      toast('Synced with Airtable!');
-    } else {
-      // Airtable is empty or incomplete — reload defaults
-      KEYS.forEach(k => {
-        DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
-        saveLocal(k, DATA[k]);
-      });
-      KEYS.forEach((k, idx) => renderPanel(idx));
-    }
+    KEYS.forEach((k, idx) => renderPanel(idx));
+    toast('Synced with Airtable!');
   }
 });
 
 // Auto-sync every 30 seconds
 setInterval(() => {
   loadFromAirtable().then(loaded => {
-    if(loaded) {
-      const totalAT = KEYS.reduce((s,k) => s + DATA[k].length, 0);
-      if(totalAT >= 300) KEYS.forEach((k, idx) => renderPanel(idx));
-    }
+    if(loaded) KEYS.forEach((k, idx) => renderPanel(idx));
   });
 }, 30000);
 </script>
