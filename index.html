@@ -219,6 +219,8 @@ async function loadFromAirtable(){
     const tempData={};let totalCount=0;
     KEYS.forEach(k=>{const recs=all.filter(r=>categoryMatchesKey(r.fields.Category,k));if(recs.length>0){tempData[k]=fromRecords(k,recs);totalCount+=tempData[k].length;}});
     if(totalCount<300){await pushAllToAirtable(true);return true;}
+    // Also reject if way too many records (duplicates)
+    if(totalCount>500){console.log('Airtable has '+totalCount+' records (too many, likely duplicates), skipping sync');setSaved();return false;}
     KEYS.forEach(k=>{if(tempData[k]&&tempData[k].length>0){DATA[k]=tempData[k];saveLocal(k,DATA[k]);}});
     setSaved();return true;
   }catch(e){console.error('Airtable load error:',e);setSaveErr();return false;}
@@ -405,10 +407,35 @@ async function pushAllToAirtable(silent){
   if(isPushing){if(!silent)toast('Already pushing...');return;}
   if(!silent&&!confirm('This will replace ALL data in Airtable. Continue?'))return;
   isPushing=true;setSaving();if(!silent)toast('Pushing data to Airtable...');
-  try{let existing=[],offset=null;
-    do{const url=AT_URL+'?pageSize=100&fields[]=Name'+(offset?'&offset='+offset:'');const res=await fetch(url,{headers:AT_HEADS});const json=await res.json();existing=existing.concat((json.records||[]).map(r=>r.id));offset=json.offset||null;}while(offset);
-    for(let i=0;i<existing.length;i+=10){const ids=existing.slice(i,i+10).map(id=>`records[]=${id}`).join('&');await fetch(`${AT_URL}?${ids}`,{method:'DELETE',headers:AT_HEADS});}
-    for(const key of KEYS){const records=toRecords(key,DATA[key]);for(let i=0;i<records.length;i+=10){const batch=records.slice(i,i+10);const res=await fetch(AT_URL,{method:'POST',headers:AT_HEADS,body:JSON.stringify({records:batch})});const json=await res.json();(json.records||[]).forEach((r,j)=>{if(DATA[key][i+j])DATA[key][i+j]._id=r.id;});}saveLocal(key,DATA[key]);}
+  try{
+    // Delete ALL existing records — loop until truly empty
+    let deleteRounds=0;
+    while(deleteRounds<20){
+      const checkRes=await fetch(AT_URL+'?pageSize=100&fields[]=Name',{headers:AT_HEADS});
+      const checkJson=await checkRes.json();
+      const ids=(checkJson.records||[]).map(r=>r.id);
+      if(ids.length===0)break; // Truly empty!
+      // Delete in batches of 10 with delay
+      for(let i=0;i<ids.length;i+=10){
+        const batch=ids.slice(i,i+10).map(id=>'records[]='+id).join('&');
+        await fetch(AT_URL+'?'+batch,{method:'DELETE',headers:AT_HEADS});
+        await new Promise(r=>setTimeout(r,250)); // rate limit pause
+      }
+      deleteRounds++;
+    }
+    toast('Airtable cleared, pushing fresh data...');
+    // Now push all data in batches of 10
+    for(const key of KEYS){
+      const records=toRecords(key,DATA[key]);
+      for(let i=0;i<records.length;i+=10){
+        const batch=records.slice(i,i+10);
+        const res=await fetch(AT_URL,{method:'POST',headers:AT_HEADS,body:JSON.stringify({records:batch})});
+        const json=await res.json();
+        (json.records||[]).forEach((r,j)=>{if(DATA[key][i+j])DATA[key][i+j]._id=r.id;});
+        await new Promise(r=>setTimeout(r,250)); // rate limit pause
+      }
+      saveLocal(key,DATA[key]);
+    }
     setSaved();toast('All data pushed to Airtable!');
   }catch(e){setSaveErr();console.error(e);}isPushing=false;
 }
