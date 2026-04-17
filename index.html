@@ -34,105 +34,164 @@
   --pink: #ec4899;
   --pink-bg: rgba(236,72,153,0.1);
   --pink-border: rgba(236,72,153,0.3);
-  --header-gradient: rgba(139,92,246,0.05);
-  --hover-row: rgba(255,255,255,0.02);
-  --toggle-bg: #1e293b;
 }
+/* ── LIGHT THEME ── */
 html.light {
-  --bg: #f8fafc; --bg2: #ffffff; --bg3: #f1f5f9;
-  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.12);
-  --text: #1e293b; --muted: #64748b; --muted2: #475569;
-  --green: #059669; --green-bg: rgba(5,150,105,0.08); --green-border: rgba(5,150,105,0.25);
-  --amber: #d97706; --amber-bg: rgba(217,119,6,0.08); --amber-border: rgba(217,119,6,0.25);
-  --red: #dc2626; --red-bg: rgba(220,38,38,0.06);
-  --blue: #2563eb; --blue-bg: rgba(37,99,235,0.06); --blue-border: rgba(37,99,235,0.2);
-  --purple: #7c3aed; --purple-bg: rgba(124,58,237,0.06); --purple-border: rgba(124,58,237,0.2);
-  --orange: #ea580c; --orange-bg: rgba(234,88,12,0.06); --orange-border: rgba(234,88,12,0.2);
-  --pink: #db2777; --pink-bg: rgba(219,39,119,0.06); --pink-border: rgba(219,39,119,0.2);
-  --header-gradient: rgba(124,58,237,0.03); --hover-row: rgba(0,0,0,0.02); --toggle-bg: #e2e8f0;
+  --bg: #f8fafc;--bg2: #ffffff;--bg3: #f1f5f9;--border: rgba(0,0,0,0.08);--border2: rgba(0,0,0,0.12);
+  --text: #1e293b;--muted: #64748b;--muted2: #475569;
+  --green: #059669;--green-bg: rgba(5,150,105,0.08);--green-border: rgba(5,150,105,0.25);
+  --amber: #d97706;--amber-bg: rgba(217,119,6,0.08);--amber-border: rgba(217,119,6,0.25);
+  --red: #dc2626;--red-bg: rgba(220,38,38,0.06);
+  --blue: #2563eb;--blue-bg: rgba(37,99,235,0.06);--blue-border: rgba(37,99,235,0.2);
+  --purple: #7c3aed;--purple-bg: rgba(124,58,237,0.06);--purple-border: rgba(124,58,237,0.2);
+  --pink: #db2777;--pink-bg: rgba(219,39,119,0.06);--pink-border: rgba(219,39,119,0.2);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s;}
-.header{padding:24px 28px 0;background:linear-gradient(180deg,var(--header-gradient) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+/* HEADER */
+.header{padding:24px 28px 0;background:linear-gradient(180deg,rgba(139,92,246,0.05) 0%,transparent 100%);border-bottom:1px solid var(--border);}
 .header-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
 .logo{width:36px;height:36px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-.header h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--text),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#e2e8f0,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .header p{font-size:12px;color:var(--muted);margin-left:52px;margin-bottom:16px;}
 .save-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);border-radius:20px;padding:4px 12px;margin-left:52px;margin-bottom:16px;}
 .save-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.theme-toggle{display:flex;align-items:center;gap:8px;margin-left:auto;cursor:pointer;user-select:none;}
-.toggle-track{width:40px;height:22px;border-radius:11px;background:var(--toggle-bg);border:1px solid var(--border2);position:relative;transition:background 0.3s;}
-.toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);position:absolute;top:2px;left:2px;transition:transform 0.3s;}
-html.light .toggle-thumb{transform:translateX(18px);}
-.tabs{display:flex;gap:2px;overflow-x:auto;}.tabs::-webkit-scrollbar{display:none;}
+/* TABS */
+.tabs{display:flex;gap:2px;overflow-x:auto;padding:0 0 0 0;}
+.tabs::-webkit-scrollbar{display:none;}
 .tab{display:flex;align-items:center;gap:7px;padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.2s;}
-.tab:hover{color:var(--text);}.tab.active{color:var(--text);border-bottom-color:var(--purple);}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);border-bottom-color:var(--purple);}
 .tab-dot{width:8px;height:8px;border-radius:50%;}
 .tab-count{font-size:10px;background:var(--bg3);padding:2px 7px;border-radius:20px;color:var(--muted);}
 .tab.active .tab-count{background:var(--purple-bg);color:var(--purple);}
-.main{padding:20px 28px;}.panel{display:none;}.panel.active{display:block;}
+/* MAIN */
+.main{padding:20px 28px;}
+.panel{display:none;}
+.panel.active{display:block;}
+/* STATS ROW */
 .stats-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:80px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;}
 .stat-card .label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
 .stat-card .value{font-size:22px;font-weight:700;color:var(--text);}
-.stat-card.green .value{color:var(--green);}.stat-card.amber .value{color:var(--amber);}.stat-card.red .value{color:var(--red);}.stat-card.blue .value{color:var(--blue);}
-.progress-wrap{margin-bottom:20px;}.progress-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:2px;transition:width 0.4s;}.progress-label{font-size:11px;color:var(--muted);margin-top:5px;}
+.stat-card.green .value{color:var(--green);}
+.stat-card.amber .value{color:var(--amber);}
+.stat-card.red .value{color:var(--red);}
+.progress-wrap{margin-bottom:20px;}
+.progress-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+.progress-label{font-size:11px;color:var(--muted);margin-top:5px;}
+/* TOOLBAR */
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
 .toolbar input,.toolbar select{font-size:13px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);outline:none;transition:border-color 0.2s;}
-.toolbar input{flex:1;min-width:180px;}.toolbar input:focus,.toolbar select:focus{border-color:var(--purple);}
+.toolbar input{flex:1;min-width:180px;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--purple);}
 .btn{font-size:12px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--muted2);transition:all 0.2s;white-space:nowrap;}
 .btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3);}
-.btn-purple{color:var(--purple);border-color:var(--purple-border);}.btn-purple:hover{background:var(--purple-bg);}
-.btn-green{color:var(--green);border-color:var(--green-border);}.btn-green:hover{background:var(--green-bg);}
-.btn-red{color:var(--red);border-color:rgba(239,68,68,0.3);}.btn-red:hover{background:var(--red-bg);}
+.btn-purple{color:var(--purple);border-color:var(--purple-border);}
+.btn-purple:hover{background:var(--purple-bg);}
+.btn-green{color:var(--green);border-color:var(--green-border);}
+.btn-green:hover{background:var(--green-bg);}
+.btn-red{color:var(--red);border-color:rgba(239,68,68,0.3);}
+.btn-red:hover{background:var(--red-bg);}
+/* ADD BOX */
 .add-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;}
 .add-box-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:500;color:var(--muted2);}
 .add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .add-row input{flex:1;min-width:140px;font-size:13px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;}
 .add-row input:focus{border-color:var(--purple);}
 .add-row label{font-size:12px;padding:8px 14px;border-radius:10px;border:1px solid var(--blue-border);color:var(--blue);cursor:pointer;transition:all 0.2s;}
-.add-row label:hover{background:var(--blue-bg);}.add-row input[type="file"]{display:none;}
-.hint{font-size:11px;color:var(--muted);margin-top:8px;}.hint code{background:var(--bg3);padding:1px 6px;border-radius:4px;color:var(--muted2);font-size:10px;}
+.add-row label:hover{background:var(--blue-bg);}
+.add-row input[type="file"]{display:none;}
+.hint{font-size:11px;color:var(--muted);margin-top:8px;}
+.hint code{background:var(--bg3);padding:1px 6px;border-radius:4px;color:var(--muted2);font-size:10px;}
+/* BULK */
 .bulk-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+/* TABLE */
 .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
-.table-scroll{max-height:520px;overflow-y:auto;}.table-scroll::-webkit-scrollbar{width:4px;}.table-scroll::-webkit-scrollbar-track{background:transparent;}.table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.table-scroll{max-height:520px;overflow-y:auto;}
+.table-scroll::-webkit-scrollbar{width:4px;}
+.table-scroll::-webkit-scrollbar-track{background:transparent;}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-thead{position:sticky;top:0;z-index:10;}thead th{text-align:left;padding:12px 14px;font-size:11px;font-weight:500;color:var(--muted);background:var(--bg3);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}tbody tr:hover{background:var(--hover-row);}tbody tr:last-child{border-bottom:none;}
-td{padding:11px 14px;vertical-align:middle;}.cell-name{font-weight:500;color:var(--text);}.cell-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.cell-link{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-.xl{color:var(--blue);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;border:1px solid var(--blue-border);background:var(--blue-bg);white-space:nowrap;}
-.xl:hover{background:rgba(59,130,246,0.2);}.xl-text{font-size:10px;}
-.xl-edit{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:6px;font-size:11px;}.xl-edit:hover{color:var(--text);background:var(--bg3);}
+thead{position:sticky;top:0;z-index:10;}
+thead th{text-align:left;padding:12px 14px;font-size:11px;font-weight:500;color:var(--muted);background:var(--bg3);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody tr:last-child{border-bottom:none;}
+td{padding:11px 14px;vertical-align:middle;}
+.cell-name{font-weight:500;color:var(--text);}
+.cell-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.cell-link{display:flex;align-items:center;gap:5px;}
+.xl{color:var(--blue);text-decoration:none;font-size:12px;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;border:1px solid var(--blue-border);background:var(--blue-bg);white-space:nowrap;}
+.xl:hover{background:rgba(59,130,246,0.2);}
+.xl-text{font-size:10px;}
+.xl-edit{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:6px;font-size:11px;}
+.xl-edit:hover{color:var(--text);background:var(--bg3);}
 .xl-none{font-size:11px;color:var(--muted);font-style:italic;}
-.link-extra{color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg);}.link-extra:hover{background:rgba(139,92,246,0.2);}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all 0.15s;}.badge:hover{filter:brightness(1.2);}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all 0.15s;}
+.badge:hover{filter:brightness(1.2);}
 .badge-active{background:var(--green-bg);color:var(--green);border-color:var(--green-border);}
 .badge-inactive{background:var(--bg3);color:var(--muted);border-color:var(--border);}
 .badge-pending{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border);}
+.del-btn{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px;font-size:14px;transition:all 0.15s;}
+.del-btn:hover{color:var(--red);background:var(--red-bg);}
+.num{color:var(--muted);font-size:11px;width:30px;}
+/* HANDLES LIST */
+.handles{display:flex;flex-wrap:wrap;gap:4px;}
+/* LEGEND */
+.legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.leg-dot{width:7px;height:7px;border-radius:50%;}
+/* EDIT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:420px;max-width:90vw;}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text);}
+.modal input{width:100%;font-size:13px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;margin-bottom:10px;}
+.modal input:focus{border-color:var(--purple);}
+.modal-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--green-border);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--green);opacity:0;transition:all 0.3s;pointer-events:none;z-index:200;transform:translateY(8px);}
+.toast.show{opacity:1;transform:translateY(0);}
+/* CATEGORY COLORS */
+.cat-sol{--cat:#8b5cf6;}
+.cat-eth{--cat:#627eea;}
+.cat-btc{--cat:#f7931a;}
+.cat-topinf{--cat:#10b981;}
+.cat-inf{--cat:#06b6d4;}
+/* THEME TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:8px;margin-left:auto;cursor:pointer;user-select:none;}
+.toggle-track{width:40px;height:22px;border-radius:11px;background:var(--bg3);border:1px solid var(--border2);position:relative;transition:background 0.3s;}
+.toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);position:absolute;top:2px;left:2px;transition:transform 0.3s;}
+html.light .toggle-thumb{transform:translateX(18px);}
+/* CONTACT BADGES */
 .badge-contacted{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border);}
 .badge-notcontacted{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,0.3);}
 .badge-contactpending{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border);}
-.del-btn{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px;font-size:14px;transition:all 0.15s;}.del-btn:hover{color:var(--red);background:var(--red-bg);}
-.num{color:var(--muted);font-size:11px;width:30px;}.handles{display:flex;flex-wrap:wrap;gap:4px;}
-.legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}.leg-dot{width:7px;height:7px;border-radius:50%;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}.modal-overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:480px;max-width:90vw;}
-.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text);}
-.modal input{width:100%;font-size:13px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;margin-bottom:10px;}.modal input:focus{border-color:var(--purple);}
-.modal-label{font-size:11px;color:var(--muted);margin-bottom:4px;}.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
-.links-list{margin-bottom:10px;}.links-list .link-item{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.links-list .link-item input{flex:1;margin-bottom:0;}.links-list .link-rm{background:transparent;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:4px 8px;border-radius:6px;}.links-list .link-rm:hover{background:var(--red-bg);}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--green-border);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--green);opacity:0;transition:all 0.3s;pointer-events:none;z-index:200;transform:translateY(8px);}.toast.show{opacity:1;transform:translateY(0);}
+/* EXTRA LINKS */
+.link-extra{color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg);}
+.link-extra:hover{background:rgba(139,92,246,0.2);}
+/* MODAL LINKS */
+.links-list{margin-bottom:10px;}
+.links-list .link-item{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.links-list .link-item input{flex:1;margin-bottom:0;}
+.links-list .link-rm{background:transparent;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:4px 8px;border-radius:6px;}
+.links-list .link-rm:hover{background:var(--red-bg);}
+.stat-card.blue .value{color:var(--blue);}
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="header-top">
     <div class="logo">🌐</div>
-    <div><h1>Web3 Activity Checker</h1></div>
+    <div>
+      <h1>Web3 Activity Checker</h1>
+    </div>
     <div class="theme-toggle" onclick="toggleTheme()">
       <span id="theme-icon">🌙</span>
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
@@ -143,21 +202,55 @@ td{padding:11px 14px;vertical-align:middle;}.cell-name{font-weight:500;color:var
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
   <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
     <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync now</button>
-    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);color:#ef4444;cursor:pointer;" onclick="resetAndPush()">🔄 Reset & Clean Push</button>
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.1);color:#10b981;cursor:pointer;" onclick="pushAllToAirtable()">↑ Initial Setup (use once)</button>
   </div>
+
   <div class="tabs" id="tabs">
-    <button class="tab active" onclick="switchTab(0,this)"><span class="tab-dot" style="background:#8b5cf6"></span>Solana Projects<span class="tab-count" id="tc0">0</span></button>
-    <button class="tab" onclick="switchTab(1,this)"><span class="tab-dot" style="background:#627eea"></span>ETH Collab<span class="tab-count" id="tc1">0</span></button>
-    <button class="tab" onclick="switchTab(2,this)"><span class="tab-dot" style="background:#f7931a"></span>Bitcoin<span class="tab-count" id="tc2">0</span></button>
-    <button class="tab" onclick="switchTab(3,this)"><span class="tab-dot" style="background:#10b981"></span>Top Influencers<span class="tab-count" id="tc3">0</span></button>
-    <button class="tab" onclick="switchTab(4,this)"><span class="tab-dot" style="background:#06b6d4"></span>Influencers<span class="tab-count" id="tc4">0</span></button>
-    <button class="tab" onclick="switchTab(5,this)"><span class="tab-dot" style="background:#ec4899"></span>Solana DAOs<span class="tab-count" id="tc5">0</span></button>
-    <button class="tab" onclick="switchTab(6,this)"><span class="tab-dot" style="background:#0052ff"></span>Base<span class="tab-count" id="tc6">0</span></button>
+    <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
+      <span class="tab-dot" style="background:#8b5cf6"></span>Solana Projects
+      <span class="tab-count" id="tc0">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(1,this)" data-cat="eth">
+      <span class="tab-dot" style="background:#627eea"></span>ETH Collab
+      <span class="tab-count" id="tc1">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(2,this)" data-cat="btc">
+      <span class="tab-dot" style="background:#f7931a"></span>Bitcoin
+      <span class="tab-count" id="tc2">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(3,this)" data-cat="topinf">
+      <span class="tab-dot" style="background:#10b981"></span>Top Influencers
+      <span class="tab-count" id="tc3">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(4,this)" data-cat="inf">
+      <span class="tab-dot" style="background:#06b6d4"></span>Influencers
+      <span class="tab-count" id="tc4">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(5,this)" data-cat="dao">
+      <span class="tab-dot" style="background:#ec4899"></span>Solana DAOs
+      <span class="tab-count" id="tc5">0</span>
+    </button>
+    <button class="tab" onclick="switchTab(6,this)" data-cat="base">
+      <span class="tab-dot" style="background:#0052ff"></span>Base
+      <span class="tab-count" id="tc6">0</span>
+    </button>
   </div>
 </div>
+
 <div class="main">
-<div id="panel-0" class="panel active"></div><div id="panel-1" class="panel"></div><div id="panel-2" class="panel"></div><div id="panel-3" class="panel"></div><div id="panel-4" class="panel"></div><div id="panel-5" class="panel"></div><div id="panel-6" class="panel"></div>
+
+<!-- PANELS 0-6: project/influencer/dao panels -->
+<div id="panel-0" class="panel active"></div>
+<div id="panel-1" class="panel"></div>
+<div id="panel-2" class="panel"></div>
+<div id="panel-3" class="panel"></div>
+<div id="panel-4" class="panel"></div>
+<div id="panel-5" class="panel"></div>
+<div id="panel-6" class="panel"></div>
+
 </div>
+
+<!-- EDIT MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <h3 id="modal-title">Edit Links</h3>
@@ -174,308 +267,648 @@ td{padding:11px 14px;vertical-align:middle;}.cell-name{font-weight:500;color:var
     </div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script>
+// ── THEME ──
 function toggleTheme(){
-  const isLight=document.documentElement.classList.toggle('light');
-  localStorage.setItem('w3_theme',isLight?'light':'dark');
-  document.getElementById('theme-icon').textContent=isLight?'☀️':'🌙';
-  document.getElementById('theme-label').textContent=isLight?'Light':'Dark';
+  const isLight = document.documentElement.classList.toggle('light');
+  localStorage.setItem('w3_theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-icon').textContent = isLight ? '☀️' : '🌙';
+  document.getElementById('theme-label').textContent = isLight ? 'Light' : 'Dark';
 }
-if(localStorage.getItem('w3_theme')==='light'){document.documentElement.classList.add('light');document.getElementById('theme-icon').textContent='☀️';document.getElementById('theme-label').textContent='Light';}
-
-const KEYS=['sol','eth','btc','topinf','inf','dao','base'];
-const AT_TOKEN='patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
-const AT_BASE='appJpWWp9NkIQCugA';const AT_TABLE='Projects';
-const AT_URL=`https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
-const AT_HEADS={'Authorization':`Bearer ${AT_TOKEN}`,'Content-Type':'application/json'};
-
-function saveLocal(k,d){try{localStorage.setItem('w3_'+k,JSON.stringify(d))}catch(e){}}
-function loadLocal(k){try{const d=localStorage.getItem('w3_'+k);return d?JSON.parse(d):null}catch(e){return null}}
-function setSaved(){document.getElementById('save-txt').textContent='✓ Synced — '+new Date().toLocaleTimeString()}
-function setSaving(){document.getElementById('save-txt').textContent='⏳ Syncing...'}
-function setSaveErr(){document.getElementById('save-txt').textContent='⚠️ Sync error — saved locally'}
-
-function categoryMatchesKey(cat,key){const c=(cat||'').trim();if(key==='dao')return c.startsWith('dao');return c===key;}
-
-function toRecords(key,arr){
-  const isDao=key==='dao';
-  return arr.map(d=>({fields:{Name:d.n||'',Handle:isDao?(d.h||[]).join(';'):(d.x||''),Status:d.s||'pending',Contact:d.c||'pending',Links:(d.l||[]).join(';'),Category:key+(isDao?('|'+(d.p||'')):'')} }));
+if(localStorage.getItem('w3_theme')==='light'){
+  document.documentElement.classList.add('light');
+  document.getElementById('theme-icon').textContent = '☀️';
+  document.getElementById('theme-label').textContent = 'Light';
 }
-function fromRecords(key,records){
-  const isDao=key==='dao';
-  return records.map(r=>{const f=r.fields;const cat=(f.Category||'');const links=(f.Links||'').split(';').filter(Boolean);const contact=f.Contact||'pending';
-    if(isDao){const parts=cat.split('|');return{n:f.Name||'',p:parts[1]||'',h:(f.Handle||'').split(';').filter(Boolean),s:f.Status||'pending',c:contact,l:links,_id:r.id};}
-    return{n:f.Name||'',x:f.Handle||'',s:f.Status||'pending',c:contact,l:links,_id:r.id};
+
+// ── STORAGE ──
+const KEYS = ['sol','eth','btc','topinf','inf','dao','base'];
+
+const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
+const AT_BASE  = 'appJpWWp9NkIQCugA';
+const AT_TABLE = 'Projects';
+const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
+const AT_HEADS = { 'Authorization': `Bearer ${AT_TOKEN}`, 'Content-Type': 'application/json' };
+
+// Also keep localStorage as fast cache
+function saveLocal(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); }catch(e){} }
+function loadLocal(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
+function setSaved(){ document.getElementById('save-txt').textContent = '✓ Synced — '+new Date().toLocaleTimeString(); }
+function setSaving(){ document.getElementById('save-txt').textContent = '⏳ Syncing...'; }
+function setSaveErr(){ document.getElementById('save-txt').textContent = '⚠️ Sync error — saved locally'; }
+
+// ── FIX #1: Exact category matching ──
+// Match category field to key. For DAOs, category is "dao|ProjectName" so use startsWith.
+// For everything else, require EXACT match to prevent cross-contamination.
+function categoryMatchesKey(category, key) {
+  const cat = (category || '').trim();
+  if (key === 'dao') return cat.startsWith('dao');
+  // Exact match only for non-dao keys
+  return cat === key;
+}
+
+// Convert our data to Airtable records
+function toRecords(key, arr){
+  const isDao = key === 'dao';
+  return arr.map(d => ({
+    fields: {
+      Name: d.n || '',
+      Handle: isDao ? (d.h||[]).join(';') : (d.x||''),
+      Status: d.s || 'pending',
+      Contact: d.c || 'pending',
+      Links: (d.l||[]).join(';'),
+      Category: key + (isDao ? ('|'+( d.p||'')) : '')
+    }
+  }));
+}
+
+// Convert Airtable records back to our format
+function fromRecords(key, records){
+  const isDao = key === 'dao';
+  return records.map(r => {
+    const f = r.fields;
+    const cat = (f.Category||'');
+    const contact = f.Contact || 'pending';
+    const links = (f.Links||'').split(';').filter(Boolean);
+    if (isDao) {
+      const parts = cat.split('|');
+      return { n: f.Name||'', p: parts[1]||'', h: (f.Handle||'').split(';').filter(Boolean), s: f.Status||'pending', c: contact, l: links, _id: r.id };
+    }
+    return { n: f.Name||'', x: f.Handle||'', s: f.Status||'pending', c: contact, l: links, _id: r.id };
   });
 }
 
+// ── loadFromAirtable: ONLY reads, NEVER pushes ──
 async function loadFromAirtable(){
   setSaving();
-  try{
-    let all=[],offset=null;
-    do{const url=AT_URL+'?pageSize=100'+(offset?'&offset='+offset:'');const res=await fetch(url,{headers:AT_HEADS});const json=await res.json();all=all.concat(json.records||[]);offset=json.offset||null;}while(offset);
-    if(all.length===0){console.log('Airtable empty, using local data');setSaved();return false;}
-    const tempData={};let totalCount=0;
-    KEYS.forEach(k=>{const recs=all.filter(r=>categoryMatchesKey(r.fields.Category,k));if(recs.length>0){tempData[k]=fromRecords(k,recs);totalCount+=tempData[k].length;}});
-    // Only accept data if count is reasonable (between 300-500)
-    if(totalCount<300||totalCount>500){console.log('Airtable has '+totalCount+' records (expected ~361), keeping local data');setSaved();return false;}
-    KEYS.forEach(k=>{if(tempData[k]&&tempData[k].length>0){DATA[k]=tempData[k];saveLocal(k,DATA[k]);}});
-    setSaved();return true;
-  }catch(e){console.error('Airtable load error:',e);setSaveErr();return false;}
+  try {
+    let all = [], offset = null;
+    do {
+      const url = AT_URL + '?pageSize=100' + (offset ? '&offset='+offset : '');
+      const res = await fetch(url, { headers: AT_HEADS });
+      const json = await res.json();
+      all = all.concat(json.records||[]);
+      offset = json.offset || null;
+    } while(offset);
+
+    if(all.length === 0){ setSaved(); return false; }
+
+    // Build temp data first — don't touch DATA yet
+    const tempData = {};
+    let totalCount = 0;
+    KEYS.forEach(k => {
+      const recs = all.filter(r => categoryMatchesKey(r.fields.Category, k));
+      if(recs.length > 0){
+        tempData[k] = fromRecords(k, recs);
+        totalCount += tempData[k].length;
+      }
+    });
+
+    // Only accept if count is reasonable (between 300 and 500)
+    if(totalCount < 300 || totalCount > 500){
+      console.log('Airtable has ' + totalCount + ' records (expected ~361), keeping local data');
+      setSaved();
+      return false;
+    }
+
+    // Safe to apply
+    KEYS.forEach(k => {
+      if(tempData[k] && tempData[k].length > 0){
+        DATA[k] = tempData[k];
+        saveLocal(k, DATA[k]);
+      }
+    });
+
+    setSaved();
+    return true;
+  } catch(e){
+    console.error('Airtable load error:', e);
+    setSaveErr();
+    return false;
+  }
 }
 
-async function saveItemToAirtable(key,item){
+// Save a single item to Airtable
+async function saveItemToAirtable(key, item){
   setSaving();
-  try{const isDao=key==='dao';
-    const fields={Name:item.n||'',Handle:isDao?(item.h||[]).join(';'):(item.x||''),Status:item.s||'pending',Contact:item.c||'pending',Links:(item.l||[]).join(';'),Category:key+(isDao?('|'+(item.p||'')):'')};
-    if(item._id){await fetch(`${AT_URL}/${item._id}`,{method:'PATCH',headers:AT_HEADS,body:JSON.stringify({fields})});}
-    else{const res=await fetch(AT_URL,{method:'POST',headers:AT_HEADS,body:JSON.stringify({fields})});const json=await res.json();item._id=json.id;}
-    saveLocal(key,DATA[key]);setSaved();
-  }catch(e){setSaveErr();}
+  try {
+    const isDao = key === 'dao';
+    const fields = {
+      Name: item.n||'',
+      Handle: isDao ? (item.h||[]).join(';') : (item.x||''),
+      Status: item.s||'pending',
+      Contact: item.c||'pending',
+      Links: (item.l||[]).join(';'),
+      Category: key + (isDao ? ('|'+(item.p||'')) : '')
+    };
+    if(item._id){
+      // Update existing
+      await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields}) });
+    } else {
+      // Create new
+      const res = await fetch(AT_URL, { method:'POST', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const json = await res.json();
+      item._id = json.id;
+    }
+    saveLocal(key, DATA[key]);
+    setSaved();
+  } catch(e){ setSaveErr(); }
 }
-async function deleteFromAirtable(id){try{await fetch(`${AT_URL}/${id}`,{method:'DELETE',headers:AT_HEADS});}catch(e){}}
-function save(key,data){saveLocal(key,data);setSaved();}
-const DEFAULTS={
-sol:[{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"}],
-eth:[{n:"alpha squad",x:"AlphaSquadNFT",s:"pending"},{n:"Atama Chibi",x:"AtamaChibi",s:"pending"},{n:"Azra games",x:"AzraGames",s:"pending"},{n:"Azuki",x:"Azuki",s:"pending"},{n:"Azuki elementals",x:"Azuki",s:"pending"},{n:"Bayc",x:"BoredApeYC",s:"pending"},{n:"Bored ape kennel club",x:"BoredApeKC",s:"pending"},{n:"BROZO",x:"BROZONFT",s:"pending"},{n:"Chimpers",x:"ChimpersNFT",s:"pending"},{n:"Creepz by overlord",x:"overlordxyz",s:"pending"},{n:"Crypto dickbutts",x:"CryptoDickbutts",s:"pending"},{n:"Crypto punk",x:"cryptopunksnfts",s:"pending"},{n:"CyberKongz",x:"CyberKongz",s:"pending"},{n:"CYBERKUNGS",x:"CyberKungz",s:"pending"},{n:"Derage",x:"DeRageNFT",s:"pending"},{n:"Doodles",x:"doodles",s:"pending"},{n:"DOODLES",x:"doodles",s:"pending"},{n:"evil seekers",x:"seekers_xyz",s:"pending"},{n:"Funkari NFT",x:"FunkariNFT",s:"pending"},{n:"Gambulls NFT",x:"GambullsCasino",s:"pending"},{n:"Gemesis",x:"GemesisNFT",s:"pending"},{n:"Goblintown",x:"goblintownwtf",s:"pending"},{n:"GodHatesNFTs",x:"GodHatesNFTs",s:"pending"},{n:"Goodvibes",x:"GoodVibesNFT",s:"pending"},{n:"Gristle budeez",x:"GristleBudeez",s:"pending"},{n:"Kaito Genesis",x:"KaitoAI_xyz",s:"pending"},{n:"Kanto Labs",x:"KantoLabs",s:"pending"},{n:"Lasercat",x:"LaserCatNFT",s:"pending"},{n:"Lil pudgys",x:"LilPudgys",s:"pending"},{n:"Lives of Asuna",x:"livesofasuna",s:"pending"},{n:"Meebits",x:"MeebitsNFTs",s:"pending"},{n:"Meet Nippy",x:"MeetNippy",s:"pending"},{n:"Memeland",x:"memeland",s:"pending"},{n:"Meta winners",x:"MetaWinnersNFT",s:"pending"},{n:"Mfers",x:"sartoshi",s:"pending"},{n:"Milady",x:"miladymaker",s:"pending"},{n:"Misfits",x:"MisfitsNFT",s:"pending"},{n:"Moonbirds",x:"moonbirds",s:"pending"},{n:"Moriusa",x:"MoriusaNFT",s:"pending"},{n:"Mutant ape",x:"MutantApeNFT",s:"pending"},{n:"Otherdeed",x:"othersidemeta",s:"pending"},{n:"Otherdeed expanded",x:"othersidemeta",s:"pending"},{n:"Otherside",x:"othersidemeta",s:"pending"},{n:"owlpha",x:"OwlphaNFT",s:"pending"},{n:"Pixelmon",x:"Pixelmon",s:"pending"},{n:"Project AEON",x:"ProjectAEON_",s:"pending"},{n:"PUDGY PENGUINS",x:"pudgypenguins",s:"pending"},{n:"Pudgy penguin",x:"pudgypenguins",s:"pending"},{n:"Pudgyrods",x:"pudgypenguins",s:"pending"},{n:"Redacted remilio babies",x:"miladymaker",s:"pending"},{n:"Rokus world",x:"RokusWorld",s:"pending"},{n:"Sappy seals",x:"SappySealsNFT",s:"pending"},{n:"The memes 6529",x:"punk6529",s:"pending"},{n:"TheCircle",x:"azazel_web3",s:"pending"},{n:"Trail heads(camp network)",x:"campnetwork_xyz",s:"pending"},{n:"Underdogs",x:"UnderDogsNFT",s:"pending"},{n:"Vee Friends",x:"veefriends",s:"pending"},{n:"Xcopy edition",x:"XCOPYART",s:"pending"}],
-btc:[{n:"$MBTC by Relics Protocol",x:"relics_btc",s:"pending"},{n:"Airhead Whale Pass",x:"AirheadFun",s:"pending"},{n:"Apes on Bitcoin",x:"apes_pixelated",s:"pending"},{n:"Based Angels",x:"basedangelsbtc",s:"pending"},{n:"Bitcoin Frogs",x:"BitcoinFrogs_",s:"pending"},{n:"Bitcoin Punks",x:"BitcoinPunks_",s:"pending"},{n:"Bitcoin Puppets",x:"BitcoinPuppets",s:"pending"},{n:"Bitcoin Weirdos",x:"BitcoinWeirdos",s:"pending"},{n:"Bitcoin Wizards",x:"BitcoinWizards_",s:"pending"},{n:"Bixels",x:"BixelBit",s:"pending"},{n:"BTC Machines",x:"BTCMachine777",s:"pending"},{n:"CENTS",x:"centsOrdinals",s:"pending"},{n:"Don't Avoid Bright Lights",x:"TheArtistBTC",s:"pending"},{n:"Fukuhedrons",x:"Nakamigos",s:"pending"},{n:"Goosinals",x:"goosinals",s:"pending"},{n:"Honey Badgers",x:"HoneyBadgersBtc",s:"pending"},{n:"IDIOTS",x:"idiotsbtc",s:"pending"},{n:"INK",x:"INKedBTC",s:"pending"},{n:"Little Pups",x:"LittlePupsNFT",s:"pending"},{n:"Loboverse",x:"lobothewolfpup",s:"pending"},{n:"Lord of stones",x:"LordofStones_",s:"pending"},{n:"MegaPunks",x:"MegapontNFT",s:"pending"},{n:"MNCHRMS",x:"MNCHRMSBTC",s:"pending"},{n:"NodeMonkes",x:"nodemonkes",s:"pending"},{n:"Nodescapes",x:"nodescapes",s:"pending"},{n:"O.P.I.U.M.",x:"opiumnft",s:"pending"},{n:"OMEN",x:"Omen4Omen",s:"pending"},{n:"Ordinal Maxi Biz (OMB)",x:"OrdinalMaxiBiz",s:"pending"},{n:"Pizza Ninjas",x:"PizzaNinjas_",s:"pending"},{n:"Pizza Pets Game",x:"Pizza_Pets",s:"pending"},{n:"Pog Ordinals",x:"pogdigital",s:"pending"},{n:"Puppet Maxi Biz (PMB)",x:"PuppetMaziBiz",s:"pending"},{n:"RSIC METAPROTOCOL",x:"rune_coin",s:"pending"},{n:"STEPEPES by LORS",x:"LorsOnChain",s:"pending"},{n:"Taproot Wizard",x:"TaprootWizards",s:"pending"},{n:"The Royals",x:"TheRoyals_DMT",s:"pending"},{n:"The Wizards of Ord",x:"TheWizardsOfOrd",s:"pending"},{n:"Whal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Yokai Avengers",x:"YokaiAvengers",s:"pending"}],
-topinf:[{n:"Agent Chammy",x:"agenttech",s:"pending"},{n:"BASC",x:"BoredApeSolClub",s:"pending"},{n:"bunjil",x:"bunjil",s:"pending"},{n:"CETS",x:"cetsfk",s:"pending"},{n:"Claynosaurz",x:"Claynosaurz",s:"pending"},{n:"Cozy the Caller",x:"cozypront",s:"pending"},{n:"Defi Dungeons",x:"defidungeons",s:"pending"},{n:"DGENZ",x:"dgenznft",s:"pending"},{n:"DSentralized",x:"DSentralized",s:"pending"},{n:"fabiano.sol",x:"FabianoSolana",s:"pending"},{n:"Fabulosa",x:"BohemiaArtFair",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"Frogana",x:"FroganaHQ",s:"pending"},{n:"Gamba Dogs",x:"gambadogs",s:"pending"},{n:"Haxz",x:"haxz_xyz",s:"pending"},{n:"JellyDawgs",x:"JellyCoNFT",s:"pending"},{n:"Lifinity Flares",x:"Lifinity_io",s:"pending"},{n:"Mad Lads / Backpack",x:"madlads",s:"pending"},{n:"Nico",x:"MintOfTheDay",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Okay Bears",x:"okaybears",s:"pending"},{n:"Oogy",x:"oogyNFT",s:"pending"},{n:"Ovols",x:"OvolsNFT",s:"pending"},{n:"Portals",x:"_portals_",s:"pending"},{n:"Quack Heads",x:"wallchain",s:"pending"},{n:"Raves",x:"Ravers",s:"pending"},{n:"Retardio Cousins",x:"retardiolove",s:"pending"},{n:"SMB",x:"monkedao",s:"pending"},{n:"SOL Big Brain",x:"SOLBigBrain",s:"pending"},{n:"SOL PRINCESS",x:"SolanaPrincess",s:"pending"},{n:"Solana Legend",x:"SolanaLegend",s:"pending"},{n:"Solana Sensei",x:"SolanaSensei",s:"pending"},{n:"Solana Sprotos",x:"SolanaSprotos",s:"pending"},{n:"SolportTom",x:"SolportTom",s:"pending"},{n:"tab",x:"tvbzify",s:"pending"},{n:"Taiyo Robotics",x:"TaiyoRobotics",s:"pending"},{n:"Teddies",x:"playteddies",s:"pending"},{n:"TENSORIANS",x:"tensor_hq",s:"pending"},{n:"Tomorrowland",x:"tomorrowlandnft",s:"pending"},{n:"Trippin Ape Tribe",x:"TrippinApeNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosSOL",s:"pending"},{n:"Webkidz",x:"webkidz",s:"pending"},{n:"YOLOMIGOS SPL420",x:"pxpushers",s:"pending"}],
-inf:[{n:"Ant",x:"KingAnt777",s:"pending"},{n:"Aster DEX",x:"Aster_DEX",s:"pending"},{n:"Books",x:"DaoKwonDo",s:"pending"},{n:"Carlitosway",x:"Carlitoswa_y",s:"pending"},{n:"Elja",x:"Eljaboom",s:"pending"},{n:"EricMack.eth",x:"EricCMack",s:"pending"},{n:"farokh",x:"farokh",s:"pending"},{n:"Fellowship",x:"fellowshiptrust",s:"pending"},{n:"Fugz",x:"FugzOfficial",s:"pending"},{n:"Genome",x:"genome_protocol",s:"pending"},{n:"gigiNFTz",x:"gigiNFTz",s:"pending"},{n:"gigiz_eth",x:"gigiz_eth",s:"pending"},{n:"JackGK",x:"JackGK_BTC",s:"pending"},{n:"Jakey",x:"SolJakey",s:"pending"},{n:"Jayden",x:"crossing_panda",s:"pending"},{n:"Jeremy",x:"Jeremyybtc",s:"pending"},{n:"JUJU",x:"the_jujukey",s:"pending"},{n:"Karin Veri - Binance",x:"karin_veri",s:"pending"},{n:"Kevin Susanto",x:"KevinSusanto",s:"pending"},{n:"Khalil Underwood",x:"RealKhalilU",s:"pending"},{n:"kuro",x:"kurogod5",s:"pending"},{n:"kyletwidda",x:"ALPHACOETH",s:"pending"},{n:"Loki",x:"lokithebird",s:"pending"},{n:"Mintify",x:"Mintify",s:"pending"},{n:"Momentum",x:"MMTFinance",s:"pending"},{n:"nft_bridges",x:"nft_bridges",s:"pending"},{n:"Pav",x:"pav_eth",s:"pending"},{n:"Project_Jcard",x:"Project_Jcard",s:"pending"},{n:"ram",x:"0xRamonos",s:"pending"},{n:"RUYUI",x:"RuyuiStudios",s:"pending"},{n:"Shibo",x:"GodsBurnt",s:"pending"},{n:"ShirleyXBT",x:"ShirleyXBT",s:"pending"},{n:"SpottieWiFi",x:"SpottieWiFi",s:"pending"},{n:"stu",x:"despxwned",s:"pending"},{n:"Suza",x:"suzapolooza_eth",s:"pending"},{n:"TheWolfofAuraStreet",x:"marcusjames_dj",s:"pending"},{n:"Tintin",x:"Tintinx2021",s:"pending"},{n:"Yogi",x:"HouseofYogiX",s:"pending"}],
-dao:[{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"HUNTERS OF WEB3",p:"Influencers",h:["evokeinsol"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl",h:["MetaDAOProject"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"MONKDAO",p:"Influencers",h:["stroll2stroll"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"RADIANTDAO",p:"Influencers",h:["ftomatik","Za_maroo"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl",h:["TheSimms"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist",h:["TheRealGapper"],s:"pending"},{n:"Solana NFT Finder DAO",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians"],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"VIRIYA DAO",p:"Influencers",h:["casanovaWeb3"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","SaveTheWhal3s"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"}],
-base:[{n:"Amazing Larva Lads",x:"dynavision_im",s:"pending"},{n:"Base Gods",x:"TYBASEGOD",s:"pending"},{n:"Based Fellas",x:"BasedFellas_",s:"pending"},{n:"Based Nouns",x:"goyabean_eth",s:"pending"},{n:"Based OnChain Punks",x:"OnChainPunksNFT",s:"pending"},{n:"based punks",x:"basedpunks_",s:"pending"},{n:"BasePaint",x:"basepaint_xyz",s:"pending"},{n:"BitDCA",x:"BitDCA_",s:"pending"},{n:"Bomefers",x:"aldover_eth",s:"pending"},{n:"CryptoPimps",x:"CryptoPimps_NFT",s:"pending"},{n:"Degen Alpha",x:"_snowyi",s:"pending"},{n:"Degens by doy",x:"patrdoy",s:"pending"},{n:"FARWORLD Creatures",x:"WolvesDAO",s:"pending"},{n:"GinaGenesis",x:"askginadotai",s:"pending"},{n:"glyphs",x:"jessepollak",s:"pending"},{n:"Kemonokaki",x:"kemonokaki",s:"pending"},{n:"Larvva Lads",x:"LarvvaLads",s:"pending"},{n:"Miggles",x:"miggles_xyz",s:"pending"},{n:"Mochimons",x:"giyu_mochi",s:"pending"},{n:"No-Punks",x:"NoPunkism",s:"pending"},{n:"NodePunks",x:"N0DEPunks",s:"pending"},{n:"OK COMPUTERS",x:"dailofrog",s:"pending"},{n:"onchain gaias",x:"onchaingaias",s:"pending"},{n:"Onchain Founding Membership",x:"MrGreenity",s:"pending"},{n:"ONtegrity",x:"ONtegrity",s:"pending"},{n:"Persona",x:"MigeruVLR",s:"pending"},{n:"PNUKS",x:"PNUKS_base",s:"pending"},{n:"re:generates",x:"mechsicko_eth",s:"pending"},{n:"Shredding Sassy - Base",x:"ShreddingSassy",s:"pending"},{n:"SmallBrosNFT",x:"SmallBrosNFT",s:"pending"},{n:"Swamp Souls",x:"Ocaptain2023",s:"pending"},{n:"THE DROPZONE",x:"CryptoBlockDan",s:"pending"},{n:"tiny dino mfers",x:"tinydinomfers",s:"pending"},{n:"Topi",x:"basejunkie_",s:"pending"},{n:"Virtuals Land",x:"VirtuaMetaverse",s:"pending"},{n:"Wealthy Hypio Babies",x:"WealthyHypio",s:"pending"},{n:"Zoolini",x:"ExpoNomez",s:"pending"}]
+
+// Delete item from Airtable
+async function deleteFromAirtable(id){
+  try { await fetch(`${AT_URL}/${id}`, { method:'DELETE', headers: AT_HEADS }); } catch(e){}
+}
+
+function save(key, data){
+  saveLocal(key, data);
+  setSaved();
+}
+
+// ── DATA ──
+const DEFAULTS = {
+sol: [
+  {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"}
+],
+eth: [
+  {n:"TheCircle",x:"azazel_web3",s:"pending"},{n:"Kanto Labs",x:"KantoLabs",s:"pending"},{n:"CyberKongz",x:"CyberKongz",s:"pending"},{n:"Pixelmon",x:"Pixelmon",s:"pending"},{n:"Misfits",x:"MisfitsNFT",s:"pending"},{n:"BROZO",x:"BROZONFT",s:"pending"},{n:"evil seekers",x:"seekers_xyz",s:"pending"},{n:"Gambulls NFT",x:"GambullsCasino",s:"pending"},{n:"owlpha",x:"OwlphaNFT",s:"pending"},{n:"alpha squad",x:"AlphaSquadNFT",s:"pending"},{n:"Atama Chibi",x:"AtamaChibi",s:"pending"},{n:"Meet Nippy",x:"MeetNippy",s:"pending"},{n:"PUDGY PENGUINS",x:"pudgypenguins",s:"pending"},{n:"CYBERKUNGS",x:"CyberKungz",s:"pending"},{n:"GodHatesNFTs",x:"GodHatesNFTs",s:"pending"},{n:"Bayc",x:"BoredApeYC",s:"pending"},{n:"Crypto punk",x:"cryptopunksnfts",s:"pending"},{n:"Mutant ape",x:"MutantApeNFT",s:"pending"},{n:"Pudgy penguin",x:"pudgypenguins",s:"pending"},{n:"Lil pudgys",x:"LilPudgys",s:"pending"},{n:"Milady",x:"miladymaker",s:"pending"},{n:"Kaito Genesis",x:"KaitoAI_xyz",s:"pending"},{n:"Doodles",x:"doodles",s:"pending"},{n:"Project AEON",x:"ProjectAEON_",s:"pending"},{n:"Vee Friends",x:"veefriends",s:"pending"},{n:"Gemesis",x:"GemesisNFT",s:"pending"},{n:"Azuki",x:"Azuki",s:"pending"},{n:"Otherside",x:"othersidemeta",s:"pending"},{n:"Goodvibes",x:"GoodVibesNFT",s:"pending"},{n:"Azuki elementals",x:"Azuki",s:"pending"},{n:"Moonbirds",x:"moonbirds",s:"pending"},{n:"Redacted remilio babies",x:"miladymaker",s:"pending"},{n:"Otherdeed expanded",x:"othersidemeta",s:"pending"},{n:"Crypto dickbutts",x:"CryptoDickbutts",s:"pending"},{n:"The memes 6529",x:"punk6529",s:"pending"},{n:"Gristle budeez",x:"GristleBudeez",s:"pending"},{n:"Trail heads(camp network)",x:"campnetwork_xyz",s:"pending"},{n:"Otherdeed",x:"othersidemeta",s:"pending"},{n:"Meta winners",x:"MetaWinnersNFT",s:"pending"},{n:"Xcopy edition",x:"XCOPYART",s:"pending"},{n:"Derage",x:"DeRageNFT",s:"pending"},{n:"Memeland",x:"memeland",s:"pending"},{n:"Bored ape kennel club",x:"BoredApeKC",s:"pending"},{n:"Sappy seals",x:"SappySealsNFT",s:"pending"},{n:"Moriusa",x:"MoriusaNFT",s:"pending"},{n:"Pudgyrods",x:"pudgypenguins",s:"pending"},{n:"Creepz by overlord",x:"overlordxyz",s:"pending"},{n:"Chimpers",x:"ChimpersNFT",s:"pending"},{n:"Azra games",x:"AzraGames",s:"pending"},{n:"Lasercat",x:"LaserCatNFT",s:"pending"},{n:"Meebits",x:"MeebitsNFTs",s:"pending"},{n:"Goblintown",x:"goblintownwtf",s:"pending"},{n:"Mfers",x:"sartoshi",s:"pending"},{n:"Funkari NFT",x:"FunkariNFT",s:"pending"},{n:"Lives of Asuna",x:"livesofasuna",s:"pending"},{n:"Rokus world",x:"RokusWorld",s:"pending"},{n:"Underdogs",x:"UnderDogsNFT",s:"pending"},{n:"DOODLES",x:"doodles",s:"pending"}
+],
+btc: [
+  {n:"Taproot Wizard",x:"TaprootWizards",s:"pending"},{n:"Airhead Whale Pass",x:"AirheadFun",s:"pending"},{n:"O.P.I.U.M.",x:"opiumnft",s:"pending"},{n:"Bitcoin Puppets",x:"BitcoinPuppets",s:"pending"},{n:"Pizza Ninjas",x:"PizzaNinjas_",s:"pending"},{n:"Pog Ordinals",x:"pogdigital",s:"pending"},{n:"BTC Machines",x:"BTCMachine777",s:"pending"},{n:"Bitcoin Frogs",x:"BitcoinFrogs_",s:"pending"},{n:"Lord of stones",x:"LordofStones_",s:"pending"},{n:"NodeMonkes",x:"nodemonkes",s:"pending"},{n:"Bitcoin Wizards",x:"BitcoinWizards_",s:"pending"},{n:"Bitcoin Punks",x:"BitcoinPunks_",s:"pending"},{n:"Bitcoin Weirdos",x:"BitcoinWeirdos",s:"pending"},{n:"Ordinal Maxi Biz (OMB)",x:"OrdinalMaxiBiz",s:"pending"},{n:"Based Angels",x:"basedangelsbtc",s:"pending"},{n:"Nodescapes",x:"nodescapes",s:"pending"},{n:"Yokai Avengers",x:"YokaiAvengers",s:"pending"},{n:"Whal3s",x:"SaveTheWhal3s",s:"pending"},{n:"$MBTC by Relics Protocol",x:"relics_btc",s:"pending"},{n:"Don't Avoid Bright Lights",x:"TheArtistBTC",s:"pending"},{n:"RSIC METAPROTOCOL",x:"rune_coin",s:"pending"},{n:"The Wizards of Ord",x:"TheWizardsOfOrd",s:"pending"},{n:"Apes on Bitcoin",x:"apes_pixelated",s:"pending"},{n:"Loboverse",x:"lobothewolfpup",s:"pending"},{n:"CENTS",x:"centsOrdinals",s:"pending"},{n:"Fukuhedrons",x:"Nakamigos",s:"pending"},{n:"INK",x:"INKedBTC",s:"pending"},{n:"IDIOTS",x:"idiotsbtc",s:"pending"},{n:"Honey Badgers",x:"HoneyBadgersBtc",s:"pending"},{n:"Bixels",x:"BixelBit",s:"pending"},{n:"Little Pups",x:"LittlePupsNFT",s:"pending"},{n:"MegaPunks",x:"MegapontNFT",s:"pending"},{n:"Pizza Pets Game",x:"Pizza_Pets",s:"pending"},{n:"STEPEPES by LORS",x:"LorsOnChain",s:"pending"},{n:"The Royals",x:"TheRoyals_DMT",s:"pending"},{n:"OMEN",x:"Omen4Omen",s:"pending"},{n:"MNCHRMS",x:"MNCHRMSBTC",s:"pending"},{n:"Goosinals",x:"goosinals",s:"pending"},{n:"Puppet Maxi Biz (PMB)",x:"PuppetMaziBiz",s:"pending"}
+],
+topinf: [
+  {n:"fabiano.sol",x:"FabianoSolana",s:"pending"},{n:"Cozy the Caller",x:"cozypront",s:"pending"},{n:"SOL PRINCESS",x:"SolanaPrincess",s:"pending"},{n:"tab",x:"tvbzify",s:"pending"},{n:"Nico",x:"MintOfTheDay",s:"pending"},{n:"BASC",x:"BoredApeSolClub",s:"pending"},{n:"Portals",x:"_portals_",s:"pending"},{n:"Trippin Ape Tribe",x:"TrippinApeNFT",s:"pending"},{n:"Ovols",x:"OvolsNFT",s:"pending"},{n:"Defi Dungeons",x:"defidungeons",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"YOLOMIGOS SPL420",x:"pxpushers",s:"pending"},{n:"Teddies",x:"playteddies",s:"pending"},{n:"JellyDawgs",x:"JellyCoNFT",s:"pending"},{n:"Oogy",x:"oogyNFT",s:"pending"},{n:"DGENZ",x:"dgenznft",s:"pending"},{n:"Fabulosa",x:"BohemiaArtFair",s:"pending"},{n:"Webkidz",x:"webkidz",s:"pending"},{n:"Agent Chammy",x:"agenttech",s:"pending"},{n:"Solana Sprotos",x:"SolanaSprotos",s:"pending"},{n:"CETS",x:"cetsfk",s:"pending"},{n:"Mad Lads / Backpack",x:"madlads",s:"pending"},{n:"SMB",x:"monkedao",s:"pending"},{n:"Tomorrowland",x:"tomorrowlandnft",s:"pending"},{n:"Haxz",x:"haxz_xyz",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"Quack Heads",x:"wallchain",s:"pending"},{n:"Frogana",x:"FroganaHQ",s:"pending"},{n:"Claynosaurz",x:"Claynosaurz",s:"pending"},{n:"Udder Chaos",x:"UdderChaosSOL",s:"pending"},{n:"Gamba Dogs",x:"gambadogs",s:"pending"},{n:"Lifinity Flares",x:"Lifinity_io",s:"pending"},{n:"Retardio Cousins",x:"retardiolove",s:"pending"},{n:"Okay Bears",x:"okaybears",s:"pending"},{n:"TENSORIANS",x:"tensor_hq",s:"pending"},{n:"Taiyo Robotics",x:"TaiyoRobotics",s:"pending"},{n:"Solana Sensei",x:"SolanaSensei",s:"pending"},{n:"Solana Legend",x:"SolanaLegend",s:"pending"},{n:"SOL Big Brain",x:"SOLBigBrain",s:"pending"},{n:"SolportTom",x:"SolportTom",s:"pending"},{n:"DSentralized",x:"DSentralized",s:"pending"},{n:"bunjil",x:"bunjil",s:"pending"},{n:"Raves",x:"Ravers",s:"pending"}
+],
+inf: [
+  {n:"Jakey",x:"SolJakey",s:"pending"},{n:"Loki",x:"lokithebird",s:"pending"},{n:"Jeremy",x:"Jeremyybtc",s:"pending"},{n:"ram",x:"0xRamonos",s:"pending"},{n:"Khalil Underwood",x:"RealKhalilU",s:"pending"},{n:"stu",x:"despxwned",s:"pending"},{n:"nft_bridges",x:"nft_bridges",s:"pending"},{n:"Project_Jcard",x:"Project_Jcard",s:"pending"},{n:"gigiz_eth",x:"gigiz_eth",s:"pending"},{n:"Mintify",x:"Mintify",s:"pending"},{n:"RUYUI",x:"RuyuiStudios",s:"pending"},{n:"JackGK",x:"JackGK_BTC",s:"pending"},{n:"Fugz",x:"FugzOfficial",s:"pending"},{n:"kyletwidda",x:"ALPHACOETH",s:"pending"},{n:"gigiNFTz",x:"gigiNFTz",s:"pending"},{n:"kuro",x:"kurogod5",s:"pending"},{n:"Aster DEX",x:"Aster_DEX",s:"pending"},{n:"Pav",x:"pav_eth",s:"pending"},{n:"farokh",x:"farokh",s:"pending"},{n:"Karin Veri - Binance",x:"karin_veri",s:"pending"},{n:"Tintin",x:"Tintinx2021",s:"pending"},{n:"ShirleyXBT",x:"ShirleyXBT",s:"pending"},{n:"Kevin Susanto",x:"KevinSusanto",s:"pending"},{n:"Elja",x:"Eljaboom",s:"pending"},{n:"Momentum",x:"MMTFinance",s:"pending"},{n:"TheWolfofAuraStreet",x:"marcusjames_dj",s:"pending"},{n:"Yogi",x:"HouseofYogiX",s:"pending"},{n:"Shibo",x:"GodsBurnt",s:"pending"},{n:"Books",x:"DaoKwonDo",s:"pending"},{n:"SpottieWiFi",x:"SpottieWiFi",s:"pending"},{n:"Ant",x:"KingAnt777",s:"pending"},{n:"Suza",x:"suzapolooza_eth",s:"pending"},{n:"EricMack.eth",x:"EricCMack",s:"pending"},{n:"Fellowship",x:"fellowshiptrust",s:"pending"},{n:"Genome",x:"genome_protocol",s:"pending"},{n:"Jayden",x:"crossing_panda",s:"pending"},{n:"Carlitosway",x:"Carlitoswa_y",s:"pending"},{n:"JUJU",x:"the_jujukey",s:"pending"}
+],
+dao: [
+  {n:"Partners DAO",p:"Mad Lads",h:["Jon_HQ"],s:"pending"},{n:"Minteddao",p:"The Heist / Defi Dungeons",h:["0itsali0"],s:"pending"},{n:"Solami Mommy DAO",p:"The Heist",h:["TheRealGapper"],s:"pending"},{n:"DOOSIN ALPHA",p:"Seraph",h:["nft_Osb","doosingod"],s:"pending"},{n:"Spike Club",p:"Miken Club",h:["ParisP_eth"],s:"pending"},{n:"Solana NFT Finder DAO",p:"okay bears",h:["mhkNFTs","rifatNFTs","jackkksol"],s:"pending"},{n:"Thomas DAO",p:"Collab twitter",h:["MizzleFireNFT"],s:"pending"},{n:"Habibi Alpha",p:"SharkyFI",h:["0xmani_","lamoniaa","Stepmemer"],s:"pending"},{n:"Minted",p:"SharkyFI",h:["jellonft","0itsali0"],s:"pending"},{n:"GotM DAO",p:"GAINZ",h:["Tswahne1991","BlockTrainn"],s:"pending"},{n:"Sukuna DAO",p:"BASC",h:["tommyysol03","SukunaZH","jikannians"],s:"pending"},{n:"Tropa da Drih DAO",p:"Sandwatch",h:["WestfureWest","Dontolidos","Mohitt_NFT"],s:"pending"},{n:"ZoddDAO",p:"Sandwatch",h:["icanfly2_nft","mazannyy"],s:"pending"},{n:"Whale3",p:"Play Solana NFT",h:["pixonme_","Khabib263","SaveTheWhal3s"],s:"pending"},{n:"Degen DAO",p:"Thugbirdz",h:["Umak0000"],s:"pending"},{n:"Linked DAO",p:"Kanpai Pandas",h:["Manay_Rants","_its_avi","oojiwashere"],s:"pending"},{n:"PESTDAO",p:"Kanpai Pandas",h:["continentalger","Escoba_sol","Fairo_m2e"],s:"pending"},{n:"IMPACT",p:"Inferno Labs",h:["carisneeth","nft_parker_","thejasich"],s:"pending"},{n:"GhostKidDAO",p:"Code Cowboy",h:["GhostKidDAO"],s:"pending"},{n:"Dre",p:"Saviors",h:["nftsgoldeth","MookieNFT","dsuperrboy"],s:"pending"},{n:"OnChain Buccaneers",p:"itk.digital",h:["Hydraze420","Jampzey"],s:"pending"},{n:"Rug Radio",p:"The Black Pearl",h:["TheSimms"],s:"pending"},{n:"MetaDAO",p:"The Black Pearl",h:["MetaDAOProject"],s:"pending"},{n:"HUNTERS OF WEB3",p:"Influencers",h:["evokeinsol"],s:"pending"},{n:"VIRIYA DAO",p:"Influencers",h:["casanovaWeb3"],s:"pending"},{n:"MONKDAO",p:"Influencers",h:["stroll2stroll"],s:"pending"},{n:"RADIANTDAO",p:"Influencers",h:["ftomatik","Za_maroo"],s:"pending"}
+],
+base: [
+  {n:"onchain gaias",x:"onchaingaias",s:"pending"},{n:"Miggles",x:"miggles_xyz",s:"pending"},{n:"Kemonokaki",x:"kemonokaki",s:"pending"},{n:"Based Fellas",x:"BasedFellas_",s:"pending"},{n:"BitDCA",x:"BitDCA_",s:"pending"},{n:"ONtegrity",x:"ONtegrity",s:"pending"},{n:"Wealthy Hypio Babies",x:"WealthyHypio",s:"pending"},{n:"Onchain Founding Membership",x:"MrGreenity",s:"pending"},{n:"Larvva Lads",x:"LarvvaLads",s:"pending"},{n:"NodePunks",x:"N0DEPunks",s:"pending"},{n:"THE DROPZONE",x:"CryptoBlockDan",s:"pending"},{n:"PNUKS",x:"PNUKS_base",s:"pending"},{n:"Degen Alpha",x:"_snowyi",s:"pending"},{n:"OK COMPUTERS",x:"dailofrog",s:"pending"},{n:"BasePaint",x:"basepaint_xyz",s:"pending"},{n:"Virtuals Land",x:"VirtuaMetaverse",s:"pending"},{n:"Persona",x:"MigeruVLR",s:"pending"},{n:"Base Gods",x:"TYBASEGOD",s:"pending"},{n:"Based OnChain Punks",x:"OnChainPunksNFT",s:"pending"},{n:"Bomefers",x:"aldover_eth",s:"pending"},{n:"re:generates",x:"mechsicko_eth",s:"pending"},{n:"Mochimons",x:"giyu_mochi",s:"pending"},{n:"Based Nouns",x:"goyabean_eth",s:"pending"},{n:"glyphs",x:"jessepollak",s:"pending"},{n:"Degens by doy",x:"patrdoy",s:"pending"},{n:"based punks",x:"basedpunks_",s:"pending"},{n:"Topi",x:"basejunkie_",s:"pending"},{n:"Shredding Sassy - Base",x:"ShreddingSassy",s:"pending"},{n:"FARWORLD Creatures",x:"WolvesDAO",s:"pending"},{n:"No-Punks",x:"NoPunkism",s:"pending"},{n:"SmallBrosNFT",x:"SmallBrosNFT",s:"pending"},{n:"CryptoPimps",x:"CryptoPimps_NFT",s:"pending"},{n:"Swamp Souls",x:"Ocaptain2023",s:"pending"},{n:"GinaGenesis",x:"askginadotai",s:"pending"},{n:"Amazing Larva Lads",x:"dynavision_im",s:"pending"},{n:"tiny dino mfers",x:"tinydinomfers",s:"pending"},{n:"Zoolini",x:"ExpoNomez",s:"pending"}
+]
 };
-let DATA={};
-KEYS.forEach(k=>{const local=loadLocal(k);if(local){DATA[k]=local.map(d=>({...d,c:d.c||'pending',l:d.l||[]}));}else{DATA[k]=JSON.parse(JSON.stringify(DEFAULTS[k])).map(d=>({...d,c:'pending',l:[]}));}});
 
-let modalCallback=null,modalLinks=[];
-function openModal(name,handle,links,cb){
-  document.getElementById('modal-title').textContent='Edit Links — '+name;
-  document.getElementById('modal-name').value=name;
-  document.getElementById('modal-handle').value=handle||'';
-  modalLinks=[...(links||[])];modalCallback=cb;renderModalLinks();
+// ── STATE ──
+let DATA = {};
+KEYS.forEach(k => {
+  const local = loadLocal(k);
+  if(local){
+    DATA[k] = local.map(d => ({...d, c: d.c||'pending', l: d.l||[]}));
+  } else {
+    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[]}));
+  }
+});
+
+// ── MODAL ──
+let modalCallback = null;
+let modalLinks = [];
+function openModal(name, handle, links, cb) {
+  document.getElementById('modal-title').textContent = 'Edit Links — ' + name;
+  document.getElementById('modal-name').value = name;
+  document.getElementById('modal-handle').value = handle || '';
+  modalLinks = [...(links||[])];
+  modalCallback = cb;
+  renderModalLinks();
   document.getElementById('modal').classList.add('open');
-  setTimeout(()=>document.getElementById('modal-handle').focus(),50);
+  setTimeout(() => document.getElementById('modal-handle').focus(), 50);
 }
-function closeModal(){document.getElementById('modal').classList.remove('open');modalCallback=null;}
+function closeModal() { document.getElementById('modal').classList.remove('open'); modalCallback = null; }
 function renderModalLinks(){
-  const c=document.getElementById('modal-links');c.innerHTML='';
-  modalLinks.forEach((lnk,i)=>{const div=document.createElement('div');div.className='link-item';
-    div.innerHTML=`<input type="text" value="${lnk}" placeholder="https://..." onchange="modalLinks[${i}]=this.value"/><button class="link-rm" onclick="modalLinks.splice(${i},1);renderModalLinks()">×</button>`;c.appendChild(div);});
+  const c = document.getElementById('modal-links'); c.innerHTML = '';
+  modalLinks.forEach((lnk,i) => {
+    const div = document.createElement('div'); div.className = 'link-item';
+    div.innerHTML = `<input type="text" value="${lnk}" placeholder="https://..." onchange="modalLinks[${i}]=this.value"/><button class="link-rm" onclick="modalLinks.splice(${i},1);renderModalLinks()">×</button>`;
+    c.appendChild(div);
+  });
 }
-function addModalLink(){modalLinks.push('');renderModalLinks();}
-function saveModal(){const h=document.getElementById('modal-handle').value.trim().replace('@','');const links=modalLinks.map(l=>l.trim()).filter(Boolean);if(modalCallback)modalCallback(h,links);closeModal();}
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+function addModalLink(){ modalLinks.push(''); renderModalLinks(); }
+function saveModal() {
+  const h = document.getElementById('modal-handle').value.trim().replace('@','');
+  const links = modalLinks.map(l=>l.trim()).filter(Boolean);
+  if (modalCallback) modalCallback(h, links);
+  closeModal();
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target === document.getElementById('modal')) closeModal(); });
 
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+// ── TOAST ──
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
 
-let activeTab=0;
-function switchTab(idx,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('panel-'+idx).classList.add('active');activeTab=idx;}
+// ── TAB SWITCH ──
+let activeTab = 0;
+function switchTab(idx, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+idx).classList.add('active');
+  activeTab = idx;
+}
 
-function clean(s){return(s||'').replace(/^"|"$/g,'').trim();}
-function dlCSV(rows,fn){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download=fn;a.click();}
-function keyOf(idx){return KEYS[idx];}
+// ── UTILS ──
+function clean(s) { return (s||'').replace(/^"|"$/g,'').trim(); }
+function dlCSV(rows, fn) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = fn; a.click();
+}
+function keyOf(idx) { return KEYS[idx]; }
 
-const COLORS=['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff'];
-const NAMES=['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base'];
-const TYPES=['project','project','project','influencer','influencer','dao','project'];
+// ── PANEL BUILDER ──
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base'];
+const TYPES = ['project','project','project','influencer','influencer','dao','project'];
 
-function buildPanel(idx){
-  const panel=document.getElementById('panel-'+idx);const color=COLORS[idx];const type=TYPES[idx];const isDao=type==='dao';
-  panel.innerHTML=`
-    <div class="add-box"><div class="add-box-header" style="color:${color}">+ Add / Import</div>
-      <div class="add-row"><input type="text" id="add-n-${idx}" placeholder="${isDao?'DAO name...':'Name...'}"/>
-        ${isDao?`<input type="text" id="add-p-${idx}" placeholder="Project..."/><input type="text" id="add-h-${idx}" placeholder="@handles, comma separated..."/>`:`<input type="text" id="add-x-${idx}" placeholder="@x handle (optional)"/>`}
+function buildPanel(idx) {
+  const panel = document.getElementById('panel-'+idx);
+  const key = keyOf(idx);
+  const color = COLORS[idx];
+  const type = TYPES[idx];
+  const isDao = type === 'dao';
+
+  panel.innerHTML = `
+    <div class="add-box">
+      <div class="add-box-header" style="color:${color}">+ Add / Import</div>
+      <div class="add-row">
+        <input type="text" id="add-n-${idx}" placeholder="${isDao ? 'DAO name...' : 'Name...'}"/>
+        ${isDao ? `<input type="text" id="add-p-${idx}" placeholder="Project..."/><input type="text" id="add-h-${idx}" placeholder="@handles, comma separated..."/>` : `<input type="text" id="add-x-${idx}" placeholder="@x handle (optional)"/>`}
         <button class="btn btn-green" onclick="addRow(${idx})">+ Add</button>
         <label>Upload CSV <input type="file" id="csv-${idx}" accept=".csv" onchange="importCSV(${idx},this)"/></label>
         <button class="btn btn-purple" onclick="exportData(${idx},false)">Export active ↓</button>
-        <button class="btn" onclick="exportData(${idx},true)">Export all ↓</button></div>
-      <p class="hint">${isDao?'CSV: <code>DAO,Project,Handles</code> — handles separated by semicolons':'CSV: <code>Name,Handle</code>'}</p></div>
+        <button class="btn" onclick="exportData(${idx},true)">Export all ↓</button>
+      </div>
+      <p class="hint">${isDao ? 'CSV: <code>DAO,Project,Handles</code> — handles separated by semicolons' : 'CSV: <code>Name,Handle</code>'}</p>
+    </div>
+
     <div class="stats-row">
       <div class="stat-card"><div class="label">Total</div><div class="value" id="st-total-${idx}">0</div></div>
       <div class="stat-card green"><div class="label">Active</div><div class="value" id="st-active-${idx}">0</div></div>
-      <div class="stat-card"><div class="label">Inactive</div><div class="value" id="st-inactive-${idx}" style="color:var(--muted)">0</div></div>
+      <div class="stat-card" style=""><div class="label">Inactive</div><div class="value" id="st-inactive-${idx}" style="color:var(--muted)">0</div></div>
       <div class="stat-card amber"><div class="label">Pending</div><div class="value" id="st-pending-${idx}">0</div></div>
-      <div class="stat-card blue"><div class="label">Contacted</div><div class="value" id="st-contacted-${idx}">0</div></div></div>
-    <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="prog-${idx}" style="width:0%;background:${color}"></div></div><div class="progress-label" id="prog-label-${idx}">0% checked</div></div>
-    <div class="toolbar"><input type="text" id="search-${idx}" placeholder="Search..." oninput="renderPanel(${idx})"/>
-      <select id="filter-${idx}" onchange="renderPanel(${idx})"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="pending">Pending</option></select>
-      <select id="cfilter-${idx}" onchange="renderPanel(${idx})"><option value="all">All contact</option><option value="contacted">Contacted</option><option value="notcontacted">Not contacted</option><option value="pending">Contact pending</option></select></div>
+      <div class="stat-card blue"><div class="label">Contacted</div><div class="value" id="st-contacted-${idx}">0</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog-${idx}" style="width:0%;background:${color}"></div></div>
+      <div class="progress-label" id="prog-label-${idx}">0% checked</div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="search-${idx}" placeholder="Search..." oninput="renderPanel(${idx})"/>
+      <select id="filter-${idx}" onchange="renderPanel(${idx})">
+        <option value="all">All statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="pending">Pending</option>
+      </select>
+      <select id="cfilter-${idx}" onchange="renderPanel(${idx})">
+        <option value="all">All contact</option>
+        <option value="contacted">Contacted</option>
+        <option value="notcontacted">Not contacted</option>
+        <option value="pending">Contact pending</option>
+      </select>
+    </div>
+
     <div class="legend">
       <div class="leg"><span class="leg-dot" style="background:var(--green)"></span>Active</div>
       <div class="leg"><span class="leg-dot" style="background:var(--muted)"></span>Inactive</div>
       <div class="leg"><span class="leg-dot" style="background:var(--amber)"></span>Pending</div>
       <div class="leg"><span class="leg-dot" style="background:var(--blue)"></span>Contacted</div>
-      <div class="leg"><span class="leg-dot" style="background:var(--red)"></span>Not contacted</div></div>
-    <div class="bulk-row"><button class="btn" onclick="markAll(${idx},'active')">All visible → Active</button><button class="btn" onclick="markAll(${idx},'inactive')">All visible → Inactive</button><button class="btn" onclick="markAll(${idx},'pending')">Reset visible</button></div>
-    <div class="table-wrap"><div class="table-scroll"><table><thead><tr><th style="width:32px">#</th><th>${isDao?'DAO':'Name'}</th><th>${isDao?'Members on X':'Links'}</th><th>Status</th><th>Contact</th><th style="width:40px"></th></tr></thead><tbody id="tbody-${idx}"></tbody></table></div></div>
-    <p style="font-size:11px;color:var(--muted);margin-top:8px;">Click ✏️ to edit links. Click badges to toggle. Sorted A→Z. Changes save automatically.</p>`;
+      <div class="leg"><span class="leg-dot" style="background:var(--red)"></span>Not contacted</div>
+    </div>
+
+    <div class="bulk-row">
+      <button class="btn" onclick="markAll(${idx},'active')">All visible → Active</button>
+      <button class="btn" onclick="markAll(${idx},'inactive')">All visible → Inactive</button>
+      <button class="btn" onclick="markAll(${idx},'pending')">Reset visible</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th style="width:32px">#</th>
+            <th>${isDao ? 'DAO' : 'Name'}</th>
+            <th>${isDao ? 'Members on X' : 'Links'}</th>
+            <th>Status</th>
+            <th>Contact</th>
+            <th style="width:40px"></th>
+          </tr></thead>
+          <tbody id="tbody-${idx}"></tbody>
+        </table>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;">Click ✏️ to edit links. Click badges to toggle. Sorted A→Z. Changes save automatically.</p>
+  `;
 }
 
-function getFiltered(idx){
-  const key=keyOf(idx);const q=(document.getElementById('search-'+idx)||{value:''}).value.toLowerCase();
-  const fs=(document.getElementById('filter-'+idx)||{value:'all'}).value;
-  const cf=(document.getElementById('cfilter-'+idx)||{value:'all'}).value;
-  return DATA[key].map((d,i)=>({...d,i})).filter(d=>{
-    if(q&&!d.n.toLowerCase().includes(q)&&!(d.p||'').toLowerCase().includes(q))return false;
-    if(fs!=='all'&&d.s!==fs)return false;
-    if(cf!=='all'&&(d.c||'pending')!==cf)return false;return true;
-  }).sort((a,b)=>a.n.localeCompare(b.n,undefined,{sensitivity:'base'}));
+// ── RENDER ──
+function getFiltered(idx) {
+  const key = keyOf(idx);
+  const q = (document.getElementById('search-'+idx)||{value:''}).value.toLowerCase();
+  const fs = (document.getElementById('filter-'+idx)||{value:'all'}).value;
+  const cf = (document.getElementById('cfilter-'+idx)||{value:'all'}).value;
+  return DATA[key].map((d,i) => ({...d,i})).filter(d => {
+    if (q && !d.n.toLowerCase().includes(q) && !(d.p||'').toLowerCase().includes(q)) return false;
+    if (fs !== 'all' && d.s !== fs) return false;
+    if (cf !== 'all' && (d.c||'pending') !== cf) return false;
+    return true;
+  }).sort((a,b) => a.n.localeCompare(b.n, undefined, {sensitivity:'base'}));
 }
 
-function renderPanel(idx){
-  const key=keyOf(idx);const type=TYPES[idx];const isDao=type==='dao';const rows=getFiltered(idx);
-  const tbody=document.getElementById('tbody-'+idx);if(!tbody)return;tbody.innerHTML='';
-  rows.forEach((d,i)=>{
-    const bc=d.s==='active'?'badge-active':d.s==='inactive'?'badge-inactive':'badge-pending';
-    const lbl=d.s==='active'?'● Active':d.s==='inactive'?'● Inactive':'● Pending';
-    const cc=(d.c||'pending');const cbc=cc==='contacted'?'badge-contacted':cc==='notcontacted'?'badge-notcontacted':'badge-contactpending';
-    const clbl=cc==='contacted'?'✓ Contacted':cc==='notcontacted'?'✗ Not contacted':'◌ Pending';
-    let linkCell='';
-    if(isDao){linkCell=d.h&&d.h.length?`<div class="handles">${d.h.map(h=>`<a class="xl" href="https://x.com/${h}" target="_blank"><span class="xl-text">@${h}</span></a>`).join('')}</div>`:`<span class="xl-none">No handles</span>`;}
-    else{let parts=[];
-      if(d.x)parts.push(`<a class="xl" href="https://x.com/${d.x}" target="_blank"><span class="xl-text">@${d.x}</span></a>`);
-      (d.l||[]).forEach(lnk=>{let label='';try{label=new URL(lnk).hostname.replace('www.','');}catch(e){label=lnk.slice(0,20);}parts.push(`<a class="xl link-extra" href="${lnk}" target="_blank"><span class="xl-text">${label}</span></a>`);});
-      if(!d.x&&!(d.l||[]).length)parts.push(`<span class="xl-none">No links</span>`);
+function renderPanel(idx) {
+  const key = keyOf(idx);
+  const type = TYPES[idx];
+  const isDao = type === 'dao';
+  const rows = getFiltered(idx);
+  const tbody = document.getElementById('tbody-'+idx);
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  rows.forEach((d, i) => {
+    const bc = d.s==='active'?'badge-active':d.s==='inactive'?'badge-inactive':'badge-pending';
+    const lbl = d.s==='active'?'● Active':d.s==='inactive'?'● Inactive':'● Pending';
+    // Contact badge
+    const cc = (d.c||'pending');
+    const cbc = cc==='contacted'?'badge-contacted':cc==='notcontacted'?'badge-notcontacted':'badge-contactpending';
+    const clbl = cc==='contacted'?'✓ Contacted':cc==='notcontacted'?'✗ Not contacted':'◌ Pending';
+
+    let linkCell = '';
+    if (isDao) {
+      linkCell = d.h && d.h.length
+        ? `<div class="handles">${d.h.map(h=>`<a class="xl" href="https://x.com/${h}" target="_blank"><span class="xl-text">@${h}</span></a>`).join('')}</div>`
+        : `<span class="xl-none">No handles</span>`;
+    } else {
+      let parts = [];
+      if(d.x) parts.push(`<a class="xl" href="https://x.com/${d.x}" target="_blank"><span class="xl-text">@${d.x}</span></a>`);
+      (d.l||[]).forEach(lnk => {
+        let label = '';
+        try { label = new URL(lnk).hostname.replace('www.',''); } catch(e){ label = lnk.slice(0,20); }
+        parts.push(`<a class="xl link-extra" href="${lnk}" target="_blank"><span class="xl-text">${label}</span></a>`);
+      });
+      if(!d.x && !(d.l||[]).length) parts.push(`<span class="xl-none">No links</span>`);
       parts.push(`<button class="xl-edit" onclick="editLink(${idx},${d.i})" title="Edit links">✏️</button>`);
-      linkCell=`<div class="cell-link">${parts.join('')}</div>`;}
-    const nameCell=isDao?`<div class="cell-name">${d.n}</div><div class="cell-sub">${d.p||''}</div>`:`<div class="cell-name">${d.n}</div>`;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td class="num">${i+1}</td><td>${nameCell}</td><td>${linkCell}</td><td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td><td><span class="badge ${cbc}" onclick="cycleContact(${idx},${d.i})">${clbl}</span></td><td><button class="del-btn" onclick="delRow(${idx},${d.i})">×</button></td>`;
-    tbody.appendChild(tr);});
+      linkCell = `<div class="cell-link">${parts.join('')}</div>`;
+    }
+    const nameCell = isDao
+      ? `<div class="cell-name">${d.n}</div><div class="cell-sub">${d.p||''}</div>`
+      : `<div class="cell-name">${d.n}</div>`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="num">${i+1}</td>
+      <td>${nameCell}</td>
+      <td>${linkCell}</td>
+      <td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td>
+      <td><span class="badge ${cbc}" onclick="cycleContact(${idx},${d.i})">${clbl}</span></td>
+      <td><button class="del-btn" onclick="delRow(${idx},${d.i})">×</button></td>`;
+    tbody.appendChild(tr);
+  });
+
   updateStats(idx);
 }
 
-function updateStats(idx){
-  const key=keyOf(idx);const arr=DATA[key];
-  const a=arr.filter(d=>d.s==='active').length;const inactive=arr.filter(d=>d.s==='inactive').length;
-  const p=arr.filter(d=>d.s==='pending').length;const contacted=arr.filter(d=>d.c==='contacted').length;
-  const total=arr.length;const checked=a+inactive;const pct=total?Math.round(checked/total*100):0;
-  const sid=(n,v)=>{const el=document.getElementById(`st-${n}-${idx}`);if(el)el.textContent=v;};
-  sid('total',total);sid('active',a);sid('inactive',inactive);sid('pending',p);sid('contacted',contacted);
-  const prog=document.getElementById('prog-'+idx);const plab=document.getElementById('prog-label-'+idx);
-  if(prog)prog.style.width=pct+'%';if(plab)plab.textContent=`${pct}% checked (${checked}/${total})`;
-  const tc=document.getElementById('tc'+idx);if(tc)tc.textContent=total;
+function updateStats(idx) {
+  const key = keyOf(idx);
+  const arr = DATA[key];
+  const a = arr.filter(d=>d.s==='active').length;
+  const inactive = arr.filter(d=>d.s==='inactive').length;
+  const p = arr.filter(d=>d.s==='pending').length;
+  const contacted = arr.filter(d=>d.c==='contacted').length;
+  const total = arr.length;
+  const checked = a + inactive;
+  const pct = total ? Math.round(checked/total*100) : 0;
+
+  const sid = (n, v) => { const el = document.getElementById(`st-${n}-${idx}`); if(el) el.textContent = v; };
+  sid('total', total); sid('active', a); sid('inactive', inactive); sid('pending', p); sid('contacted', contacted);
+
+  const prog = document.getElementById('prog-'+idx);
+  const plab = document.getElementById('prog-label-'+idx);
+  if (prog) prog.style.width = pct + '%';
+  if (plab) plab.textContent = `${pct}% checked (${checked}/${total})`;
+
+  const tc = document.getElementById('tc'+idx);
+  if (tc) tc.textContent = total;
 }
 
-function cycleStatus(idx,i){const key=keyOf(idx);const d=DATA[key][i];d.s=d.s==='pending'?'active':d.s==='active'?'inactive':'pending';saveItemToAirtable(key,d);renderPanel(idx);}
-function cycleContact(idx,i){const key=keyOf(idx);const d=DATA[key][i];const c=d.c||'pending';d.c=c==='pending'?'contacted':c==='contacted'?'notcontacted':'pending';saveItemToAirtable(key,d);renderPanel(idx);}
-function delRow(idx,i){const key=keyOf(idx);const d=DATA[key][i];if(d._id)deleteFromAirtable(d._id);DATA[key].splice(i,1);save(key,DATA[key]);renderPanel(idx);}
-function editLink(idx,i){const key=keyOf(idx);const d=DATA[key][i];openModal(d.n,d.x,d.l||[],(newHandle,newLinks)=>{DATA[key][i].x=newHandle;DATA[key][i].l=newLinks;saveItemToAirtable(key,DATA[key][i]);renderPanel(idx);toast('Links updated!');});}
-
-function addRow(idx){
-  const key=keyOf(idx);const isDao=TYPES[idx]==='dao';
-  const n=(document.getElementById('add-n-'+idx)||{value:''}).value.trim();if(!n){alert('Enter a name.');return;}
-  if(isDao){const p=(document.getElementById('add-p-'+idx)||{value:''}).value.trim()||'—';const hr=(document.getElementById('add-h-'+idx)||{value:''}).value.trim();
-    const h=hr?hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean):[];DATA[key].push({n,p,h,s:'pending',c:'pending',l:[]});
-    document.getElementById('add-h-'+idx).value='';document.getElementById('add-p-'+idx).value='';
-  }else{const x=(document.getElementById('add-x-'+idx)||{value:''}).value.trim().replace('@','');
-    if(DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())){alert('Already exists.');return;}
-    DATA[key].push({n,x:x||'',s:'pending',c:'pending',l:[]});if(document.getElementById('add-x-'+idx))document.getElementById('add-x-'+idx).value='';}
-  document.getElementById('add-n-'+idx).value='';save(key,DATA[key]);renderPanel(idx);
-  toast('Adding to Airtable...');saveItemToAirtable(key,DATA[key][DATA[key].length-1]).then(()=>toast('Added: '+n));
+// ── ACTIONS ──
+function cycleStatus(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  d.s = d.s==='pending'?'active':d.s==='active'?'inactive':'pending';
+  saveItemToAirtable(key, d);
+  renderPanel(idx);
 }
 
-function markAll(idx,status){
-  const key=keyOf(idx);const filtered=getFiltered(idx);filtered.forEach(d=>DATA[key][d.i].s=status);save(key,DATA[key]);renderPanel(idx);
-  const chunks=[];for(let i=0;i<filtered.length;i+=10)chunks.push(filtered.slice(i,i+10));
-  chunks.forEach(chunk=>{const records=chunk.filter(d=>DATA[key][d.i]._id).map(d=>({id:DATA[key][d.i]._id,fields:{Status:status}}));
-    if(records.length)fetch(AT_URL,{method:'PATCH',headers:AT_HEADS,body:JSON.stringify({records})}).then(()=>setSaved()).catch(()=>setSaveErr());});
+function cycleContact(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  const c = d.c||'pending';
+  d.c = c==='pending'?'contacted':c==='contacted'?'notcontacted':'pending';
+  saveItemToAirtable(key, d);
+  renderPanel(idx);
 }
 
-function importCSV(idx,input){
-  const key=keyOf(idx);const isDao=TYPES[idx]==='dao';const f=input.files[0];if(!f)return;const r=new FileReader();
-  r.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());let added=0;
-    lines.forEach((line,i)=>{if(i===0&&(line.toLowerCase().includes('name')||line.toLowerCase().includes('dao')))return;
-      const parts=line.split(',');const n=clean(parts[0]);if(!n)return;
-      if(isDao){const p=clean(parts[1])||'—';const h=parts[2]?clean(parts[2]).split(';').map(x=>x.replace('@','')).filter(Boolean):[];DATA[key].push({n,p,h,s:'pending',c:'pending',l:[]});added++;}
-      else{const x=(clean(parts[1])||'').replace('@','');if(DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase()))return;DATA[key].push({n,x,s:'pending',c:'pending',l:[]});added++;}});
-    save(key,DATA[key]);renderPanel(idx);toast(added+' rows imported! Syncing...');
-    const newRows=DATA[key].slice(DATA[key].length-added);newRows.forEach(row=>saveItemToAirtable(key,row));input.value='';};r.readAsText(f);
+function delRow(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  if(d._id) deleteFromAirtable(d._id);
+  DATA[key].splice(i, 1);
+  save(key, DATA[key]);
+  renderPanel(idx);
 }
 
-function exportData(idx,all){
-  const key=keyOf(idx);const isDao=TYPES[idx]==='dao';const list=all?DATA[key]:DATA[key].filter(d=>d.s==='active');if(!list.length){alert('Nothing to export.');return;}
-  let rows;if(isDao){rows=['DAO,Project,Handles,Status,Contact',...list.map(d=>`"${d.n}","${d.p}","${(d.h||[]).map(h=>'@'+h).join(';')}","${d.s}","${d.c||'pending'}"`)];}
-  else{rows=['Name,Handle,URL,Status,Contact,ExtraLinks',...list.map(d=>`"${d.n}","${d.x?'@'+d.x:''}","${d.x?'https://x.com/'+d.x:''}","${d.s}","${d.c||'pending'}","${(d.l||[]).join(';')}"`)];};
-  dlCSV(rows,(all?'all_':'active_')+key+'_2026.csv');
+function editLink(idx, i) {
+  const key = keyOf(idx);
+  const d = DATA[key][i];
+  openModal(d.n, d.x, d.l||[], (newHandle, newLinks) => {
+    DATA[key][i].x = newHandle;
+    DATA[key][i].l = newLinks;
+    saveItemToAirtable(key, DATA[key][i]);
+    renderPanel(idx);
+    toast('Links updated!');
+  });
 }
 
-let isPushing=false;
+function addRow(idx) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const n = (document.getElementById('add-n-'+idx)||{value:''}).value.trim();
+  if (!n) { alert('Enter a name.'); return; }
+
+  if (isDao) {
+    const p = (document.getElementById('add-p-'+idx)||{value:''}).value.trim() || '—';
+    const hr = (document.getElementById('add-h-'+idx)||{value:''}).value.trim();
+    const h = hr ? hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean) : [];
+    DATA[key].push({n, p, h, s:'pending', c:'pending', l:[]});
+    document.getElementById('add-h-'+idx).value = '';
+    document.getElementById('add-p-'+idx).value = '';
+  } else {
+    const x = (document.getElementById('add-x-'+idx)||{value:''}).value.trim().replace('@','');
+    if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) { alert('Already exists.'); return; }
+    DATA[key].push({n, x: x||'', s:'pending', c:'pending', l:[]});
+    if (document.getElementById('add-x-'+idx)) document.getElementById('add-x-'+idx).value = '';
+  }
+  document.getElementById('add-n-'+idx).value = '';
+  save(key, DATA[key]);
+  renderPanel(idx);
+  toast('Adding to Airtable...');
+  saveItemToAirtable(key, DATA[key][DATA[key].length-1]).then(()=>toast('Added: '+n));
+}
+
+function markAll(idx, status) {
+  const key = keyOf(idx);
+  const filtered = getFiltered(idx);
+  filtered.forEach(d => DATA[key][d.i].s = status);
+  save(key, DATA[key]);
+  renderPanel(idx);
+  // Batch update to Airtable (up to 10 at a time)
+  const chunks = [];
+  for(let i=0; i<filtered.length; i+=10) chunks.push(filtered.slice(i,i+10));
+  chunks.forEach(chunk => {
+    const records = chunk.filter(d=>DATA[key][d.i]._id).map(d=>({id:DATA[key][d.i]._id,fields:{Status:status}}));
+    if(records.length) fetch(AT_URL, {method:'PATCH',headers:AT_HEADS,body:JSON.stringify({records})}).then(()=>setSaved()).catch(()=>setSaveErr());
+  });
+}
+
+function importCSV(idx, input) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    let added = 0;
+    lines.forEach((line, i) => {
+      if (i===0 && (line.toLowerCase().includes('name') || line.toLowerCase().includes('dao'))) return;
+      const parts = line.split(',');
+      const n = clean(parts[0]); if (!n) return;
+      if (isDao) {
+        const p = clean(parts[1]) || '—';
+        const h = parts[2] ? clean(parts[2]).split(';').map(x=>x.replace('@','')).filter(Boolean) : [];
+        DATA[key].push({n,p,h,s:'pending',c:'pending',l:[]}); added++;
+      } else {
+        const x = (clean(parts[1])||'').replace('@','');
+        if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) return;
+        DATA[key].push({n,x,s:'pending',c:'pending',l:[]}); added++;
+      }
+    });
+    save(key, DATA[key]);
+    renderPanel(idx);
+    toast(added+' rows imported! Syncing to Airtable...');
+    // Save each new row to Airtable
+    const newRows = DATA[key].slice(DATA[key].length - added);
+    newRows.forEach(row => saveItemToAirtable(key, row));
+    input.value = '';
+  };
+  r.readAsText(f);
+}
+
+function exportData(idx, all) {
+  const key = keyOf(idx);
+  const isDao = TYPES[idx] === 'dao';
+  const list = all ? DATA[key] : DATA[key].filter(d=>d.s==='active');
+  if (!list.length) { alert('Nothing to export.'); return; }
+  let rows;
+  if (isDao) {
+    rows = ['DAO,Project,Handles,Status,Contact', ...list.map(d=>`"${d.n}","${d.p}","${(d.h||[]).map(h=>'@'+h).join(';')}","${d.s}","${d.c||'pending'}"`)];
+  } else {
+    rows = ['Name,Handle,URL,Status,Contact,ExtraLinks', ...list.map(d=>`"${d.n}","${d.x?'@'+d.x:''}","${d.x?'https://x.com/'+d.x:''}","${d.s}","${d.c||'pending'}","${(d.l||[]).join(';')}"`)];
+  }
+  dlCSV(rows, (all?'all_':'active_')+key+'_2026.csv');
+}
+
+let isPushing = false;
+
+// Push all local data to Airtable (manual only — via Initial Setup button)
 async function pushAllToAirtable(silent){
-  if(isPushing){if(!silent)toast('Already pushing...');return;}
-  if(!silent&&!confirm('This will replace ALL data in Airtable. Continue?'))return;
-  isPushing=true;setSaving();
+  if(isPushing){ if(!silent) toast('Already pushing, please wait...'); return; }
+  if(!silent && !confirm('This will replace ALL data in Airtable with current local data. Continue?')) return;
+  isPushing = true;
+  setSaving();
   toast('Deleting old records...');
-  try{
-    // Phase 1: Delete ALL records — keep going until truly 0
-    let deleteRounds=0;
-    while(deleteRounds<100){
-      const checkRes=await fetch(AT_URL+'?pageSize=100&fields[]=Name',{headers:AT_HEADS});
-      const checkJson=await checkRes.json();
-      const ids=(checkJson.records||[]).map(r=>r.id);
-      if(ids.length===0)break;
-      toast('Deleting... '+ids.length+' remaining (round '+(deleteRounds+1)+')');
-      for(let i=0;i<ids.length;i+=10){
-        const batch=ids.slice(i,i+10).map(id=>'records[]='+id).join('&');
-        await fetch(AT_URL+'?'+batch,{method:'DELETE',headers:AT_HEADS});
+  try {
+    // Phase 1: Delete ALL records — keep looping until truly empty
+    let round = 0;
+    while(round < 50){
+      const res = await fetch(AT_URL + '?pageSize=100&fields[]=Name', {headers: AT_HEADS});
+      const json = await res.json();
+      const ids = (json.records||[]).map(r=>r.id);
+      if(ids.length === 0) break;
+      toast('Deleting... round ' + (round+1));
+      for(let i=0; i<ids.length; i+=10){
+        const batch = ids.slice(i,i+10).map(id=>'records[]='+id).join('&');
+        await fetch(AT_URL + '?' + batch, {method:'DELETE', headers: AT_HEADS});
         await new Promise(r=>setTimeout(r,300));
       }
-      await new Promise(r=>setTimeout(r,500)); // extra pause between rounds
-      deleteRounds++;
+      await new Promise(r=>setTimeout(r,500));
+      round++;
     }
-    // Phase 2: VERIFY it's truly empty before pushing
-    const verifyRes=await fetch(AT_URL+'?pageSize=1&fields[]=Name',{headers:AT_HEADS});
-    const verifyJson=await verifyRes.json();
-    if((verifyJson.records||[]).length>0){
-      toast('⚠️ Could not fully clear Airtable. Try deleting manually first.');
-      isPushing=false;setSaveErr();return;
+
+    // Phase 2: Verify empty
+    const check = await fetch(AT_URL + '?pageSize=1&fields[]=Name', {headers: AT_HEADS});
+    const checkJson = await check.json();
+    if((checkJson.records||[]).length > 0){
+      toast('⚠️ Could not fully clear Airtable. Try again.');
+      isPushing = false; setSaveErr(); return;
     }
-    // Phase 3: Push clean data
-    toast('Airtable empty! Pushing fresh data...');
+
+    // Phase 3: Push all data
+    toast('Pushing fresh data...');
     for(const key of KEYS){
-      const records=toRecords(key,DATA[key]);
-      for(let i=0;i<records.length;i+=10){
-        const batch=records.slice(i,i+10);
-        const res=await fetch(AT_URL,{method:'POST',headers:AT_HEADS,body:JSON.stringify({records:batch})});
-        const json=await res.json();
-        (json.records||[]).forEach((r,j)=>{if(DATA[key][i+j])DATA[key][i+j]._id=r.id;});
+      const records = toRecords(key, DATA[key]);
+      for(let i=0; i<records.length; i+=10){
+        const batch = records.slice(i,i+10);
+        const res = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:batch})});
+        const json = await res.json();
+        (json.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
         await new Promise(r=>setTimeout(r,300));
       }
-      saveLocal(key,DATA[key]);
+      saveLocal(key, DATA[key]);
     }
-    setSaved();toast('All data pushed to Airtable! (361 records)');
-  }catch(e){setSaveErr();console.error(e);}isPushing=false;
+    setSaved();
+    toast('All data pushed to Airtable! (361 records)');
+  } catch(e){ setSaveErr(); console.error(e); }
+  isPushing = false;
 }
 
-// Reset all local data to defaults and clean-push to Airtable
-async function resetAndPush(){
-  if(!confirm('This will RESET all data to defaults and re-push to Airtable. All status/contact changes will be lost. Continue?'))return;
-  // Clear all localStorage
-  KEYS.forEach(k=>localStorage.removeItem('w3_'+k));
-  localStorage.removeItem('w3_version');
-  // Reload defaults
-  KEYS.forEach(k=>{DATA[k]=JSON.parse(JSON.stringify(DEFAULTS[k])).map(d=>({...d,c:'pending',l:[]}));});
-  KEYS.forEach((k,idx)=>renderPanel(idx));
-  toast('Pushing clean data...');
-  await pushAllToAirtable(true);
-  KEYS.forEach((k,idx)=>renderPanel(idx));
-  toast('Done! All clean.');
-}
+// ── INIT ──
+KEYS.forEach((k, idx) => buildPanel(idx));
+KEYS.forEach((k, idx) => renderPanel(idx));
 
-// Track if a save is in progress — skip auto-sync while saving
-let isSaving=false;
-const origSaveItem=saveItemToAirtable;
-saveItemToAirtable=async function(key,item){isSaving=true;try{await origSaveItem(key,item);}finally{setTimeout(()=>{isSaving=false;},2000);}};
-
-KEYS.forEach((k,idx)=>buildPanel(idx));KEYS.forEach((k,idx)=>renderPanel(idx));
-
-// Simple init: try to load from Airtable, otherwise use local/defaults
-loadFromAirtable().then(loaded=>{
-  if(loaded){KEYS.forEach((k,idx)=>renderPanel(idx));toast('Synced with Airtable!');}
-  else{toast('Using local data');}
+// Load from Airtable on start — never auto-push
+loadFromAirtable().then(loaded => {
+  if(loaded) {
+    KEYS.forEach((k, idx) => renderPanel(idx));
+    toast('Synced with Airtable!');
+  } else {
+    toast('Using local data. Click "Initial Setup" to push to Airtable.');
+  }
 });
-setInterval(()=>{if(!isSaving){loadFromAirtable().then(loaded=>{if(loaded)KEYS.forEach((k,idx)=>renderPanel(idx));});}},30000);
+
+// Auto-sync every 30 seconds — skip if a save is in progress
+let isSaving = false;
+const _origSave = saveItemToAirtable;
+saveItemToAirtable = async function(key, item){
+  isSaving = true;
+  try { await _origSave(key, item); }
+  finally { setTimeout(() => { isSaving = false; }, 3000); }
+};
+
+setInterval(() => {
+  if(!isSaving && !isPushing){
+    loadFromAirtable().then(loaded => {
+      if(loaded) KEYS.forEach((k, idx) => renderPanel(idx));
+    });
+  }
+}, 30000);
 </script>
 </body>
 </html>
