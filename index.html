@@ -166,8 +166,7 @@ td{padding:11px 14px;vertical-align:middle;}
   <p>Track projects, influencers & DAOs across Solana · Ethereum · Bitcoin</p>
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
   <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
-    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync from Airtable</button>
-    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.1);color:#10b981;cursor:pointer;" onclick="pushAllToAirtable()">↑ Push all to Airtable</button>
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync now</button>
   </div>
 
   <div class="tabs" id="tabs">
@@ -622,8 +621,8 @@ function addRow(idx) {
   document.getElementById('add-n-'+idx).value = '';
   save(key, DATA[key]);
   renderPanel(idx);
-  toast('Added: '+n);
-  saveItemToAirtable(key, DATA[key][DATA[key].length-1]);
+  toast('Adding to Airtable...');
+  saveItemToAirtable(key, DATA[key][DATA[key].length-1]).then(()=>toast('Added: '+n));
 }
 
 function markAll(idx, status) {
@@ -665,7 +664,10 @@ function importCSV(idx, input) {
     });
     save(key, DATA[key]);
     renderPanel(idx);
-    toast(added+' rows imported!');
+    toast(added+' rows imported! Syncing to Airtable...');
+    // Save each new row to Airtable
+    const newRows = DATA[key].slice(DATA[key].length - added);
+    newRows.forEach(row => saveItemToAirtable(key, row));
     input.value = '';
   };
   r.readAsText(f);
