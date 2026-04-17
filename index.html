@@ -143,6 +143,7 @@ td{padding:11px 14px;vertical-align:middle;}.cell-name{font-weight:500;color:var
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
   <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
     <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync now</button>
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);color:#ef4444;cursor:pointer;" onclick="resetAndPush()">🔄 Reset & Clean Push</button>
   </div>
   <div class="tabs" id="tabs">
     <button class="tab active" onclick="switchTab(0,this)"><span class="tab-dot" style="background:#8b5cf6"></span>Solana Projects<span class="tab-count" id="tc0">0</span></button>
@@ -410,6 +411,21 @@ async function pushAllToAirtable(silent){
     for(const key of KEYS){const records=toRecords(key,DATA[key]);for(let i=0;i<records.length;i+=10){const batch=records.slice(i,i+10);const res=await fetch(AT_URL,{method:'POST',headers:AT_HEADS,body:JSON.stringify({records:batch})});const json=await res.json();(json.records||[]).forEach((r,j)=>{if(DATA[key][i+j])DATA[key][i+j]._id=r.id;});}saveLocal(key,DATA[key]);}
     setSaved();toast('All data pushed to Airtable!');
   }catch(e){setSaveErr();console.error(e);}isPushing=false;
+}
+
+// Reset all local data to defaults and clean-push to Airtable
+async function resetAndPush(){
+  if(!confirm('This will RESET all data to defaults and re-push to Airtable. All status/contact changes will be lost. Continue?'))return;
+  // Clear all localStorage
+  KEYS.forEach(k=>localStorage.removeItem('w3_'+k));
+  localStorage.removeItem('w3_version');
+  // Reload defaults
+  KEYS.forEach(k=>{DATA[k]=JSON.parse(JSON.stringify(DEFAULTS[k])).map(d=>({...d,c:'pending',l:[]}));});
+  KEYS.forEach((k,idx)=>renderPanel(idx));
+  toast('Pushing clean data...');
+  await pushAllToAirtable(true);
+  KEYS.forEach((k,idx)=>renderPanel(idx));
+  toast('Done! All clean.');
 }
 
 // Track if a save is in progress — skip auto-sync while saving
