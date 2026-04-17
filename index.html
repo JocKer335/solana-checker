@@ -412,9 +412,34 @@ async function pushAllToAirtable(silent){
   }catch(e){setSaveErr();console.error(e);}isPushing=false;
 }
 
+// Track if a save is in progress — skip auto-sync while saving
+let isSaving=false;
+const origSaveItem=saveItemToAirtable;
+saveItemToAirtable=async function(key,item){isSaving=true;try{await origSaveItem(key,item);}finally{setTimeout(()=>{isSaving=false;},2000);}};
+
 KEYS.forEach((k,idx)=>buildPanel(idx));KEYS.forEach((k,idx)=>renderPanel(idx));
-loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,idx)=>renderPanel(idx));toast('Synced with Airtable!');}});
-setInterval(()=>{loadFromAirtable().then(loaded=>{if(loaded)KEYS.forEach((k,idx)=>renderPanel(idx));});},30000);
+
+// Version check: if we upgraded (added Contact/Links fields), re-push once
+const DATA_VERSION='v3_contact_links';
+async function initSync(){
+  const loaded=await loadFromAirtable();
+  if(loaded){
+    KEYS.forEach((k,idx)=>renderPanel(idx));
+    // Check if Airtable has Contact field populated — if first record has no Contact, re-push
+    const needsRepush=localStorage.getItem('w3_version')!==DATA_VERSION;
+    if(needsRepush){
+      toast('Upgrading Airtable fields...');
+      await pushAllToAirtable(true);
+      localStorage.setItem('w3_version',DATA_VERSION);
+      KEYS.forEach((k,idx)=>renderPanel(idx));
+      toast('Upgrade complete!');
+    } else {
+      toast('Synced with Airtable!');
+    }
+  }
+}
+initSync();
+setInterval(()=>{if(!isSaving){loadFromAirtable().then(loaded=>{if(loaded)KEYS.forEach((k,idx)=>renderPanel(idx));});}},30000);
 </script>
 </body>
 </html>
