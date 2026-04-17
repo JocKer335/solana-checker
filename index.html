@@ -167,7 +167,6 @@ td{padding:11px 14px;vertical-align:middle;}
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
   <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
     <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync now</button>
-    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.1);color:#10b981;cursor:pointer;" onclick="pushAllToAirtable()">↑ Initial Setup (use once)</button>
   </div>
 
   <div class="tabs" id="tabs">
@@ -299,7 +298,12 @@ async function loadFromAirtable(){
       offset = json.offset || null;
     } while(offset);
 
-    if(all.length === 0){ setSaved(); return false; } // empty table
+    // If Airtable is empty, auto-push all local data
+    if(all.length === 0){
+      console.log('Airtable is empty — auto-pushing local data...');
+      await pushAllToAirtable(true);
+      return true;
+    }
 
     // Build temp data first — don't touch DATA yet
     const tempData = {};
@@ -313,12 +317,11 @@ async function loadFromAirtable(){
       }
     });
 
-    // FIX #2: Only apply Airtable data if it has enough records (valid dataset)
-    // This prevents a bad/partial sync from wiping out good local data
+    // If Airtable has too few records (bad/partial data), auto-push defaults
     if(totalCount < 300){
-      console.log(`Airtable has only ${totalCount} records (need 300+), keeping local data`);
-      setSaved();
-      return false;
+      console.log(`Airtable has only ${totalCount} records (need 300+), auto-pushing...`);
+      await pushAllToAirtable(true);
+      return true;
     }
 
     // Safe to apply — Airtable has a valid dataset
@@ -718,12 +721,13 @@ function exportData(idx, all) {
 
 let isPushing = false;
 
-// Push all local data to Airtable (first time setup)
-async function pushAllToAirtable(){
-  if(isPushing){ toast('Already pushing, please wait...'); return; }
-  if(!confirm('This will replace ALL data in Airtable. Continue?')) return;
+// Push all local data to Airtable (auto or manual)
+async function pushAllToAirtable(silent){
+  if(isPushing){ if(!silent) toast('Already pushing, please wait...'); return; }
+  if(!silent && !confirm('This will replace ALL data in Airtable. Continue?')) return;
   isPushing = true;
   setSaving();
+  if(!silent) toast('Pushing data to Airtable...');
   try {
     // First delete all existing records
     let existing = [], offset = null;
