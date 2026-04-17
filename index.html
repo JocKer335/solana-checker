@@ -735,18 +735,32 @@ async function pushAllToAirtable(){
 KEYS.forEach((k, idx) => buildPanel(idx));
 KEYS.forEach((k, idx) => renderPanel(idx));
 
-// Try loading from Airtable on start
+// Try loading from Airtable on start — only replace local data if Airtable has real data
 loadFromAirtable().then(loaded => {
   if(loaded) {
-    KEYS.forEach((k, idx) => renderPanel(idx));
-    toast('Synced with Airtable!');
+    // Check if Airtable has enough records (at least 300 = valid push)
+    const totalAT = KEYS.reduce((s,k) => s + DATA[k].length, 0);
+    if(totalAT >= 300) {
+      KEYS.forEach((k, idx) => renderPanel(idx));
+      toast('Synced with Airtable!');
+    } else {
+      // Airtable is empty or incomplete — reload defaults
+      KEYS.forEach(k => {
+        DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
+        saveLocal(k, DATA[k]);
+      });
+      KEYS.forEach((k, idx) => renderPanel(idx));
+    }
   }
 });
 
 // Auto-sync every 30 seconds
 setInterval(() => {
   loadFromAirtable().then(loaded => {
-    if(loaded) KEYS.forEach((k, idx) => renderPanel(idx));
+    if(loaded) {
+      const totalAT = KEYS.reduce((s,k) => s + DATA[k].length, 0);
+      if(totalAT >= 300) KEYS.forEach((k, idx) => renderPanel(idx));
+    }
   });
 }, 30000);
 </script>
