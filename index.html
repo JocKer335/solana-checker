@@ -203,6 +203,7 @@ html.light .toggle-thumb{transform:translateX(18px);}
   <div style="margin-left:52px;margin-bottom:16px;display:flex;gap:8px;">
     <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.1);color:#8b5cf6;cursor:pointer;" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">↓ Sync now</button>
     <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.1);color:#10b981;cursor:pointer;" onclick="pushAllToAirtable()">↑ Initial Setup (use once)</button>
+    <button style="font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.1);color:#f59e0b;cursor:pointer;" onclick="resetLocal()">⟳ Reset Local</button>
   </div>
 
   <div class="tabs" id="tabs">
@@ -893,6 +894,19 @@ async function pushAllToAirtable(silent){
     }
   } catch(e){ setSaveErr(); console.error(e); }
   isPushing = false;
+}
+
+// Reset local data to clean defaults (does NOT touch Airtable)
+function resetLocal(){
+  if(!confirm('Reset local data to defaults? This clears your browser cache. Airtable is not affected.')) return;
+  KEYS.forEach(k => localStorage.removeItem('w3_'+k));
+  localStorage.removeItem('w3_version');
+  localStorage.removeItem('w3_theme');
+  KEYS.forEach(k => {
+    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[]}));
+  });
+  KEYS.forEach((k, idx) => renderPanel(idx));
+  toast('Local data reset to defaults!');
 }
 
 // ── INIT ──
