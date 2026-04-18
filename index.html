@@ -862,19 +862,35 @@ async function pushAllToAirtable(silent){
 
     // Phase 3: Push all data
     toast('Pushing fresh data...');
+    let pushErrors = 0;
     for(const key of KEYS){
       const records = toRecords(key, DATA[key]);
       for(let i=0; i<records.length; i+=10){
         const batch = records.slice(i,i+10);
         const res = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:batch})});
         const json = await res.json();
-        (json.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
+        if(json.error){
+          console.error('Airtable POST error:', json.error);
+          // Try without Contact and Links fields (fallback)
+          const fallbackBatch = batch.map(r => ({fields: {Name: r.fields.Name, Handle: r.fields.Handle, Status: r.fields.Status, Category: r.fields.Category}}));
+          const res2 = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:fallbackBatch})});
+          const json2 = await res2.json();
+          if(json2.error){ pushErrors++; console.error('Fallback also failed:', json2.error); }
+          else { (json2.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; }); }
+        } else {
+          (json.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
+        }
         await new Promise(r=>setTimeout(r,300));
       }
       saveLocal(key, DATA[key]);
     }
-    setSaved();
-    toast('All data pushed to Airtable! (361 records)');
+    if(pushErrors > 0){
+      toast('⚠️ Some records failed to push. Check console for details.');
+      setSaveErr();
+    } else {
+      setSaved();
+      toast('All data pushed to Airtable! (361 records)');
+    }
   } catch(e){ setSaveErr(); console.error(e); }
   isPushing = false;
 }
