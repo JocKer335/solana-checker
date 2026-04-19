@@ -186,14 +186,10 @@ html.light .toggle-thumb{transform:translateX(18px);}
 .note-input{font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;width:100%;max-width:200px;transition:border-color 0.2s;}
 .note-input:focus{border-color:var(--purple);}
 .note-input::placeholder{color:var(--muted);font-style:italic;}
-/* CM LINKS */
-.cm-cell{min-width:100px;}
-.cm-links{display:flex;flex-wrap:wrap;gap:3px;align-items:center;}
-.cm-link{color:var(--green);border-color:var(--green-border);background:var(--green-bg);text-decoration:none;font-size:11px;display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;border:1px solid var(--green-border);white-space:nowrap;}
-.cm-link:hover{background:rgba(16,185,129,0.2);}
-.cm-edit{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:2px 5px;border-radius:5px;font-size:10px;}
-.cm-edit:hover{color:var(--text);background:var(--bg3);}
 .stat-card.blue .value{color:var(--blue);}
+/* CM LINKS */
+.cm-link{color:var(--green);border-color:var(--green-border);background:var(--green-bg);text-decoration:none;font-size:10px;display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;border:1px solid var(--green-border);white-space:nowrap;}
+.cm-link:hover{background:rgba(16,185,129,0.2);}
 </style>
 </head>
 <body>
@@ -421,12 +417,13 @@ async function saveItemToAirtable(key, item){
       Category: key + (isDao ? ('|'+(item.p||'')) : '')
     };
     if(item._id){
-      // Update existing
-      await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const r = await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const j = await r.json();
+      if(j.error){ setSaveErr(); console.error('PATCH failed:', j.error); return; }
     } else {
-      // Create new
       const res = await fetch(AT_URL, { method:'POST', headers: AT_HEADS, body: JSON.stringify({fields}) });
       const json = await res.json();
+      if(json.error){ setSaveErr(); console.error('POST failed:', json.error); return; }
       item._id = json.id;
     }
     saveLocal(key, DATA[key]);
@@ -613,7 +610,6 @@ function buildPanel(idx) {
             <th style="width:32px">#</th>
             <th>${isDao ? 'DAO' : 'Name'}</th>
             <th>${isDao ? 'Members on X' : 'Links'}</th>
-            <th>CM</th>
             <th>Status</th>
             <th>Contact</th>
             <th>Notes</th>
@@ -671,32 +667,24 @@ function renderPanel(idx) {
         try { label = new URL(lnk).hostname.replace('www.',''); } catch(e){ label = lnk.slice(0,20); }
         parts.push(`<a class="xl link-extra" href="${lnk}" target="_blank"><span class="xl-text">${label}</span></a>`);
       });
-      if(!d.x && !(d.l||[]).length) parts.push(`<span class="xl-none">No links</span>`);
+      (d.cm||[]).forEach(h => {
+        const ch = h.replace(/^@/,'');
+        parts.push(`<a class="cm-link" href="https://x.com/${ch}" target="_blank">@${ch}</a>`);
+      });
+      if(!d.x && !(d.l||[]).length && !(d.cm||[]).length) parts.push(`<span class="xl-none">No links</span>`);
       parts.push(`<button class="xl-edit" onclick="editLink(${idx},${d.i})" title="Edit links">✏️</button>`);
-      linkCell = `<div class="cell-link">${parts.join('')}</div>`;
+      parts.push(`<button class="xl-edit" onclick="editCM(${idx},${d.i})" title="Edit CMs" style="font-size:10px;">CM</button>`);
+      linkCell = `<div class="cell-link" style="flex-wrap:wrap;">${parts.join('')}</div>`;
     }
     const nameCell = isDao
       ? `<div class="cell-name">${d.n}</div><div class="cell-sub">${d.p||''}</div>`
       : `<div class="cell-name">${d.n}</div>`;
-
-    // CM cell
-    let cmCell = '';
-    const cmList = (d.cm||[]);
-    if(cmList.length){
-      cmCell = `<div class="cm-links">${cmList.map(h => {
-        const clean = h.replace(/^@/,'');
-        return `<a class="cm-link" href="https://x.com/${clean}" target="_blank">@${clean}</a>`;
-      }).join('')}<button class="cm-edit" onclick="editCM(${idx},${d.i})" title="Edit CMs">✏️</button></div>`;
-    } else {
-      cmCell = `<span class="xl-none">—</span><button class="cm-edit" onclick="editCM(${idx},${d.i})" title="Add CMs">✏️</button>`;
-    }
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="num">${i+1}</td>
       <td>${nameCell}</td>
       <td>${linkCell}</td>
-      <td class="cm-cell">${cmCell}</td>
       <td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td>
       <td><span class="badge ${cbc}" onclick="cycleContact(${idx},${d.i})">${clbl}</span></td>
       <td class="note-cell"><input class="note-input" value="${(d.nt||'').replace(/"/g,'&quot;')}" placeholder="Add note..." onchange="saveNote(${idx},${d.i},this.value)"/></td>
