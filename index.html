@@ -181,6 +181,11 @@ html.light .toggle-thumb{transform:translateX(18px);}
 .links-list .link-item input{flex:1;margin-bottom:0;}
 .links-list .link-rm{background:transparent;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:4px 8px;border-radius:6px;}
 .links-list .link-rm:hover{background:var(--red-bg);}
+/* NOTES */
+.note-cell{min-width:120px;}
+.note-input{font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;width:100%;max-width:200px;transition:border-color 0.2s;}
+.note-input:focus{border-color:var(--purple);}
+.note-input::placeholder{color:var(--muted);font-style:italic;}
 .stat-card.blue .value{color:var(--blue);}
 </style>
 </head>
@@ -319,6 +324,7 @@ function toRecords(key, arr){
       Status: d.s || 'pending',
       Contact: d.c || 'pending',
       Links: (d.l||[]).join(';'),
+      Notes: d.nt || '',
       Category: key + (isDao ? ('|'+( d.p||'')) : '')
     }
   }));
@@ -334,9 +340,9 @@ function fromRecords(key, records){
     const links = (f.Links||'').split(';').filter(Boolean);
     if (isDao) {
       const parts = cat.split('|');
-      return { n: f.Name||'', p: parts[1]||'', h: (f.Handle||'').split(';').filter(Boolean), s: f.Status||'pending', c: contact, l: links, _id: r.id };
+      return { n: f.Name||'', p: parts[1]||'', h: (f.Handle||'').split(';').filter(Boolean), s: f.Status||'pending', c: contact, l: links, nt: f.Notes||'', _id: r.id };
     }
-    return { n: f.Name||'', x: f.Handle||'', s: f.Status||'pending', c: contact, l: links, _id: r.id };
+    return { n: f.Name||'', x: f.Handle||'', s: f.Status||'pending', c: contact, l: links, nt: f.Notes||'', _id: r.id };
   });
 }
 
@@ -401,6 +407,7 @@ async function saveItemToAirtable(key, item){
       Status: item.s||'pending',
       Contact: item.c||'pending',
       Links: (item.l||[]).join(';'),
+      Notes: item.nt||'',
       Category: key + (isDao ? ('|'+(item.p||'')) : '')
     };
     if(item._id){
@@ -457,9 +464,9 @@ let DATA = {};
 KEYS.forEach(k => {
   const local = loadLocal(k);
   if(local){
-    DATA[k] = local.map(d => ({...d, c: d.c||'pending', l: d.l||[]}));
+    DATA[k] = local.map(d => ({...d, c: d.c||'pending', l: d.l||[], nt: d.nt||''}));
   } else {
-    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[]}));
+    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[], nt:''}));
   }
 });
 
@@ -598,6 +605,7 @@ function buildPanel(idx) {
             <th>${isDao ? 'Members on X' : 'Links'}</th>
             <th>Status</th>
             <th>Contact</th>
+            <th>Notes</th>
             <th style="width:40px"></th>
           </tr></thead>
           <tbody id="tbody-${idx}"></tbody>
@@ -667,6 +675,7 @@ function renderPanel(idx) {
       <td>${linkCell}</td>
       <td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td>
       <td><span class="badge ${cbc}" onclick="cycleContact(${idx},${d.i})">${clbl}</span></td>
+      <td class="note-cell"><input class="note-input" value="${(d.nt||'').replace(/"/g,'&quot;')}" placeholder="Add note..." onchange="saveNote(${idx},${d.i},this.value)"/></td>
       <td><button class="del-btn" onclick="delRow(${idx},${d.i})">×</button></td>`;
     tbody.appendChild(tr);
   });
@@ -715,6 +724,13 @@ function cycleContact(idx, i) {
   renderPanel(idx);
 }
 
+function saveNote(idx, i, val) {
+  const key = keyOf(idx);
+  DATA[key][i].nt = val;
+  save(key, DATA[key]);
+  saveItemToAirtable(key, DATA[key][i]);
+}
+
 function delRow(idx, i) {
   const key = keyOf(idx);
   const d = DATA[key][i];
@@ -746,13 +762,13 @@ function addRow(idx) {
     const p = (document.getElementById('add-p-'+idx)||{value:''}).value.trim() || '—';
     const hr = (document.getElementById('add-h-'+idx)||{value:''}).value.trim();
     const h = hr ? hr.split(',').map(x=>x.trim().replace('@','')).filter(Boolean) : [];
-    DATA[key].push({n, p, h, s:'pending', c:'pending', l:[]});
+    DATA[key].push({n, p, h, s:'pending', c:'pending', l:[], nt:''});
     document.getElementById('add-h-'+idx).value = '';
     document.getElementById('add-p-'+idx).value = '';
   } else {
     const x = (document.getElementById('add-x-'+idx)||{value:''}).value.trim().replace('@','');
     if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) { alert('Already exists.'); return; }
-    DATA[key].push({n, x: x||'', s:'pending', c:'pending', l:[]});
+    DATA[key].push({n, x: x||'', s:'pending', c:'pending', l:[], nt:''});
     if (document.getElementById('add-x-'+idx)) document.getElementById('add-x-'+idx).value = '';
   }
   document.getElementById('add-n-'+idx).value = '';
@@ -792,11 +808,11 @@ function importCSV(idx, input) {
       if (isDao) {
         const p = clean(parts[1]) || '—';
         const h = parts[2] ? clean(parts[2]).split(';').map(x=>x.replace('@','')).filter(Boolean) : [];
-        DATA[key].push({n,p,h,s:'pending',c:'pending',l:[]}); added++;
+        DATA[key].push({n,p,h,s:'pending',c:'pending',l:[],nt:''}); added++;
       } else {
         const x = (clean(parts[1])||'').replace('@','');
         if (DATA[key].find(d=>d.n.toLowerCase()===n.toLowerCase())) return;
-        DATA[key].push({n,x,s:'pending',c:'pending',l:[]}); added++;
+        DATA[key].push({n,x,s:'pending',c:'pending',l:[],nt:''}); added++;
       }
     });
     save(key, DATA[key]);
@@ -901,7 +917,7 @@ function resetLocal(){
   localStorage.removeItem('w3_version');
   localStorage.removeItem('w3_theme');
   KEYS.forEach(k => {
-    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[]}));
+    DATA[k] = JSON.parse(JSON.stringify(DEFAULTS[k])).map(d => ({...d, c:'pending', l:[], nt:''}));
   });
   KEYS.forEach((k, idx) => renderPanel(idx));
   toast('Local data reset to defaults!');
