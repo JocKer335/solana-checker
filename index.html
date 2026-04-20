@@ -953,11 +953,12 @@ function renderPanel(idx) {
         try { label = new URL(lnk).hostname.replace('www.',''); } catch(e){ label = lnk.slice(0,20); }
         parts.push(`<a class="xl link-extra" href="${lnk}" target="_blank"><span class="xl-text">${label}</span></a>`);
       });
-      (d.cm||[]).forEach(h => {
+      const cmList = (d.cm && d.cm.length) ? d.cm : ((CM_DATA[keyOf(idx)]||{})[d.n]||[]);
+      cmList.forEach(h => {
         const ch = h.replace(/^@/,'');
         parts.push(`<a class="cm-link" href="https://x.com/${ch}" target="_blank">@${ch}</a>`);
       });
-      if(!d.x && !(d.l||[]).length && !(d.cm||[]).length) parts.push(`<span class="xl-none">No links</span>`);
+      if(!d.x && !(d.l||[]).length && !cmList.length) parts.push(`<span class="xl-none">No links</span>`);
       parts.push(`<button class="xl-edit" onclick="editLink(${idx},${d.i})" title="Edit links">✏️</button>`);
       parts.push(`<button class="xl-edit" onclick="editCM(${idx},${d.i})" title="Edit CMs" style="font-size:10px;">CM</button>`);
       linkCell = `<div class="cell-link" style="flex-wrap:wrap;">${parts.join('')}</div>`;
