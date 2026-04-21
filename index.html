@@ -702,6 +702,10 @@ html.light .note-input { background:rgba(0,0,0,0.03); }
       <span class="tab-dot" style="background:#0052ff"></span>Base
       <span class="tab-count" id="tc6">0</span>
     </button>
+    <button class="tab" onclick="switchTab(7,this)" data-cat="sei">
+      <span class="tab-dot" style="background:#e84142"></span>SEI Collab
+      <span class="tab-count" id="tc7">0</span>
+    </button>
   </div>
 </div>
 
@@ -753,7 +757,7 @@ if(localStorage.getItem('w3_theme')==='light'){
 }
 
 // ── STORAGE ──
-const KEYS = ['sol','eth','btc','topinf','inf','dao','base'];
+const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei'];
 
 const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
 const AT_BASE  = 'appJpWWp9NkIQCugA';
@@ -840,9 +844,9 @@ async function loadFromAirtable(){
       }
     });
 
-    // Only accept if count is reasonable (between 300 and 500)
-    if(totalCount < 300 || totalCount > 500){
-      console.log('Airtable has ' + totalCount + ' records (expected ~361), keeping local data');
+    // Only accept if count is reasonable (between 300 and 550)
+    if(totalCount < 300 || totalCount > 550){
+      console.log('Airtable has ' + totalCount + ' records (expected ~392), keeping local data');
       setSaved();
       return false;
     }
@@ -950,6 +954,9 @@ dao: [
 ],
 base: [
   {n:"onchain gaias",x:"onchaingaias",s:"pending"},{n:"Miggles",x:"miggles_xyz",s:"pending"},{n:"Kemonokaki",x:"kemonokaki",s:"pending"},{n:"Based Fellas",x:"BasedFellas_",s:"pending"},{n:"BitDCA",x:"BitDCA_",s:"pending"},{n:"ONtegrity",x:"ONtegrity",s:"pending"},{n:"Wealthy Hypio Babies",x:"WealthyHypio",s:"pending"},{n:"Onchain Founding Membership",x:"MrGreenity",s:"pending"},{n:"Larvva Lads",x:"LarvvaLads",s:"pending"},{n:"NodePunks",x:"N0DEPunks",s:"pending"},{n:"THE DROPZONE",x:"CryptoBlockDan",s:"pending"},{n:"PNUKS",x:"PNUKS_base",s:"pending"},{n:"Degen Alpha",x:"_snowyi",s:"pending"},{n:"OK COMPUTERS",x:"dailofrog",s:"pending"},{n:"BasePaint",x:"basepaint_xyz",s:"pending"},{n:"Virtuals Land",x:"VirtuaMetaverse",s:"pending"},{n:"Persona",x:"MigeruVLR",s:"pending"},{n:"Base Gods",x:"TYBASEGOD",s:"pending"},{n:"Based OnChain Punks",x:"OnChainPunksNFT",s:"pending"},{n:"Bomefers",x:"aldover_eth",s:"pending"},{n:"re:generates",x:"mechsicko_eth",s:"pending"},{n:"Mochimons",x:"giyu_mochi",s:"pending"},{n:"Based Nouns",x:"goyabean_eth",s:"pending"},{n:"glyphs",x:"jessepollak",s:"pending"},{n:"Degens by doy",x:"patrdoy",s:"pending"},{n:"based punks",x:"basedpunks_",s:"pending"},{n:"Topi",x:"basejunkie_",s:"pending"},{n:"Shredding Sassy - Base",x:"ShreddingSassy",s:"pending"},{n:"FARWORLD Creatures",x:"WolvesDAO",s:"pending"},{n:"No-Punks",x:"NoPunkism",s:"pending"},{n:"SmallBrosNFT",x:"SmallBrosNFT",s:"pending"},{n:"CryptoPimps",x:"CryptoPimps_NFT",s:"pending"},{n:"Swamp Souls",x:"Ocaptain2023",s:"pending"},{n:"GinaGenesis",x:"askginadotai",s:"pending"},{n:"Amazing Larva Lads",x:"dynavision_im",s:"pending"},{n:"tiny dino mfers",x:"tinydinomfers",s:"pending"},{n:"Zoolini",x:"ExpoNomez",s:"pending"}
+],
+sei: [
+  {n:"Yeiliens",x:"",s:"pending"},{n:"Fuckers",x:"",s:"pending"},{n:"Seiyans",x:"",s:"pending"},{n:"WeBump",x:"",s:"pending"},{n:"Drill Club",x:"",s:"pending"},{n:"Dragon Slither",x:"",s:"pending"},{n:"ALIVE1111",x:"ALIVE1111nfts",s:"pending"},{n:"CAPPYS",x:"",s:"pending"},{n:"Yaka Voyager",x:"",s:"pending"},{n:"Aura",x:"",s:"pending"},{n:"Grand Gangsta ID's",x:"",s:"pending"},{n:"Outlines",x:"OutlinesSEI",s:"pending"},{n:"The Farmors",x:"",s:"pending"},{n:"MOOZ",x:"",s:"pending"},{n:"The Seinos",x:"",s:"pending"},{n:"Saga",x:"",s:"pending"},{n:"SEITAN",x:"",s:"pending"},{n:"The Colony",x:"",s:"pending"},{n:"Seipex Finance",x:"Seipex_Fi",s:"pending"},{n:"SeiPunks",x:"",s:"pending"},{n:"ForU AI Genesis",x:"",s:"pending"},{n:"dob",x:"",s:"pending"},{n:"Onyx",x:"Onyx_sei",s:"pending"},{n:"BenchWarmers",x:"BenchwarmersWW",s:"pending"},{n:"SEI MINTIES",x:"MintiesNFT",s:"pending"},{n:"Zombseis",x:"",s:"pending"},{n:"Seilors",x:"SeilorsNFT",s:"pending"},{n:"EGADS",x:"",s:"pending"},{n:"Lucille Packs",x:"",s:"pending"},{n:"TheGhostSei",x:"TheGhostSei",s:"pending"},{n:"The Consortium",x:"TheConsortiumX",s:"pending"}
 ]
 };
 
@@ -1209,6 +1216,29 @@ base:{
   "Amazing Larva Lads":["dynavision_im"],
   "tiny dino mfers":["tinydinomfers"],
   "Zoolini":["ExpoNomez"]
+},
+sei:{
+  "Yeiliens":["2blockchainz","DallasAgaodi","nbdieu"],
+  "Fuckers":["CryptoBint","fuckersforlife"],
+  "Seiyans":["naungzinlatt4"],
+  "WeBump":["sir_hercules","DegenLexx"],
+  "Drill Club":["TheTedlo","De3ngineer","0xdippo"],
+  "Dragon Slither":["galvin_le_"],
+  "CAPPYS":["TheWangman_","XJustmichael"],
+  "Yaka Voyager":["YakaFinance","mayorkazzy","FrogOnSei"],
+  "Aura":["Max_The__Mage","SacredTails"],
+  "Grand Gangsta ID's":["EagleHarrusias"],
+  "The Farmors":["XJustmichael","d_misios"],
+  "MOOZ":["GlitchedDream","BenSEI_1337"],
+  "The Seinos":["TheNFTJett"],
+  "Saga":["sell9000","paradoxmuzix"],
+  "The Colony":["dyyyz","sell9000","Ojay989491"],
+  "ForU AI Genesis":["54yl1","orpheuzkaze"],
+  "dob":["ray_dob"],
+  "SEI MINTIES":["PetraPetra0404","nfterrance420"],
+  "Zombseis":["superman__171"],
+  "EGADS":["Gr33nKn1ght","Escoba_sol"],
+  "Lucille Packs":["unclefunkdrew"]
 }
 };
 
