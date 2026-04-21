@@ -711,7 +711,7 @@ html.light .note-input { background:rgba(0,0,0,0.03); }
 
 <div class="main">
 
-<!-- PANELS 0-6: project/influencer/dao panels -->
+<!-- PANELS 0-7: project/influencer/dao panels -->
 <div id="panel-0" class="panel active"></div>
 <div id="panel-1" class="panel"></div>
 <div id="panel-2" class="panel"></div>
@@ -719,6 +719,7 @@ html.light .note-input { background:rgba(0,0,0,0.03); }
 <div id="panel-4" class="panel"></div>
 <div id="panel-5" class="panel"></div>
 <div id="panel-6" class="panel"></div>
+<div id="panel-7" class="panel"></div>
 
 </div>
 
@@ -1311,9 +1312,9 @@ function dlCSV(rows, fn) {
 function keyOf(idx) { return KEYS[idx]; }
 
 // ── PANEL BUILDER ──
-const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff'];
-const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base'];
-const TYPES = ['project','project','project','influencer','influencer','dao','project'];
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab'];
+const TYPES = ['project','project','project','influencer','influencer','dao','project','project'];
 
 function buildPanel(idx) {
   const panel = document.getElementById('panel-'+idx);
