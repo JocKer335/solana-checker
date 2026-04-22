@@ -1624,9 +1624,16 @@ function renderPanel(idx) {
       let parts = [];
       if(d.x) parts.push(`<a class="xl" href="https://x.com/${d.x}" target="_blank"><span class="xl-text">@${d.x}</span></a>`);
       (d.l||[]).forEach(lnk => {
-        let label = '';
-        try { label = new URL(lnk).hostname.replace('www.',''); } catch(e){ label = lnk.slice(0,20); }
-        parts.push(`<a class="xl link-extra" href="${lnk}" target="_blank"><span class="xl-text">${label}</span></a>`);
+        const trimmed = lnk.trim().replace(/^@/,'');
+        if(!trimmed) return;
+        if(!trimmed.startsWith('http')){
+          // treat as X handle
+          parts.push(`<a class="xl" href="https://x.com/${trimmed}" target="_blank"><span class="xl-text">@${trimmed}</span></a>`);
+        } else {
+          let label = '';
+          try { label = new URL(trimmed).hostname.replace('www.',''); } catch(e){ label = trimmed.slice(0,20); }
+          parts.push(`<a class="xl link-extra" href="${trimmed}" target="_blank"><span class="xl-text">${label}</span></a>`);
+        }
       });
       const cmList = (d.cm && d.cm.length) ? d.cm : ((CM_DATA[keyOf(idx)]||{})[d.n]||[]);
       cmList.forEach(h => {
