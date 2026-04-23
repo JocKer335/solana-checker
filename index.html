@@ -855,6 +855,10 @@ tbody tr:hover { border-left-color: rgba(167,139,250,0.7); background: rgba(167,
       <span class="tab-dot" style="background:#f59e0b"></span>Super Team
       <span class="tab-count" id="tc8">0</span>
     </button>
+    <button class="tab" onclick="switchTab(9,this)" data-cat="bnb">
+      <span class="tab-dot" style="background:#F3BA2F"></span>BNB Chain
+      <span class="tab-count" id="tc9">0</span>
+    </button>
   </div>
 </div>
 
@@ -870,6 +874,7 @@ tbody tr:hover { border-left-color: rgba(167,139,250,0.7); background: rgba(167,
 <div id="panel-6" class="panel"></div>
 <div id="panel-7" class="panel"></div>
 <div id="panel-8" class="panel"></div>
+<div id="panel-9" class="panel"></div>
 
 </div>
 
@@ -908,7 +913,7 @@ if(localStorage.getItem('w3_theme')==='light'){
 }
 
 // ── STORAGE ──
-const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam'];
+const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam','bnb'];
 
 const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
 const AT_BASE  = 'appJpWWp9NkIQCugA';
@@ -1142,7 +1147,8 @@ base: [
 sei: [
   {n:"Yeiliens",x:"",s:"pending"},{n:"Fuckers",x:"",s:"pending"},{n:"Seiyans",x:"",s:"pending"},{n:"WeBump",x:"",s:"pending"},{n:"Drill Club",x:"",s:"pending"},{n:"Dragon Slither",x:"",s:"pending"},{n:"ALIVE1111",x:"ALIVE1111nfts",s:"pending"},{n:"CAPPYS",x:"",s:"pending"},{n:"Yaka Voyager",x:"",s:"pending"},{n:"Aura",x:"",s:"pending"},{n:"Grand Gangsta ID's",x:"",s:"pending"},{n:"Outlines",x:"OutlinesSEI",s:"pending"},{n:"The Farmors",x:"",s:"pending"},{n:"MOOZ",x:"",s:"pending"},{n:"The Seinos",x:"",s:"pending"},{n:"Saga",x:"",s:"pending"},{n:"SEITAN",x:"",s:"pending"},{n:"The Colony",x:"",s:"pending"},{n:"Seipex Finance",x:"Seipex_Fi",s:"pending"},{n:"SeiPunks",x:"",s:"pending"},{n:"ForU AI Genesis",x:"",s:"pending"},{n:"dob",x:"",s:"pending"},{n:"Onyx",x:"Onyx_sei",s:"pending"},{n:"BenchWarmers",x:"BenchwarmersWW",s:"pending"},{n:"SEI MINTIES",x:"MintiesNFT",s:"pending"},{n:"Zombseis",x:"",s:"pending"},{n:"Seilors",x:"SeilorsNFT",s:"pending"},{n:"EGADS",x:"",s:"pending"},{n:"Lucille Packs",x:"",s:"pending"},{n:"TheGhostSei",x:"TheGhostSei",s:"pending"},{n:"The Consortium",x:"TheConsortiumX",s:"pending"}
 ],
-superteam: []
+superteam: [],
+bnb: []
 };
 
 // ── CM DATA (from contacts CSVs) ──
@@ -1496,9 +1502,9 @@ function dlCSV(rows, fn) {
 function keyOf(idx) { return KEYS[idx]; }
 
 // ── PANEL BUILDER ──
-const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142','#f59e0b'];
-const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab','Super Team'];
-const TYPES = ['project','project','project','influencer','influencer','dao','project','project','project'];
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142','#f59e0b','#F3BA2F'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab','Super Team','BNB Chain'];
+const TYPES = ['project','project','project','influencer','influencer','dao','project','project','project','project'];
 
 function buildPanel(idx) {
   const panel = document.getElementById('panel-'+idx);
