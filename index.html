@@ -995,9 +995,9 @@ async function loadFromAirtable(){
       }
     });
 
-    // Only accept if count is reasonable (between 300 and 550)
-    if(totalCount < 300 || totalCount > 550){
-      console.log('Airtable has ' + totalCount + ' records (expected ~392), keeping local data');
+    // Only accept if count is reasonable (between 300 and 1200)
+    if(totalCount < 300 || totalCount > 1200){
+      console.log('Airtable has ' + totalCount + ' records (expected ~521), keeping local data');
       setSaved();
       return false;
     }
