@@ -1601,12 +1601,16 @@ html.light .note-input {
       <span class="tab-dot" style="background:#f43f5e"></span>Meme
       <span class="tab-count" id="tc15">0</span>
     </button>
+    <button class="tab" onclick="switchTab(16,this)" data-cat="angelinvestors">
+      <span class="tab-dot" style="background:#0ea5e9"></span>Angel Investors
+      <span class="tab-count" id="tc16">0</span>
+    </button>
   </div>
 </div>
 
 <div class="main">
 
-<!-- PANELS 0-15: project/influencer/dao panels -->
+<!-- PANELS 0-16: project/influencer/dao panels -->
 <div id="panel-0" class="panel active"></div>
 <div id="panel-1" class="panel"></div>
 <div id="panel-2" class="panel"></div>
@@ -1623,6 +1627,7 @@ html.light .note-input {
 <div id="panel-13" class="panel"></div>
 <div id="panel-14" class="panel"></div>
 <div id="panel-15" class="panel"></div>
+<div id="panel-16" class="panel"></div>
 
 </div>
 
@@ -1661,7 +1666,7 @@ if(localStorage.getItem('w3_theme')==='light'){
 }
 
 // â”€â”€ STORAGE â”€â”€
-const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam','net','blockchainservice','defi','infrastructure','treasury','launchpad','meme'];
+const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam','net','blockchainservice','defi','infrastructure','treasury','launchpad','meme','angelinvestors'];
 
 const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
 const AT_BASE  = 'appJpWWp9NkIQCugA';
@@ -1902,7 +1907,8 @@ defi: [],
 infrastructure: [],
 treasury: [],
 launchpad: [],
-meme: []
+meme: [],
+angelinvestors: []
 };
 
 // â”€â”€ CM DATA (from contacts CSVs) â”€â”€
@@ -2256,9 +2262,9 @@ function dlCSV(rows, fn) {
 function keyOf(idx) { return KEYS[idx]; }
 
 // â”€â”€ PANEL BUILDER â”€â”€
-const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142','#f59e0b','#14b8a6','#3b82f6','#22c55e','#64748b','#eab308','#f97316','#f43f5e'];
-const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab','Super Team','NET','Blockchain Service','DeFi','Infrastructure','Treasury','Launchpad','Meme'];
-const TYPES = ['project','project','project','influencer','influencer','dao','project','project','project','project','project','project','project','project','project','project'];
+const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142','#f59e0b','#14b8a6','#3b82f6','#22c55e','#64748b','#eab308','#f97316','#f43f5e','#0ea5e9'];
+const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab','Super Team','NET','Blockchain Service','DeFi','Infrastructure','Treasury','Launchpad','Meme','Angel Investors'];
+const TYPES = ['project','project','project','influencer','influencer','dao','project','project','project','project','project','project','project','project','project','project','project'];
 
 function buildPanel(idx) {
   const panel = document.getElementById('panel-'+idx);
