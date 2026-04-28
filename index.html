@@ -44,7 +44,7 @@
   --grid: rgba(0,229,255,0.035);
 }
 
-/* â”€â”€ LIGHT THEME â”€â”€ */
+/* ── LIGHT THEME ── */
 html.light {
   --bg: #f0f4ff;
   --bg2: rgba(255,255,255,0.95);
@@ -107,7 +107,7 @@ html.light body::before {
 }
 body > * { position:relative; z-index:1; }
 
-/* â”€â”€ HEADER â”€â”€ */
+/* ── HEADER ── */
 .header {
   padding:20px 32px 0;
   background:rgba(3,7,17,0.8);
@@ -168,7 +168,7 @@ html.light .header h1 {
 }
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
 
-/* â”€â”€ TABS â”€â”€ */
+/* ── TABS ── */
 .tabs { display:flex; gap:2px; overflow-x:auto; padding:10px 0 0; }
 .tabs::-webkit-scrollbar{display:none;}
 
@@ -203,12 +203,12 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
 }
 .tab.active .tab-count { background:var(--purple-bg); color:var(--purple); border-color:var(--purple-border); box-shadow:0 0 8px rgba(191,138,255,0.1); }
 
-/* â”€â”€ MAIN â”€â”€ */
+/* ── MAIN ── */
 .main{padding:24px 28px;}
 .panel{display:none;}
 .panel.active{display:block;}
 
-/* â”€â”€ STAT CARDS â”€â”€ */
+/* ── STAT CARDS ── */
 .stats-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
 .stat-card {
   background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 22px;
@@ -244,7 +244,7 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
 .stat-card.blue .value   { color:var(--blue); text-shadow:0 0 20px rgba(99,225,255,0.4); }
 .stat-card.blue { border-color:rgba(99,225,255,0.15); box-shadow:0 0 24px rgba(99,225,255,0.05); }
 
-/* â”€â”€ PROGRESS â”€â”€ */
+/* ── PROGRESS ── */
 .progress-wrap{margin-bottom:22px;}
 .progress-track { height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; border:1px solid var(--border); }
 @keyframes progressGlow{0%{left:-60%;}100%{left:180%;}}
@@ -259,7 +259,7 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
 }
 .progress-label{font-size:11px;color:var(--muted2);margin-top:7px;font-weight:500;font-family:'JetBrains Mono',monospace;}
 
-/* â”€â”€ TOOLBAR â”€â”€ */
+/* ── TOOLBAR ── */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
 .toolbar input,.toolbar select {
   font-size:13px;padding:10px 15px;border-radius:12px;
@@ -272,7 +272,7 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
   box-shadow:0 0 0 3px rgba(99,225,255,0.08), 0 0 16px rgba(99,225,255,0.06);
 }
 
-/* â”€â”€ BUTTONS â”€â”€ */
+/* ── BUTTONS ── */
 .btn {
   font-size:12px;padding:9px 16px;border-radius:10px;border:1px solid var(--border);
   background:var(--bg2);cursor:pointer;color:var(--muted2);
@@ -287,7 +287,7 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
 .btn-red { color:var(--red); border-color:rgba(255,56,96,0.25); }
 .btn-red:hover { background:var(--red-bg); box-shadow:0 0 16px rgba(255,56,96,0.12); }
 
-/* â”€â”€ ADD BOX â”€â”€ */
+/* ── ADD BOX ── */
 .add-box {
   background:var(--bg2);border:1px solid var(--border);border-radius:18px;
   padding:18px 20px;margin-bottom:22px;
@@ -311,10 +311,10 @@ html.light .tab.active::after { background:linear-gradient(90deg,#2563eb,#7c3aed
 .hint{font-size:11px;color:var(--muted);margin-top:10px;}
 .hint code{background:var(--bg3);padding:3px 8px;border-radius:6px;color:var(--muted2);font-size:10px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
 
-/* â”€â”€ BULK â”€â”€ */
+/* ── BULK ── */
 .bulk-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
 
-/* â”€â”€ TABLE â”€â”€ */
+/* ── TABLE ── */
 .table-wrap {
   background:var(--bg2);border:1px solid var(--border);border-radius:18px;
   overflow:hidden;margin-bottom:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -345,7 +345,7 @@ td{padding:11px 16px;vertical-align:middle;}
 .cell-sub{font-size:11px;color:var(--muted);margin-top:3px;}
 .cell-link{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 
-/* â”€â”€ LINKS â”€â”€ */
+/* ── LINKS ── */
 .xl {
   color:var(--blue);
   text-decoration:none;
@@ -376,7 +376,7 @@ td{padding:11px 16px;vertical-align:middle;}
 .xl-edit:hover{color:var(--text);background:var(--bg3);}
 .xl-none{font-size:11px;color:var(--muted);font-style:italic;opacity:0.6;}
 
-/* â”€â”€ BADGES â”€â”€ */
+/* ── BADGES ── */
 .badge {
   display:inline-flex;
   align-items:center;
@@ -442,13 +442,13 @@ td{padding:11px 16px;vertical-align:middle;}
 .del-btn:hover{color:var(--red);background:var(--red-bg);}
 .num{color:var(--muted);font-size:11px;width:30px;font-variant-numeric:tabular-nums;}
 
-/* â”€â”€ HANDLES / LEGEND â”€â”€ */
+/* ── HANDLES / LEGEND ── */
 .handles{display:flex;flex-wrap:wrap;gap:4px;}
 .legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
 .leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
 .leg-dot{width:7px;height:7px;border-radius:50%;}
 
-/* â”€â”€ MODAL â”€â”€ */
+/* ── MODAL ── */
 .modal-overlay {
   display:none;
   position:fixed;
@@ -492,7 +492,7 @@ html.light .modal input { background:rgba(0,0,0,0.03); }
 .modal-label{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
 
-/* â”€â”€ TOAST â”€â”€ */
+/* ── TOAST ── */
 .toast {
   position:fixed;
   bottom:24px;
@@ -514,7 +514,7 @@ html.light .modal input { background:rgba(0,0,0,0.03); }
 }
 .toast.show{opacity:1;transform:translateY(0) scale(1);}
 
-/* â”€â”€ THEME TOGGLE â”€â”€ */
+/* ── THEME TOGGLE ── */
 .theme-toggle{display:flex;align-items:center;gap:8px;margin-left:auto;cursor:pointer;user-select:none;}
 .toggle-track {
   width:40px;
@@ -538,7 +538,7 @@ html.light .modal input { background:rgba(0,0,0,0.03); }
 }
 html.light .toggle-thumb{transform:translateX(18px);}
 
-/* â”€â”€ EXTRA LINK STYLES â”€â”€ */
+/* ── EXTRA LINK STYLES ── */
 .link-extra{color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg);}
 .link-extra:hover{background:rgba(167,139,250,0.15);box-shadow:0 0 10px rgba(167,139,250,0.16);}
 
@@ -548,7 +548,7 @@ html.light .toggle-thumb{transform:translateX(18px);}
 .links-list .link-rm{background:transparent;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:4px 8px;border-radius:6px;transition:background 0.15s;}
 .links-list .link-rm:hover{background:var(--red-bg);}
 
-/* â”€â”€ NOTES â”€â”€ */
+/* ── NOTES ── */
 .note-cell{min-width:120px;}
 .note-input {
   font-size:11.5px;
@@ -567,7 +567,7 @@ html.light .note-input { background:rgba(0,0,0,0.03); }
 .note-input:focus { border-color:var(--purple-border); box-shadow:0 0 0 2px rgba(167,139,250,0.1); }
 .note-input::placeholder{color:var(--muted);font-style:italic;}
 
-/* â”€â”€ CM LINKS â”€â”€ */
+/* ── CM LINKS ── */
 .cm-link {
   color:var(--green);
   border-color:var(--green-border);
@@ -585,16 +585,16 @@ html.light .note-input { background:rgba(0,0,0,0.03); }
 }
 .cm-link:hover{background:rgba(0,229,160,0.14);box-shadow:0 0 8px rgba(0,229,160,0.14);}
 
-/* â”€â”€ CATEGORY COLORS â”€â”€ */
+/* ── CATEGORY COLORS ── */
 .cat-sol{--cat:#a78bfa;}
 .cat-eth{--cat:#627eea;}
 .cat-btc{--cat:#f7931a;}
 .cat-topinf{--cat:#00e5a0;}
 .cat-inf{--cat:#06b6d4;}
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   VISUAL OVERHAUL v0.3 â€” INSANE EDITION
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════
+   VISUAL OVERHAUL v0.3 — INSANE EDITION
+   ═══════════════════════════════════════ */
 
 /* Starfield canvas */
 #starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
@@ -1532,9 +1532,9 @@ html.light .note-input {
       <span id="theme-label" style="font-size:12px;color:var(--muted)">Dark</span>
     </div>
   </div>
-  <p>Track projects, influencers & DAOs across Solana · Ethereum · Bitcoin · Base · SEI</p>
+  <p>Track projects, influencers & DAOs across Solana � Ethereum � Bitcoin � Base � SEI</p>
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
-  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button></div>
+  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button><button class="btn btn-purple" id="team-lock-btn" onclick="toggleTeamAccess()">Team login</button></div>
 
   <div class="tabs" id="tabs">
     <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
@@ -1652,7 +1652,7 @@ html.light .note-input {
 <div class="toast" id="toast"></div>
 
 <script>
-// â”€â”€ THEME â”€â”€
+// ── THEME ──
 function toggleTheme(){
   const isLight = document.documentElement.classList.toggle('light');
   localStorage.setItem('w3_theme', isLight ? 'light' : 'dark');
@@ -1665,8 +1665,42 @@ if(localStorage.getItem('w3_theme')==='light'){
   document.getElementById('theme-label').textContent = 'Light';
 }
 
-// â”€â”€ STORAGE â”€â”€
+// ── STORAGE ──
 const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam','net','blockchainservice','defi','infrastructure','treasury','launchpad','meme','angelinvestors'];
+
+const TEAM_ACCESS_CODE = 'team2026';
+let teamUnlocked = localStorage.getItem('w3_team_unlocked') === '1';
+function hasTeamAccess(){ return teamUnlocked; }
+function requireTeamAccess(){
+  if(teamUnlocked) return true;
+  const code = prompt('Team access code:');
+  if(code === TEAM_ACCESS_CODE){
+    teamUnlocked = true;
+    localStorage.setItem('w3_team_unlocked','1');
+    updateTeamAccessUI();
+    KEYS.forEach((k,i)=>renderPanel(i));
+    toast('Team editing unlocked');
+    return true;
+  }
+  if(code !== null) alert('Wrong team code.');
+  return false;
+}
+function toggleTeamAccess(){
+  if(teamUnlocked){
+    teamUnlocked = false;
+    localStorage.removeItem('w3_team_unlocked');
+    updateTeamAccessUI();
+    KEYS.forEach((k,i)=>renderPanel(i));
+    toast('Editing locked');
+    return;
+  }
+  requireTeamAccess();
+}
+function updateTeamAccessUI(){
+  const btn = document.getElementById('team-lock-btn');
+  if(btn) btn.textContent = teamUnlocked ? 'Lock editing' : 'Team login';
+  document.querySelectorAll('.team-only').forEach(el => { el.style.display = teamUnlocked ? '' : 'none'; });
+}
 
 const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
 const AT_BASE  = 'appJpWWp9NkIQCugA';
@@ -1681,7 +1715,7 @@ function setSaved(){ document.getElementById('save-txt').textContent = 'Synced -
 function setSaving(){ document.getElementById('save-txt').textContent = 'Syncing...'; }
 function setSaveErr(){ document.getElementById('save-txt').textContent = 'Sync error - saved locally'; }
 
-// â”€â”€ FIX #1: Exact category matching â”€â”€
+// ── FIX #1: Exact category matching ──
 // Match category field to key. For DAOs, category is "dao|ProjectName" so use startsWith.
 // For everything else, require EXACT match to prevent cross-contamination.
 function categoryMatchesKey(category, key) {
@@ -1727,7 +1761,7 @@ function fromRecords(key, records){
   });
 }
 
-// â”€â”€ loadFromAirtable: ONLY reads, NEVER pushes â”€â”€
+// ── loadFromAirtable: ONLY reads, NEVER pushes ──
 async function loadFromAirtable(){
   setSaving();
   try {
@@ -1742,7 +1776,7 @@ async function loadFromAirtable(){
 
     if(all.length === 0){ setSaved(); return false; }
 
-    // Build temp data first â€” don't touch DATA yet
+    // Build temp data first — don't touch DATA yet
     const tempData = {};
     let totalCount = 0;
     KEYS.forEach(k => {
@@ -1812,7 +1846,7 @@ async function deleteFromAirtable(id){
   try { await fetch(`${AT_URL}/${id}`, { method:'DELETE', headers: AT_HEADS }); } catch(e){}
 }
 
-// Add new SEI records to Airtable (one-time use â€” does not touch existing records)
+// Add new SEI records to Airtable (one-time use — does not touch existing records)
 async function addSEIToAirtable(){
   const items = DATA['sei']||[];
   const newItems = items.filter(d => !d._id);
@@ -1874,7 +1908,7 @@ function save(key, data){
   setSaved();
 }
 
-// â”€â”€ DATA â”€â”€
+// ── DATA ──
 const DEFAULTS = {
 sol: [
   {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"},{n:"Claynosaurz",x:"Claynosaurz",s:"pending"},{n:"Ovols",x:"OvolsNFT",s:"pending"},{n:"Oogy",x:"oogyNFT",s:"pending"},{n:"Teddies",x:"playteddies",s:"pending"},{n:"JellyDawgs / Jelly Co",x:"JellyCoNFT",s:"pending"},{n:"DGENZ",x:"dgenznft",s:"pending"},{n:"Solana Sprotos",x:"SolanaSprotos",s:"pending"},{n:"Gamba Dogs",x:"gambadogs",s:"pending"},{n:"Tensorians",x:"TensoriansNFT",s:"pending"},{n:"Galactic Geckos",x:"GalacticGeckos",s:"pending"},{n:"Shadowy Super Coders",x:"ShadowySC",s:"pending"},{n:"Degenerate Trash Pandas",x:"dgtrashpandas",s:"pending"},{n:"Honeyland",x:"HoneylandLife",s:"pending"},{n:"Nyan Heroes",x:"NyanHeroes",s:"pending"},{n:"StepN",x:"Stepnofficial",s:"pending"},{n:"Star Atlas",x:"staratlas",s:"pending"},{n:"Aurorians",x:"AuroriansNFT",s:"pending"},{n:"Zenjin Vipers",x:"ZenjinVipers",s:"pending"},{n:"SolGods",x:"SolGodsNFT",s:"pending"},{n:"DRiP Haus",x:"drip_haus",s:"pending"},{n:"Genopets",x:"genopets",s:"pending"},{n:"Frakt",x:"frakt_market",s:"pending"},{n:"Sollamas",x:"SollamasSol",s:"pending"},{n:"Solluminati",x:"Solluminati_",s:"pending"},{n:"Kaiju of Sol",x:"KaijuOfSol",s:"pending"},{n:"Cryowar",x:"CryowarGame",s:"pending"},{n:"Saga Monkes",x:"SagaMonkes",s:"pending"},{n:"Skeleton Crew",x:"SkeletonCrewSOL",s:"pending"},{n:"Catalina Whale Mixer",x:"CatalinaWhale",s:"pending"},{n:"Degen Fat Cats",x:"DegenFatCats",s:"pending"},{n:"Lotus Gang",x:"LotusGangNFT",s:"pending"},{n:"Mutant Monkey Business",x:"MutantMonkeyBiz",s:"pending"},{n:"Photo Finish Live",x:"photofinish",s:"pending"},{n:"Non Playable Coins",x:"NPCsol",s:"pending"},{n:"Rekt Dogs",x:"RektDogsNFT",s:"pending"},{n:"Monkey Kingdom",x:"MonkeyKingdom",s:"pending"},{n:"AI Genz",x:"AIGenzNFT",s:"pending"},{n:"Wagmi Games",x:"wagmi_studios",s:"pending"},{n:"Llama Army",x:"LlamaArmyNFT",s:"pending"},{n:"Chads",x:"ChadNFTSol",s:"pending"},{n:"Alpha Pharaohs",x:"AlphaPharaohs",s:"pending"},{n:"Slimhoods",x:"SlimhoodsNFT",s:"pending"},{n:"Degen Dojo",x:"DegenDojoNFT",s:"pending"}
@@ -1911,7 +1945,7 @@ meme: [],
 angelinvestors: []
 };
 
-// â”€â”€ CM DATA (from contacts CSVs) â”€â”€
+// ── CM DATA (from contacts CSVs) ──
 const CM_DATA = {
 sol:{
   "Mad Lads":["Zeck_Sol","armaniferrante","BrudaSol"],
@@ -2193,7 +2227,7 @@ sei:{
 }
 };
 
-// â”€â”€ STATE â”€â”€
+// ── STATE ──
 let DATA = {};
 KEYS.forEach(k => {
   const local = loadLocal(k);
@@ -2204,7 +2238,7 @@ KEYS.forEach(k => {
   }
 });
 
-// â”€â”€ MODAL â”€â”€
+// ── MODAL ──
 let modalCallback = null;
 let modalLinks = [];
 function openModal(name, handle, links, cb) {
@@ -2235,14 +2269,14 @@ function saveModal() {
 }
 document.getElementById('modal').addEventListener('click', e => { if(e.target === document.getElementById('modal')) closeModal(); });
 
-// â”€â”€ TOAST â”€â”€
+// ── TOAST ──
 function toast(m) {
   const t = document.getElementById('toast');
   t.textContent = m; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// â”€â”€ TAB SWITCH â”€â”€
+// ── TAB SWITCH ──
 let activeTab = 0;
 function switchTab(idx, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -2252,7 +2286,7 @@ function switchTab(idx, el) {
   activeTab = idx;
 }
 
-// â”€â”€ UTILS â”€â”€
+// ── UTILS ──
 function clean(s) { return (s||'').replace(/^"|"$/g,'').trim(); }
 function dlCSV(rows, fn) {
   const a = document.createElement('a');
@@ -2261,7 +2295,7 @@ function dlCSV(rows, fn) {
 }
 function keyOf(idx) { return KEYS[idx]; }
 
-// â”€â”€ PANEL BUILDER â”€â”€
+// ── PANEL BUILDER ──
 const COLORS = ['#8b5cf6','#627eea','#f7931a','#10b981','#06b6d4','#ec4899','#0052ff','#e84142','#f59e0b','#14b8a6','#3b82f6','#22c55e','#64748b','#eab308','#f97316','#f43f5e','#0ea5e9'];
 const NAMES = ['Solana Projects','ETH Collab','Bitcoin','Top Influencers','Influencers','Solana DAOs','Base','SEI Collab','Super Team','NET','Blockchain Service','DeFi','Infrastructure','Treasury','Launchpad','Meme','Angel Investors'];
 const TYPES = ['project','project','project','influencer','influencer','dao','project','project','project','project','project','project','project','project','project','project','project'];
@@ -2274,7 +2308,7 @@ function buildPanel(idx) {
   const isDao = type === 'dao';
 
   panel.innerHTML = `
-    <div class="add-box">
+    <div class="add-box team-only">
       <div class="add-box-header" style="color:${color}">+ Add / Import</div>
       <div class="add-row">
         <input type="text" id="add-n-${idx}" placeholder="${isDao ? 'DAO name...' : 'Name...'}"/>
@@ -2324,7 +2358,7 @@ function buildPanel(idx) {
       <div class="leg"><span class="leg-dot" style="background:var(--red)"></span>Not contacted</div>
     </div>
 
-    <div class="bulk-row">
+    <div class="bulk-row team-only">
       <button class="btn" onclick="markAll(${idx},'active')">All visible active</button>
       <button class="btn" onclick="markAll(${idx},'inactive')">All visible inactive</button>
       <button class="btn" onclick="markAll(${idx},'pending')">Reset visible</button>
@@ -2350,7 +2384,7 @@ function buildPanel(idx) {
   `;
 }
 
-// â”€â”€ RENDER â”€â”€
+// ── RENDER ──
 function getFiltered(idx) {
   const key = keyOf(idx);
   const q = (document.getElementById('search-'+idx)||{value:''}).value.toLowerCase();
@@ -2407,8 +2441,10 @@ function renderPanel(idx) {
         parts.push(`<a class="cm-link" href="https://x.com/${ch}" target="_blank">@${ch}</a>`);
       });
       if(!d.x && !(d.l||[]).length && !cmList.length) parts.push(`<span class="xl-none">No links</span>`);
-      parts.push(`<button class="xl-edit edit-link-btn" onclick="editLink(${idx},${d.i})" title="Edit links">Edit</button>`);
-      parts.push(`<button class="xl-edit edit-cm-btn" onclick="editCM(${idx},${d.i})" title="Edit CMs">CM</button>`);
+      if(hasTeamAccess()){
+        parts.push(`<button class="xl-edit edit-link-btn" onclick="editLink(${idx},${d.i})" title="Edit links">Edit</button>`);
+        parts.push(`<button class="xl-edit edit-cm-btn" onclick="editCM(${idx},${d.i})" title="Edit CMs">CM</button>`);
+      }
       linkCell = `<div class="cell-link" style="flex-wrap:wrap;">${parts.join('')}</div>`;
     }
     const nameCell = isDao
@@ -2420,10 +2456,10 @@ function renderPanel(idx) {
       <td class="num">${i+1}</td>
       <td>${nameCell}</td>
       <td>${linkCell}</td>
-      <td><span class="badge ${bc}" onclick="cycleStatus(${idx},${d.i})">${lbl}</span></td>
-      <td><span class="badge ${cbc}" onclick="cycleContact(${idx},${d.i})">${clbl}</span></td>
-      <td class="note-cell"><input class="note-input" value="${(d.nt||'').replace(/"/g,'&quot;')}" placeholder="Add note..." onchange="saveNote(${idx},${d.i},this.value)"/></td>
-      <td><button class="del-btn" onclick="delRow(${idx},${d.i})">x</button></td>`;
+      <td><span class="badge ${bc}" ${hasTeamAccess() ? `onclick="cycleStatus(${idx},${d.i})"` : ''}>${lbl}</span></td>
+      <td><span class="badge ${cbc}" ${hasTeamAccess() ? `onclick="cycleContact(${idx},${d.i})"` : ''}>${clbl}</span></td>
+      <td class="note-cell"><input class="note-input" value="${(d.nt||'').replace(/"/g,'&quot;')}" placeholder="Add note..." ${hasTeamAccess() ? `onchange="saveNote(${idx},${d.i},this.value)"` : 'disabled'}/></td>
+      <td>${hasTeamAccess() ? `<button class="del-btn" onclick="delRow(${idx},${d.i})">x</button>` : ''}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -2453,8 +2489,9 @@ function updateStats(idx) {
   if (tc) tc.textContent = total;
 }
 
-// â”€â”€ ACTIONS â”€â”€
+// ── ACTIONS ──
 function cycleStatus(idx, i) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const d = DATA[key][i];
   d.s = d.s==='pending'?'active':d.s==='active'?'inactive':'pending';
@@ -2463,6 +2500,7 @@ function cycleStatus(idx, i) {
 }
 
 function cycleContact(idx, i) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const d = DATA[key][i];
   const c = d.c||'pending';
@@ -2472,6 +2510,7 @@ function cycleContact(idx, i) {
 }
 
 function saveNote(idx, i, val) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   DATA[key][i].nt = val;
   save(key, DATA[key]);
@@ -2479,6 +2518,7 @@ function saveNote(idx, i, val) {
 }
 
 function editCM(idx, i) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const d = DATA[key][i];
   const current = (d.cm||[]).join(', ');
@@ -2492,6 +2532,7 @@ function editCM(idx, i) {
 }
 
 function delRow(idx, i) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const d = DATA[key][i];
   if(d._id) deleteFromAirtable(d._id);
@@ -2501,6 +2542,7 @@ function delRow(idx, i) {
 }
 
 function editLink(idx, i) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const d = DATA[key][i];
   openModal(d.n, d.x, d.l||[], (newHandle, newLinks) => {
@@ -2513,6 +2555,7 @@ function editLink(idx, i) {
 }
 
 function addRow(idx) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const isDao = TYPES[idx] === 'dao';
   const n = (document.getElementById('add-n-'+idx)||{value:''}).value.trim();
@@ -2539,6 +2582,7 @@ function addRow(idx) {
 }
 
 function markAll(idx, status) {
+  if(!requireTeamAccess()) return;
   const key = keyOf(idx);
   const filtered = getFiltered(idx);
   filtered.forEach(d => DATA[key][d.i].s = status);
@@ -2554,6 +2598,7 @@ function markAll(idx, status) {
 }
 
 function importCSV(idx, input) {
+  if(!requireTeamAccess()){ input.value = ''; return; }
   const key = keyOf(idx);
   const isDao = TYPES[idx] === 'dao';
   const f = input.files[0]; if (!f) return;
@@ -2602,15 +2647,16 @@ function exportData(idx, all) {
 
 let isPushing = false;
 
-// Push all local data to Airtable (manual only â€” via Initial Setup button)
+// Push all local data to Airtable (manual only — via Initial Setup button)
 async function pushAllToAirtable(silent){
+  if(!requireTeamAccess()) return;
   if(isPushing){ if(!silent) toast('Already pushing, please wait...'); return; }
   if(!silent && !confirm('This will replace ALL data in Airtable with current local data. Continue?')) return;
   isPushing = true;
   setSaving();
   toast('Deleting old records...');
   try {
-    // Phase 1: Delete ALL records â€” keep looping until truly empty
+    // Phase 1: Delete ALL records — keep looping until truly empty
     let round = 0;
     while(round < 50){
       const res = await fetch(AT_URL + '?pageSize=100&fields[]=Name', {headers: AT_HEADS});
@@ -2672,6 +2718,7 @@ async function pushAllToAirtable(silent){
 
 // Reset local data to clean defaults (does NOT touch Airtable)
 function resetLocal(){
+  if(!requireTeamAccess()) return;
   if(!confirm('Reset local data to defaults? This clears your browser cache. Airtable is not affected.')) return;
   KEYS.forEach(k => localStorage.removeItem('w3_'+k));
   localStorage.removeItem('w3_version');
@@ -2683,11 +2730,11 @@ function resetLocal(){
   toast('Local data reset to defaults!');
 }
 
-// â”€â”€ INIT â”€â”€
+// ── INIT ──
 KEYS.forEach((k, idx) => buildPanel(idx));
 KEYS.forEach((k, idx) => renderPanel(idx));
 
-// Load from Airtable on start â€” never auto-push
+// Load from Airtable on start — never auto-push
 loadFromAirtable().then(loaded => {
   if(loaded) {
     KEYS.forEach((k, idx) => renderPanel(idx));
@@ -2697,7 +2744,7 @@ loadFromAirtable().then(loaded => {
   }
 });
 
-// Auto-sync every 30 seconds â€” skip if a save is in progress
+// Auto-sync every 30 seconds — skip if a save is in progress
 let isSaving = false;
 const _origSave = saveItemToAirtable;
 saveItemToAirtable = async function(key, item){
@@ -2714,7 +2761,7 @@ setInterval(() => {
   }
 }, 30000);
 
-// â”€â”€ STARFIELD â”€â”€
+// ── STARFIELD ──
 (function(){
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
