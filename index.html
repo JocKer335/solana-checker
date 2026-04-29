@@ -1716,6 +1716,7 @@ const SB_HEADS = {
 
 // Also keep localStorage as fast cache
 function saveLocal(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); }catch(e){} }
+function save(key, data){ saveLocal(key, data); }
 function loadLocal(key){ try{ const d=localStorage.getItem('w3_'+key); return d?JSON.parse(d):null; }catch(e){return null;} }
 function setSaved(){ document.getElementById('save-txt').textContent = 'Synced - '+new Date().toLocaleTimeString(); }
 function setSaving(){ document.getElementById('save-txt').textContent = 'Syncing...'; }
