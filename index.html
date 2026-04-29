@@ -2257,23 +2257,13 @@ function toast(m) {
 }
 
 // ── TAB SWITCH ──
-const ACTIVE_TAB_KEY = 'w3_active_tab';
 let activeTab = 0;
-function switchTab(idx, el, persist = true) {
-  if(!el) el = document.querySelector(`.tab[data-cat="${KEYS[idx]}"]`);
-  const panel = document.getElementById('panel-'+idx);
-  if(!el || !panel) return;
+function switchTab(idx, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
-  panel.classList.add('active');
+  document.getElementById('panel-'+idx).classList.add('active');
   activeTab = idx;
-  if(persist) localStorage.setItem(ACTIVE_TAB_KEY, KEYS[idx]);
-}
-function restoreActiveTab(){
-  const savedKey = localStorage.getItem(ACTIVE_TAB_KEY);
-  const idx = KEYS.includes(savedKey) ? KEYS.indexOf(savedKey) : 0;
-  switchTab(idx, document.querySelector(`.tab[data-cat="${KEYS[idx]}"]`), false);
 }
 
 // ── UTILS ──
@@ -2690,14 +2680,11 @@ function resetLocal(){
 // ── INIT ──
 KEYS.forEach((k, idx) => buildPanel(idx));
 KEYS.forEach((k, idx) => renderPanel(idx));
-restoreActiveTab();
-updateTeamAccessUI();
 
 // Load from Airtable on start — never auto-push
 loadFromAirtable().then(loaded => {
   if(loaded) {
     KEYS.forEach((k, idx) => renderPanel(idx));
-    restoreActiveTab();
     toast('Synced with Supabase!');
   } else {
     toast('Using local data. Click "Initial Setup" to push to Supabase.');
