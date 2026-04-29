@@ -1512,6 +1512,19 @@ html.light .note-input {
     flex-shrink: 0;
   }
 }
+
+/* Team edit lock: hide all write controls unless unlocked */
+body:not(.team-unlocked) .team-only,
+body:not(.team-unlocked) .edit-link-btn,
+body:not(.team-unlocked) .edit-cm-btn,
+body:not(.team-unlocked) .del-btn,
+body:not(.team-unlocked) .bulk-row {
+  display: none !important;
+}
+body:not(.team-unlocked) .note-input {
+  pointer-events: none;
+  opacity: 0.55;
+}
 </style>
 </head>
 <body>
@@ -1671,6 +1684,7 @@ const KEYS = ['sol','eth','btc','topinf','inf','dao','base','sei','superteam','n
 const TEAM_ACCESS_CODE = 'team2026';
 let teamUnlocked = localStorage.getItem('w3_team_unlocked') === '1';
 function hasTeamAccess(){ return teamUnlocked; }
+function applyTeamBodyClass(){ document.body.classList.toggle('team-unlocked', teamUnlocked); }
 function requireTeamAccess(){
   if(teamUnlocked) return true;
   const code = prompt('Team access code:');
