@@ -1547,7 +1547,7 @@ body:not(.team-unlocked) .note-input {
   </div>
   <p>Track projects, influencers & DAOs across Solana � Ethereum � Bitcoin � Base � SEI</p>
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
-  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button><button class="btn btn-purple" id="team-lock-btn" onclick="toggleTeamAccess()">Team login</button><button class="btn btn-green" id="initial-setup-btn" onclick="pushAllToAirtable(false)">Push to Supabase</button></div>
+  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button><button class="btn btn-purple" id="team-lock-btn" onclick="toggleTeamAccess()">Team login</button></div>
 
   <div class="tabs" id="tabs">
     <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
@@ -2303,14 +2303,14 @@ function buildPanel(idx) {
     <div class="add-box">
       <div class="add-box-header" style="color:${color}">+ Add / Import</div>
       <div class="add-row">
-        <input class="team-only" type="text" id="add-n-${idx}" placeholder="${isDao ? 'DAO name...' : 'Name...'}"/>
-        ${isDao ? `<input class="team-only" type="text" id="add-p-${idx}" placeholder="Project..."/><input class="team-only" type="text" id="add-h-${idx}" placeholder="@handles, comma separated..."/>` : `<input class="team-only" type="text" id="add-x-${idx}" placeholder="@x handle (optional)"/>`}
-        <button class="btn btn-green team-only" onclick="addRow(${idx})">+ Add</button>
-        <label class="team-only">Upload CSV <input type="file" id="csv-${idx}" accept=".csv" onchange="importCSV(${idx},this)"/></label>
+        <input type="text" id="add-n-${idx}" placeholder="${isDao ? 'DAO name...' : 'Name...'}"/>
+        ${isDao ? `<input type="text" id="add-p-${idx}" placeholder="Project..."/><input type="text" id="add-h-${idx}" placeholder="@handles, comma separated..."/>` : `<input type="text" id="add-x-${idx}" placeholder="@x handle (optional)"/>`}
+        <button class="btn btn-green" onclick="addRow(${idx})">+ Add</button>
+        <label>Upload CSV <input type="file" id="csv-${idx}" accept=".csv" onchange="importCSV(${idx},this)"/></label>
         <button class="btn btn-purple" onclick="exportData(${idx},false)">Export active</button>
         <button class="btn" onclick="exportData(${idx},true)">Export all</button>
       </div>
-      <p class="hint team-only">${isDao ? 'CSV: <code>DAO,Project,Handles</code> - handles separated by semicolons' : 'CSV: <code>Name,Handle</code>'}</p>
+      <p class="hint">${isDao ? 'CSV: <code>DAO,Project,Handles</code> - handles separated by semicolons' : 'CSV: <code>Name,Handle</code>'}</p>
     </div>
 
     <div class="stats-row">
