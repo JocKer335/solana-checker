@@ -1702,11 +1702,16 @@ function updateTeamAccessUI(){
   document.querySelectorAll('.team-only').forEach(el => { el.style.display = teamUnlocked ? '' : 'none'; });
 }
 
-const AT_TOKEN = 'patKsZTNmb3pAmuat.b8a03f1117d535f72b49e0cc1bdb829d0d2fb0c5a457b7b5314f572bbe0cf22e';
-const AT_BASE  = 'appJpWWp9NkIQCugA';
-const AT_TABLE = 'Tracker';
-const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
-const AT_HEADS = { 'Authorization': `Bearer ${AT_TOKEN}`, 'Content-Type': 'application/json' };
+const SUPABASE_URL = 'https://cmhgndniwtdznnxmqebb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8tXvdq771tUaSG84x8jgYg_t6T4-dMS';
+const SB_TABLE = 'tracker';
+const SB_URL = `${SUPABASE_URL}/rest/v1/${SB_TABLE}`;
+const SB_HEADS = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
 
 // Also keep localStorage as fast cache
 function saveLocal(key, data){ try{ localStorage.setItem('w3_'+key, JSON.stringify(data)); }catch(e){} }
@@ -1715,86 +1720,88 @@ function setSaved(){ document.getElementById('save-txt').textContent = 'Synced -
 function setSaving(){ document.getElementById('save-txt').textContent = 'Syncing...'; }
 function setSaveErr(){ document.getElementById('save-txt').textContent = 'Sync error - saved locally'; }
 
-// ── FIX #1: Exact category matching ──
 // Match category field to key. For DAOs, category is "dao|ProjectName" so use startsWith.
 // For everything else, require EXACT match to prevent cross-contamination.
 function categoryMatchesKey(category, key) {
   const cat = (category || '').trim();
   if (key === 'dao') return cat.startsWith('dao');
-  // Exact match only for non-dao keys
   return cat === key;
 }
 
-// Convert our data to Airtable records
-function toRecords(key, arr){
+function toSupabaseRow(key, item){
   const isDao = key === 'dao';
-  return arr.map(d => ({
-    fields: {
-      Name: d.n || '',
-      Handle: isDao ? (d.h||[]).join(';') : (d.x||''),
-      Status: d.s || 'pending',
-      Contact: d.c || 'pending',
-      Links: (d.l||[]).join(';'),
-      Notes: d.nt || '',
-      CM: (d.cm||[]).join(';'),
-      Category: key + (isDao ? ('|'+( d.p||'')) : '')
-    }
-  }));
+  return {
+    name: item.n || '',
+    handle: isDao ? (item.h||[]).join(';') : (item.x||''),
+    status: item.s || 'pending',
+    contact: item.c || 'pending',
+    links: (item.l||[]).join(';'),
+    notes: item.nt || '',
+    cm: (item.cm||[]).join(';'),
+    category: key + (isDao ? ('|'+(item.p||'')) : '')
+  };
 }
 
-// Convert Airtable records back to our format
-function fromRecords(key, records){
+function fromSupabaseRows(key, rows){
   const isDao = key === 'dao';
-  return records.map(r => {
-    const f = r.fields;
-    const cat = (f.Category||'');
-    const contact = f.Contact || 'pending';
-    const links = (f.Links||'').split(';').filter(Boolean);
-    const cms = (f.CM||'').split(';').filter(Boolean);
-    const defaultCm = (CM_DATA[key]||{})[f.Name] || [];
+  return rows.map(r => {
+    const cat = r.category || '';
+    const contact = r.contact || 'pending';
+    const links = (r.links||'').split(';').filter(Boolean);
+    const cms = (r.cm||'').split(';').filter(Boolean);
+    const defaultCm = (CM_DATA[key]||{})[r.name] || [];
     const finalCm = cms.length ? cms : defaultCm;
     if (isDao) {
       const parts = cat.split('|');
-      return { n: f.Name||'', p: parts[1]||'', h: (f.Handle||'').split(';').filter(Boolean), s: f.Status||'pending', c: contact, l: links, nt: f.Notes||'', cm: finalCm, _id: r.id };
+      return { n: r.name||'', p: parts[1]||'', h: (r.handle||'').split(';').filter(Boolean), s: r.status||'pending', c: contact, l: links, nt: r.notes||'', cm: finalCm, _id: r.id };
     }
-    return { n: f.Name||'', x: f.Handle||'', s: f.Status||'pending', c: contact, l: links, nt: f.Notes||'', cm: finalCm, _id: r.id };
+    return { n: r.name||'', x: r.handle||'', s: r.status||'pending', c: contact, l: links, nt: r.notes||'', cm: finalCm, _id: r.id };
   });
 }
 
-// ── loadFromAirtable: ONLY reads, NEVER pushes ──
+function toRecords(key, arr){ return arr.map(d => toSupabaseRow(key, d)); }
+
+async function fetchSupabaseRows(){
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+  while(true){
+    const res = await fetch(`${SB_URL}?select=*&order=name.asc`, {
+      headers: { ...SB_HEADS, 'Range-Unit': 'items', 'Range': `${from}-${from + pageSize - 1}` }
+    });
+    const json = await res.json();
+    if(!res.ok){ throw json; }
+    const rows = Array.isArray(json) ? json : [];
+    all = all.concat(rows);
+    if(rows.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+// loadFromAirtable name kept as compatibility wrapper; it now reads from Supabase only.
 async function loadFromAirtable(){
   setSaving();
   try {
-    let all = [], offset = null;
-    do {
-      const url = AT_URL + '?pageSize=100' + (offset ? '&offset='+offset : '');
-      const res = await fetch(url, { headers: AT_HEADS });
-      const json = await res.json();
-      all = all.concat(json.records||[]);
-      offset = json.offset || null;
-    } while(offset);
-
+    const all = await fetchSupabaseRows();
     if(all.length === 0){ setSaved(); return false; }
 
-    // Build temp data first — don't touch DATA yet
     const tempData = {};
     let totalCount = 0;
     KEYS.forEach(k => {
-      const recs = all.filter(r => categoryMatchesKey(r.fields.Category, k));
-      if(recs.length > 0){
-        tempData[k] = fromRecords(k, recs);
+      const rows = all.filter(r => categoryMatchesKey(r.category, k));
+      if(rows.length > 0){
+        tempData[k] = fromSupabaseRows(k, rows);
         totalCount += tempData[k].length;
       }
     });
 
-    // Only accept if count is reasonable (between 300 and 1200)
-    if(totalCount < 300 || totalCount > 1200){
-      console.log('Airtable has ' + totalCount + ' records (expected ~521), keeping local data');
+    if(totalCount < 300 || totalCount > 10000){
+      console.log('Supabase has ' + totalCount + ' records (expected 300-10000), keeping local data');
       setSaved();
       return false;
     }
 
-    // Safe to apply
     KEYS.forEach(k => {
       if(tempData[k] && tempData[k].length > 0){
         DATA[k] = tempData[k];
@@ -1805,83 +1812,61 @@ async function loadFromAirtable(){
     setSaved();
     return true;
   } catch(e){
-    console.error('Airtable load error:', e);
+    console.error('Supabase load error:', e);
     setSaveErr();
     return false;
   }
 }
 
-// Save a single item to Airtable
+// saveItemToAirtable name kept as compatibility wrapper; it now saves to Supabase.
 async function saveItemToAirtable(key, item){
   setSaving();
   try {
-    const isDao = key === 'dao';
-    const fields = {
-      Name: item.n||'',
-      Handle: isDao ? (item.h||[]).join(';') : (item.x||''),
-      Status: item.s||'pending',
-      Contact: item.c||'pending',
-      Links: (item.l||[]).join(';'),
-      Notes: item.nt||'',
-      CM: (item.cm||[]).join(';'),
-      Category: key + (isDao ? ('|'+(item.p||'')) : '')
-    };
+    const row = toSupabaseRow(key, item);
     if(item._id){
-      const r = await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const r = await fetch(`${SB_URL}?id=eq.${encodeURIComponent(item._id)}`, { method:'PATCH', headers: SB_HEADS, body: JSON.stringify(row) });
       const j = await r.json();
-      if(j.error){ setSaveErr(); console.error('PATCH failed:', j.error); return; }
+      if(!r.ok){ setSaveErr(); console.error('Supabase PATCH failed:', j); return; }
     } else {
-      const res = await fetch(AT_URL, { method:'POST', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const res = await fetch(SB_URL, { method:'POST', headers: SB_HEADS, body: JSON.stringify(row) });
       const json = await res.json();
-      if(json.error){ setSaveErr(); console.error('POST failed:', json.error); return; }
-      item._id = json.id;
+      if(!res.ok){ setSaveErr(); console.error('Supabase POST failed:', json); return; }
+      item._id = json && json[0] && json[0].id;
     }
     saveLocal(key, DATA[key]);
     setSaved();
-  } catch(e){ setSaveErr(); }
+  } catch(e){ console.error('Supabase save error:', e); setSaveErr(); }
 }
 
-// Delete item from Airtable
 async function deleteFromAirtable(id){
-  try { await fetch(`${AT_URL}/${id}`, { method:'DELETE', headers: AT_HEADS }); } catch(e){}
+  try { await fetch(`${SB_URL}?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers: SB_HEADS }); } catch(e){}
 }
-
-// Add new SEI records to Airtable (one-time use — does not touch existing records)
+// Add new SEI records to Supabase (one-time use; does not touch existing records)
 async function addSEIToAirtable(){
   const items = DATA['sei']||[];
   const newItems = items.filter(d => !d._id);
-  if(!newItems.length){ toast('All SEI records already in Airtable!'); return; }
-  if(!confirm(`Add ${newItems.length} SEI records to Airtable? (existing records untouched)`)) return;
+  if(!newItems.length){ toast('All SEI records already in Supabase!'); return; }
+  if(!confirm(`Add ${newItems.length} SEI records to Supabase? (existing records untouched)`)) return;
   setSaving();
   let count = 0, errors = 0;
   for(const item of newItems){
-    const fields = {
-      Name: item.n||'',
-      Handle: item.x||'',
-      Status: item.s||'pending',
-      Contact: item.c||'pending',
-      Links: (item.l||[]).join(';'),
-      Notes: item.nt||'',
-      CM: (item.cm||[]).join(';'),
-      Category: 'sei'
-    };
     try {
-      const res = await fetch(AT_URL, { method:'POST', headers: AT_HEADS, body: JSON.stringify({fields}) });
+      const res = await fetch(SB_URL, { method:'POST', headers: SB_HEADS, body: JSON.stringify(toSupabaseRow('sei', item)) });
       const json = await res.json();
-      if(json.error){ errors++; console.error('POST failed for '+item.n+':', json.error); }
-      else { item._id = json.id; count++; }
+      if(!res.ok){ errors++; console.error('POST failed for '+item.n+':', json); }
+      else { item._id = json && json[0] && json[0].id; count++; }
     } catch(e){ errors++; }
     await new Promise(res => setTimeout(res, 150));
   }
   saveLocal('sei', DATA['sei']);
   if(errors) setSaveErr();
-  else { setSaved(); document.getElementById('btn-add-sei').style.display='none'; }
+  else { setSaved(); const btn = document.getElementById('btn-add-sei'); if(btn) btn.style.display='none'; }
   toast(`SEI: ${count} added${errors?' ('+errors+' errors)':''}`);
 }
 
-// Push CM handles for all items that have CM data to Airtable (one-time use)
+// Push CM handles for all items that have CM data to Supabase (one-time use)
 async function pushCMToAirtable(){
-  if(!confirm('This will update the CM field in Airtable for all rows that have CM handles. Continue?')) return;
+  if(!confirm('This will update the CM field in Supabase for all rows that have CM handles. Continue?')) return;
   let count = 0, errors = 0;
   setSaving();
   for(const key of KEYS){
@@ -1889,26 +1874,19 @@ async function pushCMToAirtable(){
     for(const item of items){
       if((item.cm||[]).length && item._id){
         try {
-          const r = await fetch(`${AT_URL}/${item._id}`, { method:'PATCH', headers: AT_HEADS, body: JSON.stringify({fields:{CM: item.cm.join(';')}}) });
+          const r = await fetch(`${SB_URL}?id=eq.${encodeURIComponent(item._id)}`, { method:'PATCH', headers: SB_HEADS, body: JSON.stringify({cm: item.cm.join(';')}) });
           const j = await r.json();
-          if(j.error){ errors++; console.error('CM push failed for '+item.n+':', j.error); }
+          if(!r.ok){ errors++; console.error('CM push failed for '+item.n+':', j); }
           else count++;
         } catch(e){ errors++; }
-        await new Promise(res => setTimeout(res, 100));
+        await new Promise(res => setTimeout(res, 120));
       }
     }
   }
   if(errors) setSaveErr();
   else setSaved();
-  toast(`CM pushed: ${count} rows updated${errors?' ('+errors+' errors)':''}`);
+  toast(`CM pushed: ${count}${errors?' ('+errors+' errors)':''}`);
 }
-
-function save(key, data){
-  saveLocal(key, data);
-  setSaved();
-}
-
-// ── DATA ──
 const DEFAULTS = {
 sol: [
   {n:"Mad Lads",x:"MadLadsNFT",s:"pending"},{n:"Defi Dungeons",x:"DefiDungeons",s:"pending"},{n:"The Heist / Defi Dungeons",x:"TheHeistNFT",s:"pending"},{n:"Portals",x:"PortalsNFT",s:"pending"},{n:"Taiyo Robotics TYR",x:"TaiyoRobotics",s:"pending"},{n:"Aurory: Seekers of Tokane",x:"AuroryProject",s:"pending"},{n:"Cets",x:"CetsOnCreck",s:"pending"},{n:"Frogana",x:"FroganaSOL",s:"pending"},{n:"AFEL",x:"AFELnft",s:"pending"},{n:"Solarians",x:"SolariansNFT",s:"pending"},{n:"Subber.xyz",x:"Subber_xyz",s:"pending"},{n:"Marker Kid - WE ARE GREGS",x:"MarkerKidNFT",s:"pending"},{n:"Degen Coin Flip",x:"DegenCoinFlip",s:"pending"},{n:"URBAN NODE",x:"UrbanNodeNFT",s:"pending"},{n:"Seraph",x:"SeraphNFT",s:"pending"},{n:"Miken Club",x:"MikenClub",s:"pending"},{n:"okay bears",x:"okaybears",s:"pending"},{n:"degods",x:"DeGodsNFT",s:"pending"},{n:"y00ts",x:"y00tsNFT",s:"pending"},{n:"Smyths / meegos / Blocksmith Labs",x:"BlocksmithLabs",s:"pending"},{n:"SharkyFI",x:"sharkyfi",s:"pending"},{n:"OligarchNFT",x:"OligarchNFT",s:"pending"},{n:"Dead King Society",x:"DeadKingSociety",s:"pending"},{n:"GAINZ",x:"GainzNFT",s:"pending"},{n:"SolCasino",x:"SolCasino_",s:"pending"},{n:"BASC",x:"BASCollective",s:"pending"},{n:"Bodoggos",x:"Bodoggos",s:"pending"},{n:"Sandwatch",x:"SandwatchNFT",s:"pending"},{n:"Poply",x:"PoplyNFT",s:"pending"},{n:"BroHalla",x:"BroHallaNFT",s:"pending"},{n:"SMB / Bonkz / SagaDAO",x:"SolanaMBS",s:"pending"},{n:"Pen Frens",x:"PenFrensNFT",s:"pending"},{n:"Bored Ape Solana Club",x:"BoredApeSolana",s:"pending"},{n:"Stoned Ape Crew",x:"StonedApeCrew",s:"pending"},{n:"Play Solana NFT",x:"PlaySolanaNFT",s:"pending"},{n:"Famous Fox Federation",x:"FamousFoxFed",s:"pending"},{n:"RETARDIO",x:"retardiocousins",s:"pending"},{n:"Lifinity Flares",x:"Lifinity",s:"pending"},{n:"Dokyo",x:"DokyoNFT",s:"pending"},{n:"Pathfinders",x:"PathfindersNFT",s:"pending"},{n:"Shredded Apes",x:"ShreddedApes",s:"pending"},{n:"sol punk",x:"SolPunksNFT",s:"pending"},{n:"Genesis Watcher",x:"GenesisWatcher_",s:"pending"},{n:"Decimus Dynamics / ALTRA",x:"DecimusDynamics",s:"pending"},{n:"The Chimpions",x:"TheChimpions",s:"pending"},{n:"Coral Tribe",x:"CoralTribeNFT",s:"pending"},{n:"SOL Decoder",x:"SOLDecoder",s:"pending"},{n:"Tombstoned",x:"TombstonedNFT",s:"pending"},{n:"Thugbirdz",x:"ThugBirdz",s:"pending"},{n:"the Stoned Frogs",x:"StonedFrogsNFT",s:"pending"},{n:"New Foxes",x:"NewFoxesNFT",s:"pending"},{n:"Udder Chaos",x:"UdderChaosNFT",s:"pending"},{n:"Primates",x:"PrimatesNFT",s:"pending"},{n:"solsteads",x:"solsteads",s:"pending"},{n:"SolPunks",x:"SolPunksFamily",s:"pending"},{n:"TombStoned",x:"TombStonedHS",s:"pending"},{n:"BANX",x:"BanxNFT",s:"pending"},{n:"Miners of Mars",x:"MinersOfMars",s:"pending"},{n:"Boogles GEN 1",x:"BooglesNFT",s:"pending"},{n:"Pesky Penguins",x:"PeskyPenguins",s:"pending"},{n:"SOL SLUG",x:"SolSlugNFT",s:"pending"},{n:"ZERO MONKE BIZ / ZMB",x:"ZeroMonkeBiz",s:"pending"},{n:"Kanpai Pandas",x:"KanpaiPandas",s:"pending"},{n:"Digi Monkz",x:"DigiMonkz",s:"pending"},{n:"Cyber Frogs",x:"CyberFrogsNFT",s:"pending"},{n:"Edamame",x:"EdamameNFT",s:"pending"},{n:"Boku Labz",x:"BokuLabz",s:"pending"},{n:"Conduct3",x:"Conduct3NFT",s:"pending"},{n:"Sailors Web3",x:"SailorsWeb3",s:"pending"},{n:"Inferno Labs",x:"InfernoLabsNFT",s:"pending"},{n:"Omega Alpha",x:"OmegaAlphaNFT",s:"pending"},{n:"HELIO",x:"helio_pay",s:"pending"},{n:"TrippinApeNFT",x:"TrippinApeNFT",s:"pending"},{n:"Code Cowboy",x:"Code_Cowboy_",s:"pending"},{n:"Liberty Square",x:"LibertySquareHQ",s:"pending"},{n:"Oak Paradise",x:"OakParadiseNFT",s:"pending"},{n:"Monkey Baby Business (MBB)",x:"MonkeyBabyBiz",s:"pending"},{n:"Boryoku dragons",x:"BoryokuDragon",s:"pending"},{n:"OWNERS CLUB",x:"OwnersClubNFT",s:"pending"},{n:"THE FRACTURE",x:"TheFractureNFT",s:"pending"},{n:"XPUNK",x:"xpunknft",s:"pending"},{n:"WONDERBOSSNFT",x:"WonderBossNFT",s:"pending"},{n:"BLOCKSMITHLABS",x:"BlocksmithLabs",s:"pending"},{n:"SOLANA SENSEI",x:"SolanaSensei",s:"pending"},{n:"PLAYSOLANA",x:"PlaySolana",s:"pending"},{n:"GIGABUDS",x:"GigabudsNFT",s:"pending"},{n:"MOONSTERS",x:"MoonstersNFT",s:"pending"},{n:"Rafflors",x:"Rafflors",s:"pending"},{n:"SaveTheWhal3s",x:"SaveTheWhal3s",s:"pending"},{n:"Tomorrowland: the reflection",x:"TomorrowlandNFT",s:"pending"},{n:"Pixeezus",x:"Pixeezus",s:"pending"},{n:"Punkykongz",x:"PunkyKongz",s:"pending"},{n:"Pythenians",x:"Pythenians",s:"pending"},{n:"Rogues",x:"RoguesNFT",s:"pending"},{n:"LP Dollz",x:"LPDollz",s:"pending"},{n:"Eden",x:"Eden_SOL",s:"pending"},{n:"Wegens",x:"WegensNFT",s:"pending"},{n:"Webkidz",x:"WebkidzNFT",s:"pending"},{n:"Degenerate ape academy",x:"degenape",s:"pending"},{n:"LowLifeForms",x:"LowLifeFormsNFT",s:"pending"},{n:"Critters quest",x:"CrittersQuest",s:"pending"},{n:"Puffsterz",x:"PuffsterzNFT",s:"pending"},{n:"Maikers",x:"MaikersNFT",s:"pending"},{n:"Solana fat boys",x:"SolanaFatBoys",s:"pending"},{n:"Enchanted nft",x:"EnchantedNFT_",s:"pending"},{n:"Luckysea",x:"LuckySea_NFT",s:"pending"},{n:"Mnk3ys",x:"Mnk3ysNFT",s:"pending"},{n:"Space operator nft",x:"SpaceOperatorNFT",s:"pending"},{n:"Yaku",x:"YakuCorp",s:"pending"},{n:"Saviors",x:"SaviorsNFT",s:"pending"},{n:"BoredApeYC",x:"BoredApeYC",s:"pending"},{n:"Stride",x:"stride_sol",s:"pending"},{n:"itk.digital",x:"itkdigital",s:"pending"},{n:"ThePlagueNft",x:"ThePlagueNFT",s:"pending"},{n:"Element NFT Marketplace",x:"Element_Market",s:"pending"},{n:"The Black Pearl / TBP",x:"TBP_Official",s:"pending"},{n:"MultiChain Advisors Inc.",x:"MultiChainInc",s:"pending"},{n:"Carrot",x:"DeFiCarrot",s:"pending"},{n:"AdrenaProtocol",x:"AdrenaProtocol",s:"pending"},{n:"Claynosaurz",x:"Claynosaurz",s:"pending"},{n:"Ovols",x:"OvolsNFT",s:"pending"},{n:"Oogy",x:"oogyNFT",s:"pending"},{n:"Teddies",x:"playteddies",s:"pending"},{n:"JellyDawgs / Jelly Co",x:"JellyCoNFT",s:"pending"},{n:"DGENZ",x:"dgenznft",s:"pending"},{n:"Solana Sprotos",x:"SolanaSprotos",s:"pending"},{n:"Gamba Dogs",x:"gambadogs",s:"pending"},{n:"Tensorians",x:"TensoriansNFT",s:"pending"},{n:"Galactic Geckos",x:"GalacticGeckos",s:"pending"},{n:"Shadowy Super Coders",x:"ShadowySC",s:"pending"},{n:"Degenerate Trash Pandas",x:"dgtrashpandas",s:"pending"},{n:"Honeyland",x:"HoneylandLife",s:"pending"},{n:"Nyan Heroes",x:"NyanHeroes",s:"pending"},{n:"StepN",x:"Stepnofficial",s:"pending"},{n:"Star Atlas",x:"staratlas",s:"pending"},{n:"Aurorians",x:"AuroriansNFT",s:"pending"},{n:"Zenjin Vipers",x:"ZenjinVipers",s:"pending"},{n:"SolGods",x:"SolGodsNFT",s:"pending"},{n:"DRiP Haus",x:"drip_haus",s:"pending"},{n:"Genopets",x:"genopets",s:"pending"},{n:"Frakt",x:"frakt_market",s:"pending"},{n:"Sollamas",x:"SollamasSol",s:"pending"},{n:"Solluminati",x:"Solluminati_",s:"pending"},{n:"Kaiju of Sol",x:"KaijuOfSol",s:"pending"},{n:"Cryowar",x:"CryowarGame",s:"pending"},{n:"Saga Monkes",x:"SagaMonkes",s:"pending"},{n:"Skeleton Crew",x:"SkeletonCrewSOL",s:"pending"},{n:"Catalina Whale Mixer",x:"CatalinaWhale",s:"pending"},{n:"Degen Fat Cats",x:"DegenFatCats",s:"pending"},{n:"Lotus Gang",x:"LotusGangNFT",s:"pending"},{n:"Mutant Monkey Business",x:"MutantMonkeyBiz",s:"pending"},{n:"Photo Finish Live",x:"photofinish",s:"pending"},{n:"Non Playable Coins",x:"NPCsol",s:"pending"},{n:"Rekt Dogs",x:"RektDogsNFT",s:"pending"},{n:"Monkey Kingdom",x:"MonkeyKingdom",s:"pending"},{n:"AI Genz",x:"AIGenzNFT",s:"pending"},{n:"Wagmi Games",x:"wagmi_studios",s:"pending"},{n:"Llama Army",x:"LlamaArmyNFT",s:"pending"},{n:"Chads",x:"ChadNFTSol",s:"pending"},{n:"Alpha Pharaohs",x:"AlphaPharaohs",s:"pending"},{n:"Slimhoods",x:"SlimhoodsNFT",s:"pending"},{n:"Degen Dojo",x:"DegenDojoNFT",s:"pending"}
@@ -2577,7 +2555,7 @@ function addRow(idx) {
   document.getElementById('add-n-'+idx).value = '';
   save(key, DATA[key]);
   renderPanel(idx);
-  toast('Adding to Airtable...');
+  toast('Adding to Supabase...');
   saveItemToAirtable(key, DATA[key][DATA[key].length-1]).then(()=>toast('Added: '+n));
 }
 
@@ -2588,12 +2566,9 @@ function markAll(idx, status) {
   filtered.forEach(d => DATA[key][d.i].s = status);
   save(key, DATA[key]);
   renderPanel(idx);
-  // Batch update to Airtable (up to 10 at a time)
-  const chunks = [];
-  for(let i=0; i<filtered.length; i+=10) chunks.push(filtered.slice(i,i+10));
-  chunks.forEach(chunk => {
-    const records = chunk.filter(d=>DATA[key][d.i]._id).map(d=>({id:DATA[key][d.i]._id,fields:{Status:status}}));
-    if(records.length) fetch(AT_URL, {method:'PATCH',headers:AT_HEADS,body:JSON.stringify({records})}).then(()=>setSaved()).catch(()=>setSaveErr());
+  const ids = filtered.map(d => DATA[key][d.i]._id).filter(Boolean);
+  ids.forEach(id => {
+    fetch(`${SB_URL}?id=eq.${encodeURIComponent(id)}`, {method:'PATCH',headers:SB_HEADS,body:JSON.stringify({status})}).then(()=>setSaved()).catch(()=>setSaveErr());
   });
 }
 
@@ -2622,8 +2597,8 @@ function importCSV(idx, input) {
     });
     save(key, DATA[key]);
     renderPanel(idx);
-    toast(added+' rows imported! Syncing to Airtable...');
-    // Save each new row to Airtable
+    toast(added+' rows imported! Syncing to Supabase...');
+    // Save each new row to Supabase
     const newRows = DATA[key].slice(DATA[key].length - added);
     newRows.forEach(row => saveItemToAirtable(key, row));
     input.value = '';
@@ -2647,61 +2622,32 @@ function exportData(idx, all) {
 
 let isPushing = false;
 
-// Push all local data to Airtable (manual only — via Initial Setup button)
+// Push all local data to Supabase (manual only; replaces all Supabase rows)
 async function pushAllToAirtable(silent){
   if(!requireTeamAccess()) return;
   if(isPushing){ if(!silent) toast('Already pushing, please wait...'); return; }
-  if(!silent && !confirm('This will replace ALL data in Airtable with current local data. Continue?')) return;
+  if(!silent && !confirm('This will replace ALL data in Supabase with current local data. Continue?')) return;
   isPushing = true;
   setSaving();
   toast('Deleting old records...');
   try {
-    // Phase 1: Delete ALL records — keep looping until truly empty
-    let round = 0;
-    while(round < 50){
-      const res = await fetch(AT_URL + '?pageSize=100&fields[]=Name', {headers: AT_HEADS});
-      const json = await res.json();
-      const ids = (json.records||[]).map(r=>r.id);
-      if(ids.length === 0) break;
-      toast('Deleting... round ' + (round+1));
-      for(let i=0; i<ids.length; i+=10){
-        const batch = ids.slice(i,i+10).map(id=>'records[]='+id).join('&');
-        await fetch(AT_URL + '?' + batch, {method:'DELETE', headers: AT_HEADS});
-        await new Promise(r=>setTimeout(r,300));
-      }
-      await new Promise(r=>setTimeout(r,500));
-      round++;
-    }
+    const del = await fetch(`${SB_URL}?id=gte.0`, { method:'DELETE', headers: SB_HEADS });
+    if(!del.ok){ console.error('Supabase delete failed:', await del.json()); setSaveErr(); isPushing = false; return; }
 
-    // Phase 2: Verify empty
-    const check = await fetch(AT_URL + '?pageSize=1&fields[]=Name', {headers: AT_HEADS});
-    const checkJson = await check.json();
-    if((checkJson.records||[]).length > 0){
-      toast('Could not fully clear Airtable. Try again.');
-      isPushing = false; setSaveErr(); return;
-    }
-
-    // Phase 3: Push all data
     toast('Pushing fresh data...');
-    let pushErrors = 0;
+    let pushErrors = 0, total = 0;
     for(const key of KEYS){
       const records = toRecords(key, DATA[key]);
-      for(let i=0; i<records.length; i+=10){
-        const batch = records.slice(i,i+10);
-        const res = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:batch})});
+      for(let i=0; i<records.length; i+=500){
+        const batch = records.slice(i,i+500);
+        const res = await fetch(SB_URL, {method:'POST', headers:SB_HEADS, body:JSON.stringify(batch)});
         const json = await res.json();
-        if(json.error){
-          console.error('Airtable POST error:', json.error);
-          // Try without Contact and Links fields (fallback)
-          const fallbackBatch = batch.map(r => ({fields: {Name: r.fields.Name, Handle: r.fields.Handle, Status: r.fields.Status, Category: r.fields.Category}}));
-          const res2 = await fetch(AT_URL, {method:'POST', headers:AT_HEADS, body:JSON.stringify({records:fallbackBatch})});
-          const json2 = await res2.json();
-          if(json2.error){ pushErrors++; console.error('Fallback also failed:', json2.error); }
-          else { (json2.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; }); }
-        } else {
-          (json.records||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
+        if(!res.ok){ pushErrors++; console.error('Supabase POST error:', json); }
+        else {
+          (json||[]).forEach((r,j) => { if(DATA[key][i+j]) DATA[key][i+j]._id = r.id; });
+          total += (json||[]).length;
         }
-        await new Promise(r=>setTimeout(r,300));
+        await new Promise(r=>setTimeout(r,120));
       }
       saveLocal(key, DATA[key]);
     }
@@ -2710,16 +2656,15 @@ async function pushAllToAirtable(silent){
       setSaveErr();
     } else {
       setSaved();
-      toast('All data pushed to Airtable! (361 records)');
+      toast('All data pushed to Supabase! (' + total + ' records)');
     }
   } catch(e){ setSaveErr(); console.error(e); }
   isPushing = false;
 }
-
-// Reset local data to clean defaults (does NOT touch Airtable)
+// Reset local data to clean defaults (does NOT touch Supabase)
 function resetLocal(){
   if(!requireTeamAccess()) return;
-  if(!confirm('Reset local data to defaults? This clears your browser cache. Airtable is not affected.')) return;
+  if(!confirm('Reset local data to defaults? This clears your browser cache. Supabase is not affected.')) return;
   KEYS.forEach(k => localStorage.removeItem('w3_'+k));
   localStorage.removeItem('w3_version');
   localStorage.removeItem('w3_theme');
@@ -2738,9 +2683,9 @@ KEYS.forEach((k, idx) => renderPanel(idx));
 loadFromAirtable().then(loaded => {
   if(loaded) {
     KEYS.forEach((k, idx) => renderPanel(idx));
-    toast('Synced with Airtable!');
+    toast('Synced with Supabase!');
   } else {
-    toast('Using local data. Click "Initial Setup" to push to Airtable.');
+    toast('Using local data. Click "Initial Setup" to push to Supabase.');
   }
 });
 
