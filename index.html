@@ -1547,7 +1547,7 @@ body:not(.team-unlocked) .note-input {
   </div>
   <p>Track projects, influencers & DAOs across Solana � Ethereum � Bitcoin � Base � SEI</p>
   <div class="save-pill"><span class="dot"></span><span id="save-txt">Loading...</span></div>
-  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button><button class="btn btn-purple" id="team-lock-btn" onclick="toggleTeamAccess()">Team login</button><button class="btn btn-green team-only" id="initial-setup-btn" onclick="pushAllToAirtable(false)">Initial Setup</button></div>
+  <div class="quick-actions"><button class="btn btn-sync" onclick="loadFromAirtable().then(loaded=>{if(loaded){KEYS.forEach((k,i)=>renderPanel(i));toast('Synced!');}})">Sync now</button><button class="btn btn-purple" id="team-lock-btn" onclick="toggleTeamAccess()">Team login</button><button class="btn btn-green" id="initial-setup-btn" onclick="pushAllToAirtable(false)">Push to Supabase</button></div>
 
   <div class="tabs" id="tabs">
     <button class="tab active" onclick="switchTab(0,this)" data-cat="sol">
